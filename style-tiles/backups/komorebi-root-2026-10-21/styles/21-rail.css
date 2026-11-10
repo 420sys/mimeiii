@@ -1,0 +1,61 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   LUAUOS · 21 RAIL
+   A narrow vertical dock: one icon per window, a running dot, and the two
+   machine controls at the bottom. A quiet strip of glass, floating over the
+   picture.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+#rail {
+  position: relative; z-index: 20;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  margin: 8px 0 8px 8px; padding: 6px 0;
+  border: var(--bw) solid var(--glass-line); border-radius: var(--r);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.08) brightness(var(--glass-bright));
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.08) brightness(var(--glass-bright));
+  box-shadow: var(--glass-shadow);
+}
+
+.rail-btn {
+  position: relative;
+  width: 30px; height: 30px; display: grid; place-items: center;
+  border: 0; border-radius: var(--r-sm);
+  color: var(--fg-4);
+  transition: color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+}
+.rail-btn svg { width: 17px; height: 17px; }
+.rail-btn:hover { color: var(--fg); background: var(--line-2); }
+.rail-btn:active { transform: translateY(1px); }
+.rail-btn[aria-pressed="true"], .rail-btn.on {
+  color: var(--fg); background: none;
+}
+
+/* running indicator: a small dot under the icon */
+.rail-btn::after {
+  content: ''; position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%);
+  width: 0; height: 3px; border-radius: 99px; background: var(--fg-4);
+  transition: width var(--t) var(--ez), background var(--t-fast);
+}
+.rail-btn.open::after { width: 8px; }
+.rail-btn.focus::after { width: 14px; background: var(--accent); }
+.rail-btn.on::after { width: 8px; background: var(--accent); }
+.rail-btn .badge {
+  position: absolute; right: 0; top: 0; min-width: 12px; height: 12px;
+  display: grid; place-items: center; padding: 0 3px;
+  border-radius: 99px; background: var(--accent); color: var(--accent-ink);
+  font: 600 8.5px/1 var(--font-code);
+}
+.rail-btn .deck-dot { display: none; }
+.rail-spacer { flex: 1; }
+.rail-sep { width: 20px; height: 1px; background: var(--line-2); margin: 5px 0; }
+#rail .rail-btn.power:hover { color: var(--warn); background: var(--line-2); }
+
+/* ── small screens: the rail becomes a bottom bar (see 50-responsive) ────── */
+body.stack #rail {
+  flex-direction: row; justify-content: flex-start; overflow-x: auto;
+  margin: 0; border: 0; border-top: var(--bw) solid var(--line-2); border-radius: 0;
+  padding: 6px 8px; background: var(--glass);
+}
+body.stack .rail-spacer { flex: 0 0 8px; }
+body.stack .rail-sep { width: 1px; height: 22px; }
+body.stack .rail-btn { margin-bottom: 5px; }

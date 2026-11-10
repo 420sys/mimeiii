@@ -1,0 +1,26 @@
+/* MIMEI · styles/39-strangers.css
+   Critique batch 3. Loaded after 38-study.css; only what no earlier file has: the lesson scroller that
+   takes the keys on a cold link without a ring until a key is pressed, and the Settings rows for Export, Import and the two-step Clear. (The desk's one quiet line
+   for a stranger lives in 35-desk.css now: .cr-promise.) */
+
+#study .st-scroll.quiet { outline: none; }
+
+
+#settings-body .set-acts { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+#settings-body .set-step[hidden] { display: none; }
+#settings-body .set-note { margin: 0; padding: 2px 12px 6px; color: var(--fg-2); font: 400 12px/1.5 var(--font-code); }
+#settings-body .set-note:empty { display: none; }
+#settings-body .set-warn { margin: 0 0 6px; padding: 9px 12px; border: 1px solid rgba(var(--blood-rgb), .7); border-radius: 2px; color: var(--bone); font: 400 12.5px/1.5 var(--font-code); }
+#settings-body .btn.danger, #settings-body .btn.danger:hover { color: var(--warn); }
+#settings-body .btn.danger:hover { border-color: var(--warn); }
+#settings-body .set-warn p { margin: 0 0 8px; }
+#settings-body .set-warn .set-acts { justify-content: flex-start; }
+#settings-body .set-warn:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+
+/* Settings states facts at 11px like the rest of the machine: the sub lines, the effects levels and every key cap */
+#settings-body .srow .sub, #settings-body .segbar button, #settings-body kbd { font-size: 11px; }
+
+/* Settings scrolls inside its own window: the keyboard list and the about text sit below the fold at most sizes */
+#settings-body { flex: 1; align-self: stretch; min-width: 0; min-height: 0; overflow-y: auto; }
+#settings-body .srow .sub code { font-size: 11px; }
+#settings-body .pane h3 { font-size: 11px; }   /* the section labels too: nothing in the body reads under 11px */

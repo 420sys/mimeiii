@@ -1,0 +1,37 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 60 PRINT
+   Printing a session should give you the lesson, not the desktop: white
+   paper, black ink, code wells kept readable, and no rain on the page.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+  :root {
+    --fg: #111; --fg-2: #222; --fg-3: #444; --fg-4: #666;
+    --bg: #fff; --surface: #fff; --surface-2: #fff; --surface-solid: #fff;
+    --surface-hi: #fff; --well: #f6f6f6; --line: #bbb; --line-2: #ddd; --line-hi: #888;
+    --accent: #000; --accent-2: #004; --ok: #040; --warn: #a00;
+    --lvl-blur: 0; --lvl-scan: 0; --lvl-grain: 0; --lvl-rain: 0; --lvl-bloom: 0;
+  }
+  body { height: auto; overflow: visible; background: #fff; color: #111; }
+  #wall, .fx-layers, #bar, #desk, #boot, #launcher, #scrim,
+  #peek-back, .win-tabs, .win-bar .dots, #win-menu, .copy { display: none !important; }
+  #shell { display: block; height: auto; }
+  #seat { overflow: visible; padding: 0; }
+  .win {
+    position: static !important; width: auto !important; height: auto !important;
+    border: 0; box-shadow: none; background: none; backdrop-filter: none;
+  }
+  .win-bar { border-bottom: 1px solid #ccc; }
+  .session-body, .man-body, .course-list, .panel-body { overflow: visible; height: auto; max-height: none; }
+  .doc p, .doc li, .man-doc p, .man-doc li { font-size: 11pt; line-height: 1.5; color: #111; }
+  .doc h1, .man-doc h1 { font-size: 20pt; color: #000; }
+  .code, .out, .runbook, .probe, .solution, .tbl { break-inside: avoid; border-color: #bbb; background: #fafafa; }
+  .code pre, .out pre { font-size: 9.5pt; color: #111; }
+  .cl .ln { color: #888; }
+  #study .wb-code .code::after { display: none !important; }   /* the edge fade is a screen cue: paper does not scroll */
+  .stepnav { display: none; }
+  a { color: #000; text-decoration: underline; }
+  .doc a::after, .man-doc a::after { content: ' (' attr(href) ')'; font-size: 9pt; color: #555; }
+  .solution[open] > summary { display: none; }
+  .kicker { color: #555; }
+}

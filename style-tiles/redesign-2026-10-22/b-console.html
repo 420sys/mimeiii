@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LuauOS — Direction B — The Console</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0b0a'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='%239dbba7'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="base.css">
+<style>
+  :root {
+    --void: #090a09;
+    --void-hi: #0f110f;
+    --ivory: #eee7d8;
+    --ivory-dim: #b9b2a2;
+    --muted: #777469;
+    --line: rgba(238, 231, 216, .17);
+    --line-soft: rgba(238, 231, 216, .075);
+    --green: #9dbba7;
+    --stone: #e3dbca;
+    --stone-lo: #d4cab7;
+    --ink: #171612;
+  }
+  html { background: var(--void); }
+  body {
+    background:
+      radial-gradient(85% 70% at 20% 0%, rgba(52, 59, 50, .22), transparent 55%),
+      radial-gradient(60% 50% at 90% 100%, rgba(157, 187, 167, .045), transparent 60%),
+      var(--void);
+    color: var(--ivory);
+    font-family: var(--sans);
+    padding: 24px 28px 18px;
+    overflow: hidden;
+  }
+  .console {
+    height: calc(100vh - 42px);
+    min-height: 680px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  /* a technical sheet under everything, almost invisible */
+  .console::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .34;
+    background-image:
+      linear-gradient(to right, rgba(238, 231, 216, .035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(238, 231, 216, .03) 1px, transparent 1px);
+    background-size: 72px 72px;
+    -webkit-mask: radial-gradient(90% 80% at 50% 40%, #000 0 45%, transparent 100%);
+    mask: radial-gradient(90% 80% at 50% 40%, #000 0 45%, transparent 100%);
+  }
+
+  /* ── masthead ─────────────────────────────────────────────────────────── */
+  .top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    z-index: 2;
+  }
+  .brand { display: flex; align-items: center; gap: 13px; }
+  .brand .mark {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 4px rgba(157, 187, 167, .08);
+  }
+  .brand h1 {
+    font: 400 16px/1 var(--sans);
+    letter-spacing: .34em;
+    text-transform: uppercase;
+  }
+  .brand .tag {
+    margin-left: 8px;
+    padding-left: 20px;
+    border-left: 1px solid var(--line);
+    color: var(--muted);
+    font: 400 6.5px/1 var(--mono);
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+  .top-status {
+    display: flex;
+    gap: clamp(18px, 3vw, 42px);
+    padding-top: 2px;
+  }
+  .top-status div { display: flex; flex-direction: column; gap: 5px; }
+  .top-status span {
+    color: var(--muted);
+    font: 400 6px/1 var(--mono);
+    letter-spacing: .17em;
+    text-transform: uppercase;
+  }
+  .top-status b {
+    color: var(--ivory-dim);
+    font: 400 8px/1 var(--mono);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .top-status b.live { color: var(--green); }
+
+  /* ── stage ────────────────────────────────────────────────────────────── */
+  .stage {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 22px 3px 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .stage-kicker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: clamp(20px, 4vh, 44px);
+    color: var(--muted);
+    font: 400 6.5px/1 var(--mono);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .stage-kicker .mid {
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(to right, var(--line), transparent);
+  }
+
+  .time-line {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 36px;
+  }
+  .time-wrap { display: flex; align-items: baseline; gap: 20px; min-width: 0; }
+  .time {
+    font: 100 clamp(104px, 13.4vw, 196px)/.74 var(--mono);
+    letter-spacing: -.105em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ivory);
+    text-indent: -.06em;
+    white-space: nowrap;
+  }
+  .time sup {
+    align-self: flex-start;
+    margin-top: .15em;
+    color: var(--green);
+    font: 400 10px/1 var(--mono);
+    letter-spacing: .12em;
+    vertical-align: 0;
+  }
+  .date-block {
+    display: flex;
+    align-items: flex-end;
+    gap: 26px;
+    padding-bottom: 4px;
+    text-align: right;
+  }
+  .date-block .rule {
+    width: 56px;
+    height: 1px;
+    margin-bottom: 7px;
+    background: var(--line);
+  }
+  .date-copy { display: flex; flex-direction: column; gap: 5px; }
+  .date-copy b {
+    font: 400 clamp(22px, 2.2vw, 31px)/.9 var(--serif);
+    letter-spacing: -.025em;
+    color: var(--ivory);
+  }
+  .date-copy span { color: var(--muted); font: 400 6.5px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+
+  /* the moving six-hour window: always centered on now */
+  .ruler-block { margin-top: clamp(22px, 4.6vh, 48px); }
+  .ruler-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font: 400 6px/1 var(--mono);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .ruler-head .now-label { color: var(--green); }
+  .ruler {
+    height: 53px;
+    position: relative;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .ruler-ticks { position: absolute; inset: 0; pointer-events: none; }
+  .ruler-ticks i {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: rgba(238, 231, 216, .14);
+  }
+  .ruler-ticks i.hour { background: rgba(238, 231, 216, .30); }
+  .ruler-hours {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -18px;
+    height: 8px;
+    color: var(--muted);
+    font: 400 7px/1 var(--mono);
+    letter-spacing: .04em;
+  }
+  .ruler-hours span {
+    position: absolute;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+  .ruler-hours span:first-child { transform: translateX(-2px); }
+  .ruler-hours span:last-child { transform: translateX(calc(-100% + 2px)); }
+  .now {
+    position: absolute;
+    left: 50%;
+    top: -5px;
+    bottom: -5px;
+    width: 1px;
+    background: var(--green);
+    transform: translateX(-.5px);
+  }
+  .now::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 4px rgba(157, 187, 167, .08);
+  }
+  .now::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--green);
+    transform: translateX(-50%);
+  }
+
+  .register {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 37px;
+    color: var(--muted);
+    font: 400 6px/1 var(--mono);
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+  .register-label { white-space: nowrap; }
+  .reg-ticks {
+    flex: 1;
+    display: flex;
+    gap: clamp(3px, .7vw, 10px);
+    align-items: stretch;
+  }
+  .reg-group { display: flex; gap: 2px; flex: 1; }
+  .reg-group i {
+    display: block;
+    flex: 1;
+    height: 12px;
+    background: rgba(238, 231, 216, .16);
+  }
+  .reg-group:first-child i:first-child { background: var(--green); }
+  .reg-count { white-space: nowrap; color: var(--ivory-dim); }
+
+  /* ── keys: the physical tool console ──────────────────────────────────── */
+  .keys {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: linear-gradient(170deg, #ece4d4, var(--stone-lo));
+    color: var(--ink);
+    border: 1px solid rgba(238, 231, 216, .30);
+    box-shadow:
+      0 -26px 65px rgba(0, 0, 0, .36),
+      0 1px 0 rgba(255, 255, 255, .6) inset,
+      0 -1px 0 rgba(0, 0, 0, .16) inset;
+    position: relative;
+    z-index: 3;
+  }
+  .keys::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(23, 22, 18, .13);
+    pointer-events: none;
+  }
+  .key {
+    min-width: 0;
+    min-height: 112px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 17px 14px;
+    border-right: 1px solid rgba(23, 22, 18, .21);
+    text-align: left;
+    position: relative;
+    transition: background .2s var(--ease);
+  }
+  .key:last-child { border-right: 0; }
+  .key::before {
+    content: '';
+    position: absolute;
+    left: 17px;
+    right: 17px;
+    top: 0;
+    height: 2px;
+    background: var(--green);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .25s var(--ease);
+  }
+  .key:hover, .key:focus-visible { background: rgba(23, 22, 18, .075); }
+  .key:hover::before, .key:focus-visible::before { transform: scaleX(1); }
+  .key:active { background: rgba(23, 22, 18, .12); }
+  .key-top { display: flex; align-items: center; width: 100%; justify-content: space-between; gap: 10px; }
+  .key-index { color: rgba(23, 22, 18, .48); font: 400 6.5px/1 var(--mono); letter-spacing: .12em; }
+  .key-led {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(23, 22, 18, .18);
+    transition: background .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .key:hover .key-led, .key:focus-visible .key-led {
+    background: #4e6b57;
+    box-shadow: 0 0 0 3px rgba(78, 107, 87, .10);
+  }
+  .key-name {
+    font: 400 clamp(17px, 1.7vw, 23px)/.9 var(--sans);
+    letter-spacing: -.025em;
+  }
+  .key-desc {
+    color: rgba(23, 22, 18, .52);
+    font: 400 6px/1.4 var(--mono);
+    letter-spacing: .045em;
+    text-transform: uppercase;
+  }
+  .baseline {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding-top: 9px;
+    color: var(--muted);
+    font: 400 6px/1 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  /* ── a window, not a sheet ────────────────────────────────────────────── */
+  .win {
+    position: fixed;
+    z-index: 40;
+    left: 50%;
+    top: 50%;
+    width: min(840px, 78vw);
+    height: min(610px, 72vh);
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    background: #101210;
+    color: var(--ivory);
+    border: 1px solid rgba(238, 231, 216, .52);
+    box-shadow:
+      0 50px 120px rgba(0, 0, 0, .72),
+      0 0 0 1px rgba(0, 0, 0, .5);
+    animation: win-in .22s var(--ease) both;
+  }
+  @keyframes win-in {
+    from { opacity: 0; transform: translate(-50%, calc(-50% + 10px)) scale(.992); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+  .win-bar {
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0 12px 0 15px;
+    background: linear-gradient(180deg, #f0e8d8, #ddd4c1);
+    color: var(--ink);
+    border-bottom: 1px solid rgba(238, 231, 216, .4);
+    font: 400 6.5px/1 var(--mono);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .win-bar .win-title { display: flex; align-items: center; gap: 10px; }
+  .win-bar .win-title i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #526a58;
+  }
+  .win-controls { display: flex; align-items: center; gap: 9px; }
+  .win-controls button {
+    width: 23px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(23, 22, 18, .30);
+    font: 400 10px/1 var(--mono);
+    color: rgba(23, 22, 18, .66);
+    transition: background .18s var(--ease), color .18s var(--ease);
+  }
+  .win-controls button:hover { background: var(--ink); color: var(--ivory); }
+  .win-body {
+    min-height: 0;
+    flex: 1;
+    overflow: auto;
+    padding: 32px 38px 38px;
+    background:
+      linear-gradient(to right, rgba(238, 231, 216, .025) 1px, transparent 1px) 0 0 / 72px 100%,
+      #101210;
+  }
+  .win-kicker { color: var(--green); font: 400 6.5px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; }
+  .win-title-lg {
+    margin-top: 9px;
+    font: 400 clamp(34px, 4vw, 52px)/.92 var(--serif);
+    letter-spacing: -.04em;
+  }
+  .win-title-lg em { color: var(--green); font-style: italic; }
+  .win-lede {
+    max-width: 55ch;
+    margin-top: 13px;
+    color: var(--ivory-dim);
+    font: 400 11.5px/1.6 var(--sans);
+  }
+  .w-units {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 42px;
+    margin-top: 25px;
+    border-top: 1px solid var(--line);
+  }
+  .w-unit {
+    display: grid;
+    grid-template-columns: 29px 1fr auto;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line-soft);
+    align-items: baseline;
+  }
+  .w-unit b { font: 400 19px/.95 var(--serif); letter-spacing: -.02em; }
+  .w-unit .u-n { color: var(--green); font: 400 6.5px/1 var(--mono); }
+  .w-unit i { color: var(--muted); font: 400 6px/1 var(--mono); font-style: normal; letter-spacing: .08em; text-transform: uppercase; }
+  .w-search { display: flex; gap: 12px; align-items: center; margin-top: 28px; border-bottom: 1px solid var(--ivory); padding-bottom: 11px; }
+  .w-search span { color: var(--green); font: 400 10px/1 var(--mono); }
+  .w-search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: var(--ivory);
+    font: 400 clamp(22px, 2.6vw, 34px)/1 var(--serif);
+    letter-spacing: -.025em;
+  }
+  .w-search input::placeholder { color: rgba(238, 231, 216, .30); }
+  .w-example {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line-soft);
+    font: 400 9px/1 var(--mono);
+    color: var(--ivory-dim);
+  }
+  .w-example span:last-child { color: var(--muted); }
+  .w-code {
+    margin-top: 23px;
+    padding: 16px 18px;
+    background: #080908;
+    border: 1px solid var(--line);
+    color: var(--ivory-dim);
+    font: 400 10px/1.8 var(--mono);
+    white-space: pre;
+    overflow: auto;
+  }
+  .w-code .c { color: #6f7268; }
+  .w-code .k { color: var(--green); }
+  .w-goal { display: flex; align-items: flex-end; gap: 22px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .w-goal b { font: 100 74px/.8 var(--mono); letter-spacing: -.09em; color: var(--ivory); }
+  .w-goal span { color: var(--muted); font: 400 6.5px/1.7 var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+  .w-ticks { display: grid; grid-template-columns: repeat(26, 1fr); gap: 3px; margin-top: 24px; }
+  .w-ticks i { height: 15px; background: rgba(238, 231, 216, .12); }
+  .w-ticks i:first-child { background: var(--green); }
+  .w-set { margin-top: 20px; border-top: 1px solid var(--line); }
+  .w-set div { display: flex; justify-content: space-between; gap: 26px; padding: 12px 0; border-bottom: 1px solid var(--line-soft); font: 400 9px/1 var(--mono); color: var(--ivory-dim); }
+  .w-set span:last-child { color: var(--muted); }
+  .win-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 24px;
+    padding: 0 15px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font: 400 5.5px/1 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .win-foot .live { color: var(--green); }
+
+  @media (max-width: 980px) {
+    body { padding: 18px; overflow: auto; }
+    .console { height: auto; min-height: 0; }
+    .brand .tag { display: none; }
+    .top-status div:nth-child(2), .top-status div:nth-child(3) { display: none; }
+    .time { font-size: clamp(82px, 16vw, 150px); }
+    .time-line { flex-direction: column; align-items: flex-start; gap: 26px; }
+    .date-block { text-align: left; }
+    .keys { grid-template-columns: 1fr 1fr; }
+    .key { border-bottom: 1px solid rgba(23, 22, 18, .21); }
+    .key:last-child { border-right: 1px solid rgba(23, 22, 18, .21); }
+    .key:nth-child(2n) { border-right: 0; }
+    .stage { padding-top: 34px; padding-bottom: 40px; }
+  }
+  @media (max-width: 620px) {
+    body { padding: 14px; }
+    .top { align-items: flex-start; }
+    .top-status { gap: 14px; }
+    .top-status div:nth-child(1) { display: none; }
+    .time { font-size: 78px; }
+    .date-block { gap: 14px; }
+    .date-block .rule { width: 30px; }
+    .keys { grid-template-columns: 1fr; }
+    .key { min-height: 76px; border-right: 0 !important; }
+    .key:last-child { border-right: 0; }
+    .key-desc { display: none; }
+    .win { width: calc(100vw - 20px); height: 82vh; }
+    .win-body { padding: 24px 20px 28px; }
+    .w-units { grid-template-columns: 1fr; }
+    .baseline span:nth-child(2) { display: none; }
+  }
+</style>
+</head>
+<body>
+<main class="console">
+  <header class="top">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <h1>LuauOS</h1>
+      <span class="tag">a quiet instrument for learning Luau</span>
+    </div>
+    <div class="top-status">
+      <div><span>system</span><b class="live">online</b></div>
+      <div><span>wall</span><b>deep line</b></div>
+      <div><span>display</span><b id="b-dims">1440 × 900</b></div>
+      <div><span>revision</span><b>2026.10</b></div>
+    </div>
+  </header>
+
+  <section class="stage" aria-label="The desk">
+    <div class="stage-kicker">
+      <span>workspace 01 — the desk</span>
+      <span class="mid" aria-hidden="true"></span>
+      <span>instrument no. 01</span>
+    </div>
+
+    <div class="time-line">
+      <div class="time-wrap">
+        <div class="time" id="b-time">00:00</div>
+        <sup>local</sup>
+      </div>
+      <div class="date-block">
+        <span class="rule" aria-hidden="true"></span>
+        <div class="date-copy">
+          <b id="b-date">22 October 2026</b>
+          <span id="b-day">thursday</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ruler-block">
+      <div class="ruler-head">
+        <span>local window / ± 03 h</span>
+        <span class="now-label">now · <b id="b-ruler-now">00:00</b></span>
+      </div>
+      <div class="ruler" id="b-ruler">
+        <div class="ruler-ticks" id="b-ticks" aria-hidden="true"></div>
+        <div class="now" aria-hidden="true"></div>
+        <div class="ruler-hours" id="b-hours"></div>
+      </div>
+      <div class="register">
+        <span class="register-label">course register</span>
+        <div class="reg-ticks" id="b-register" aria-hidden="true"></div>
+        <span class="reg-count">52 stops / 12 units</span>
+      </div>
+    </div>
+  </section>
+
+  <nav class="keys" aria-label="Tools">
+    <button class="key" type="button" data-tool="course">
+      <span class="key-top"><span class="key-index">01</span><span class="key-led" aria-hidden="true"></span></span>
+      <span class="key-name">Course</span>
+      <span class="key-desc">twelve units · fifty-two stops</span>
+    </button>
+    <button class="key" type="button" data-tool="search">
+      <span class="key-top"><span class="key-index">02</span><span class="key-led" aria-hidden="true"></span></span>
+      <span class="key-name">Search</span>
+      <span class="key-desc">find a lesson, a unit, a word</span>
+    </button>
+    <button class="key" type="button" data-tool="manual">
+      <span class="key-top"><span class="key-index">03</span><span class="key-led" aria-hidden="true"></span></span>
+      <span class="key-name">Manual</span>
+      <span class="key-desc">syntax, patterns, small references</span>
+    </button>
+    <button class="key" type="button" data-tool="goals">
+      <span class="key-top"><span class="key-index">04</span><span class="key-led" aria-hidden="true"></span></span>
+      <span class="key-name">Goals</span>
+      <span class="key-desc">checkpoints and the journal</span>
+    </button>
+    <button class="key" type="button" data-tool="settings">
+      <span class="key-top"><span class="key-index">05</span><span class="key-led" aria-hidden="true"></span></span>
+      <span class="key-name">Settings</span>
+      <span class="key-desc">effects, sound, the picture</span>
+    </button>
+  </nav>
+
+  <footer class="baseline">
+    <span>workspace 01 — desk</span>
+    <span>select a tool — windows open over the desk</span>
+    <span>noctalia / luauos 1.0</span>
+  </footer>
+</main>
+
+<aside class="win" id="b-win" role="dialog" aria-modal="true" aria-labelledby="b-win-kicker" hidden>
+  <div class="win-bar">
+    <span class="win-title"><i aria-hidden="true"></i><span class="mono" id="b-win-kicker">course / luauos</span></span>
+    <div class="win-controls">
+      <button type="button" aria-label="Minimise" tabindex="-1">—</button>
+      <button type="button" aria-label="Maximise" tabindex="-1">□</button>
+      <button type="button" id="b-close" aria-label="Close window">×</button>
+    </div>
+  </div>
+  <div class="win-body" id="b-win-body"></div>
+  <div class="win-foot"><span>window 01 · over the desk</span><span class="live">the hybrid model</span></div>
+</aside>
+
+<script>
+(() => {
+  const units = [
+    ['Set up', '4 stops'], ['Variables', '6 stops'], ['Decisions', '4 stops'], ['Loops', '5 stops'],
+    ['Functions', '5 stops'], ['Tables', '5 stops'], ['The world', '4 stops'], ['Events', '4 stops'],
+    ['Players', '4 stops'], ['Client and server', '4 stops'], ['Organising and saving', '3 stops'], ['Hero project', '4 stops'],
+  ];
+
+  const tools = {
+    course: {
+      kicker: 'course / twelve units',
+      title: 'Twelve units.<br><em>Fifty-two stops.</em>',
+      lede: 'The whole language, from opening Studio to a finished hero project. Each unit is a room; each stop is one small, complete session.',
+      body: `<div class="w-units">${units.map((u, i) => `<div class="w-unit"><span class="u-n">${String(i + 1).padStart(2, '0')}</span><b>${u[0]}</b><i>${u[1]}</i></div>`).join('')}</div>`,
+    },
+    search: {
+      kicker: 'search / the whole course',
+      title: 'Find the next<br><em>small thing.</em>',
+      lede: 'Search by lesson name, unit, or the thing you are trying to do. The course is small enough to know; the search is for the moment you forget where something lives.',
+      body: `<div class="w-search"><span>/</span><input type="text" placeholder="print, variables, a player joins…" aria-label="Search the course"></div>
+        <div class="w-example"><span>1.0 Set up Roblox Studio</span><span>unit 01 · 10m</span></div>
+        <div class="w-example"><span>2.1 Your first variable</span><span>unit 02 · 10m</span></div>
+        <div class="w-example"><span>7.2 A part that moves</span><span>unit 07 · 12m</span></div>`,
+    },
+    manual: {
+      kicker: 'manual / quick reference',
+      title: 'A small book<br><em>beside the work.</em>',
+      lede: 'No long reference to get lost in. The manual holds the syntax and patterns that are worth keeping within arm’s reach while you are in Studio.',
+      body: `<div class="w-code"><span class="c">-- print is the first instrument</span>
+<span class="k">local</span> greeting = "Hello, world!"
+<span class="k">print</span>(greeting)
+
+<span class="c">-- a variable can change</span>
+<span class="k">local</span> score = 0
+score += 1
+<span class="k">print</span>(score)</div>`,
+    },
+    goals: {
+      kicker: 'goals / this session',
+      title: 'Nothing ticked.<br><em>Plenty of room.</em>',
+      lede: 'Checkpoints are the smallest honest unit of progress. They are not a score; they are a record of what you have actually done.',
+      body: `<div class="w-goal"><b>0</b><span>of 52 stops finished<br>rank init · 0 xp</span></div>
+        <div class="w-ticks" aria-hidden="true">${Array.from({ length: 52 }, () => '<i></i>').join('')}</div>`,
+    },
+    settings: {
+      kicker: 'settings / this machine',
+      title: 'The room,<br><em>not the work.</em>',
+      lede: 'The desk should be quiet by default. These are the few controls that change the room around the lesson.',
+      body: `<div class="w-set">
+          <div><span>effects</span><span>static · level 0</span></div>
+          <div><span>sound</span><span>off</span></div>
+          <div><span>wallpaper</span><span>deep line</span></div>
+          <div><span>display</span><span id="b-set-dims">1440 × 900</span></div>
+        </div>`,
+    },
+  };
+
+  const pad = n => String(n).padStart(2, '0');
+  const dims = () => {
+    const s = `${innerWidth} × ${innerHeight}`;
+    document.getElementById('b-dims').textContent = s;
+    const set = document.getElementById('b-set-dims');
+    if (set) set.textContent = s;
+  };
+
+  let renderedMinute = null;
+  const renderWindow = (d) => {
+    const minute = d.getHours() * 60 + d.getMinutes();
+    if (minute === renderedMinute) return;
+    renderedMinute = minute;
+    const start = minute - 180;
+    const span = 360;
+    const tickHtml = [];
+    for (let t = start; t <= start + span; t += 15) {
+      const pct = ((t - start) / span) * 100;
+      const isHour = ((t % 60) + 60) % 60 === 0;
+      tickHtml.push(`<i class="${isHour ? 'hour' : ''}" style="left:${pct}%"></i>`);
+    }
+    const labels = [];
+    for (let t = Math.ceil(start / 60) * 60; t <= start + span; t += 60) {
+      const pct = ((t - start) / span) * 100;
+      const h = ((Math.floor(t / 60) % 24) + 24) % 24;
+      labels.push(`<span style="left:${pct}%">${pad(h)}:00</span>`);
+    }
+    document.getElementById('b-ticks').innerHTML = tickHtml.join('');
+    document.getElementById('b-hours').innerHTML = labels.join('');
+  };
+
+  const clock = () => {
+    const d = new Date();
+    const t = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    document.getElementById('b-time').textContent = t;
+    document.getElementById('b-ruler-now').textContent = t;
+    document.getElementById('b-day').textContent = d.toLocaleDateString('en-GB', { weekday: 'long' });
+    document.getElementById('b-date').textContent = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    renderWindow(d);
+  };
+
+  document.getElementById('b-register').innerHTML = units.map((u, i) =>
+    `<span class="reg-group" title="${u[0]}">${Array.from({ length: Math.max(3, Math.min(6, parseInt(u[1], 10))) }, () => '<i></i>').join('')}</span>`
+  ).join('');
+
+  const win = document.getElementById('b-win');
+  const body = document.getElementById('b-win-body');
+  const kicker = document.getElementById('b-win-kicker');
+  let lastFocus = null;
+  const close = () => {
+    win.hidden = true;
+    if (lastFocus) lastFocus.focus();
+  };
+  const open = name => {
+    const t = tools[name];
+    if (!t) return;
+    lastFocus = document.activeElement;
+    kicker.textContent = t.kicker;
+    body.innerHTML = `<p class="win-kicker">${t.kicker}</p><h2 class="win-title-lg">${t.title}</h2><p class="win-lede">${t.lede}</p>${t.body}`;
+    win.hidden = false;
+    dims();
+    document.getElementById('b-close').focus();
+  };
+
+  document.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click', () => open(b.dataset.tool)));
+  document.getElementById('b-close').addEventListener('click', close);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !win.hidden) close(); });
+
+  clock();
+  dims();
+  setInterval(clock, 1000);
+  addEventListener('resize', dims);
+})();
+</script>
+</body>
+</html>

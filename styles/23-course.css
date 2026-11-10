@@ -1,0 +1,81 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 23 COURSE
+   The course window is a file manager, yazi-style: a path bar, a search, a
+   scrolling list of unit directories and the stops inside them. Keyboard
+   first — j/k walk it, / searches, Enter opens — mouse welcome.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.course { display: flex; flex-direction: column; width: 100%; min-width: 0; }
+
+.course-search {
+  display: flex; align-items: center; gap: 8px; flex: none;
+  padding: 7px 10px; border-bottom: var(--bw) solid var(--line-2);
+}
+.course-search svg { width: 12px; height: 12px; flex: none; fill: none; stroke: var(--fg-4); stroke-width: 1.6; }
+.course-search input {
+  flex: 1; min-width: 0; border: 0; background: none; outline: 0;
+  font-size: var(--fs-sm); color: var(--fg);
+}
+.course-search input::placeholder { color: var(--fg-4); }
+.course-search kbd { flex: none; }
+
+.course-list { flex: 1; min-height: 0; overflow-y: auto; padding: 6px 0 14px; }
+
+.unit-head {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 5px 10px; margin-top: 2px;
+  font-size: var(--fs-sm); color: var(--fg-3); text-align: left;
+}
+.unit-head:hover { background: var(--line-2); color: var(--fg-2); }
+.unit-head .caret { width: 9px; height: 9px; flex: none; fill: none; stroke: var(--fg-4); stroke-width: 1.8; transition: transform var(--t-fast); }
+.unit-head[aria-expanded="false"] .caret { transform: rotate(-90deg); }
+.unit-head .dir { color: inherit; }
+
+.unit-stops { display: grid; }
+.unit-head[aria-expanded="false"] + .unit-stops { display: none; }
+
+.stop {
+  display: grid; grid-template-columns: 5px auto 1fr; align-items: center; gap: 7px;
+  width: 100%; padding: 4px 10px 4px 16px; text-align: left;
+  font-size: var(--fs-sm); color: var(--fg-3);
+  border-left: 2px solid transparent;
+}
+.stop:hover { background: var(--line-2); color: var(--fg); }
+.stop .st-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--fg-4); }
+.stop .n { color: var(--fg-4); font-variant-numeric: tabular-nums; }
+.stop .t { color: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stop.done { color: var(--fg-2); }
+.stop.done .n { color: var(--ok); }
+.stop.done .st-dot { background: var(--ok); }
+.stop.doing .st-dot { background: var(--accent-2); }
+.stop.open .st-dot { background: var(--accent); }
+.stop.tool .n { color: var(--accent-2); }
+.stop.tool .st-dot { background: var(--accent-2); }
+.stop.soon { color: var(--fg-4); opacity: .48; }
+.stop.soon .st-dot { background: var(--fg-4); }
+.stop[aria-current="true"] {
+  background: var(--sel); border-left-color: var(--accent); color: var(--fg);
+}
+.stop[aria-current="true"] .n { color: var(--accent); }
+.stop:focus-visible { outline-offset: -2px; }
+
+.course-foot {
+  flex: none; padding: 8px 10px; border-top: var(--bw) solid var(--line-2);
+}
+.course-foot .row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: var(--fs-xs); color: var(--fg-4);
+}
+.course-foot .fill { flex: 1; }
+.course-foot .next {
+  padding: 0; border: 0; background: none;
+  color: var(--accent); font: 400 var(--fs-xs)/1.2 var(--font-code);
+  white-space: nowrap;
+}
+.course-foot .next span { color: var(--fg-4); }
+.course-foot .next:hover { color: var(--accent-bright); }
+.course-foot .done { color: var(--fg-4); }
+
+/* a stop found by what it says (the search reads lesson text too): the words around the match, under its name */
+.stop .snip { grid-column: 2 / -1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-4); font-size: 12px; }
+.stop .snip b { color: var(--fg-2); font-weight: 500; }

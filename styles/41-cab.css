@@ -1,0 +1,473 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 41 CAB · WORKSPACES 3 AND 4
+   The manual, the terminal, the files and settings are the crane's cab: panes
+   of glass in front of you, the desk's city behind them out of focus and
+   dimmed, in tonight's scene (src/ui/cab.js puts data-scene on <html> and
+   <body> and paints the soft wall). Agreed in moodboard/v9-cab/BUILD.md.
+
+   One voice with the desk and the climb: Inter for words, IBM Plex Mono for
+   code and the small capitals; white and city blue at Night and Late, slate
+   in Ice; no accent colour. The only warm light is the lamp (#ffb46b): the
+   edge of the pane in front, its word in the bar, the caret where you type.
+
+   The tokens are redefined on :root, so everything older that reads them (the
+   launcher, the scrim, the empty seat) speaks the same voice on every
+   workspace. The desk (#desk, --cr-*) and the climb (#study.climb) keep their
+   own scoped tokens and are untouched. Small text is solid hex, measured to
+   clear 4.5:1 on the solid surface (tests/a11y.spec.js); --faint is for
+   hairlines and ornaments only.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --c-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --c-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --font-ui: var(--c-ui);
+  --font-code: var(--c-mono);
+  --mono: var(--c-mono);
+  --disp: var(--c-ui);
+
+  --gap: 14px;                           /* the city shows between the panes */
+  --bar-h: 32px;
+  --win-t: 32px;
+  --win-foot-h: 26px;
+  --r: 6px; --r-sm: 4px; --r-lg: 8px;
+  --fs: 13px; --fs-sm: 12px; --fs-xs: 11px;
+
+  --lamp: #ffb46b;
+  --lamp-rgb: 255, 180, 107;
+  --lamp-glow: 0 0 6px rgba(255, 180, 107, .9), 0 0 16px rgba(255, 180, 107, .4);
+
+  --ink: #05070c;
+  --bg: #05070c;
+  --surface-solid: #070a10;
+  --surface: rgba(242, 245, 250, .028);
+  --surface-2: rgba(242, 245, 250, .05);
+  --surface-hi: rgba(242, 245, 250, .08);
+  --pane: rgba(6, 9, 15, .74);           /* a pane of glass in the cab */
+  --pane-solid: #080b12;
+  --fg: #f2f5fa;
+  --fg-2: #c8ccd5;                        /* text */
+  --fg-3: #9499a2;                        /* dim */
+  --fg-4: #7e838b;                        /* quiet: the smallest text, still 5:1 */
+  --faint: rgba(228, 234, 244, .40);      /* hairlines and ornaments, never words */
+  --line: rgba(242, 245, 250, .13);
+  --line-2: rgba(242, 245, 250, .07);
+  --line-hi: rgba(242, 245, 250, .3);
+  --well: rgba(2, 4, 10, .5);
+  --kw: #fff; --str: #a9c4e4; --num: #d6e3f4; --com: rgba(196, 210, 230, .55); --fn: #e6eef9;
+
+  --accent: #f2f5fa;
+  --accent-rgb: 242, 245, 250;
+  --accent-ink: #05070c;
+  --accent-2: #a9c4e4;                    /* city blue */
+  --accent-bright: #ffffff;
+  --accent-line: rgba(242, 245, 250, .3);
+  --accent-glow: transparent;
+  --accent-wash: rgba(242, 245, 250, .06);
+  --bone: #f2f5fa;
+  --blood: #f2f5fa;
+  --blood-rgb: 242, 245, 250;
+  --blood-hi: #f2f5fa;
+  --ok: #f2f5fa;
+  --warn: #f2f5fa;
+  --sel: rgba(242, 245, 250, .1);
+  --caret: var(--lamp);
+  --scroll: rgba(242, 245, 250, .14);
+  --scroll-hover: rgba(242, 245, 250, .28);
+  --shadow: 0 30px 70px -30px rgba(0, 0, 0, .85);
+  --glass-shadow: var(--shadow);
+}
+:root[data-scene='ice'] {
+  --lamp: #c96f22;                        /* the lamp in daylight: deeper, so its edge still reads (3.4:1) */
+  --lamp-rgb: 201, 111, 34;
+  --lamp-glow: 0 0 6px rgba(201, 111, 34, .55), 0 0 14px rgba(201, 111, 34, .22);
+  --ink: #eef2f7;
+  --bg: #eef2f7;
+  --surface-solid: #f4f6f9;
+  --surface: rgba(255, 255, 255, .42);
+  --surface-2: rgba(24, 32, 43, .04);
+  --surface-hi: rgba(24, 32, 43, .07);
+  --pane: rgba(246, 248, 251, .8);
+  --pane-solid: #f4f6f9;
+  --fg: #18202b;
+  --fg-2: #373e48;
+  --fg-3: #5a6069;
+  --fg-4: #656a72;
+  --faint: rgba(24, 32, 43, .46);
+  --line: rgba(24, 32, 43, .15);
+  --line-2: rgba(24, 32, 43, .08);
+  --line-hi: rgba(24, 32, 43, .3);
+  --well: rgba(255, 255, 255, .58);
+  --kw: #0d141d; --str: #3a5a80; --num: #29466a; --com: rgba(24, 32, 43, .58); --fn: #1b2430;
+  --accent: #18202b;
+  --accent-rgb: 24, 32, 43;
+  --accent-ink: #f4f6f9;
+  --accent-2: #3a5a80;
+  --accent-bright: #0d141d;
+  --accent-line: rgba(24, 32, 43, .3);
+  --accent-wash: rgba(24, 32, 43, .05);
+  --bone: #18202b; --blood: #18202b; --blood-rgb: 24, 32, 43; --blood-hi: #18202b;
+  --ok: #18202b; --warn: #18202b;
+  --sel: rgba(24, 32, 43, .1);
+  --scroll: rgba(24, 32, 43, .18);
+  --scroll-hover: rgba(24, 32, 43, .32);
+  --shadow: 0 30px 70px -34px rgba(40, 60, 90, .35);
+}
+
+html, body { background: var(--ink); }
+body { font: 400 var(--fs)/1.55 var(--c-ui); color: var(--fg); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--sel); color: var(--fg); }
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; box-shadow: none; }
+kbd {
+  display: inline-block; min-width: 18px; padding: 1px 5px; border: 1px solid var(--line); border-radius: 3px; background: none;
+  font: 500 11px/1.4 var(--c-mono); color: var(--fg-3); text-align: center; box-shadow: none;
+}
+
+/* ── the city behind the glass ───────────────────────────────────────────── */
+#wall { background: var(--ink); }
+#wall-img, .wall-lqip { --wall-pos: 50% 62%; filter: none; }
+:root[data-scene='ice'] #wall-img, :root[data-scene='ice'] .wall-lqip { filter: saturate(.9); }
+.wall-veil {
+  background:
+    radial-gradient(120% 95% at 50% 45%, rgba(5, 7, 12, .2), rgba(5, 7, 12, .56) 100%),
+    linear-gradient(180deg, rgba(5, 7, 12, .5) 0%, rgba(5, 7, 12, 0) 26%, rgba(5, 7, 12, 0) 70%, rgba(5, 7, 12, .5) 100%);
+}
+:root[data-scene='ice'] .wall-veil {
+  background:
+    radial-gradient(120% 95% at 50% 45%, rgba(238, 242, 247, .16), rgba(238, 242, 247, .5) 100%),
+    linear-gradient(180deg, rgba(238, 242, 247, .5) 0%, rgba(238, 242, 247, 0) 26%, rgba(238, 242, 247, 0) 70%, rgba(238, 242, 247, .42) 100%);
+}
+#wall::after { content: none; }
+.wall-noise { opacity: .03; }
+body.peek .wall-veil { opacity: .45; }
+
+/* ── the bar: one slim line, the desk's small capitals ───────────────────── */
+#bar {
+  height: var(--bar-h); padding: 0 12px 0 16px; gap: 14px;
+  border-bottom: 1px solid var(--line-2);
+  background: linear-gradient(180deg, rgba(5, 7, 12, .78), rgba(5, 7, 12, .58));
+  /* the one live blur in the cab, so it follows the effects level (--glass-blur is 0 at 2 and below) */
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * .875)) saturate(.9); backdrop-filter: blur(calc(var(--glass-blur) * .875)) saturate(.9);
+  font: 500 11px/1 var(--c-mono); color: var(--fg-3);
+}
+:root[data-scene='ice'] #bar { background: linear-gradient(180deg, rgba(246, 248, 251, .86), rgba(246, 248, 251, .66)); }
+.bar-l { gap: 14px; }
+#bar .brand { gap: 10px; height: var(--bar-h); padding: 0; color: var(--fg); }
+#bar .brand .ob-mark { height: 16px; }
+#bar .brand-name { font: 600 11px/1 var(--c-ui); letter-spacing: .5em; margin-right: -.5em; color: var(--fg); }
+#bar .brand:hover .brand-name { color: var(--fg); }
+#workspaces { gap: 2px; }
+#bar .ws { height: var(--bar-h); padding: 0 7px; gap: 8px; color: var(--fg-4); }
+#bar .ws .num, #bar .ws .ws-name { font: 500 11px/1 var(--c-mono); letter-spacing: .16em; text-transform: uppercase; font-style: normal; }
+#bar .ws .num { color: var(--fg-4); }
+#bar .ws .ws-name { color: var(--fg); }
+#bar .ws:hover .num { color: var(--fg); }
+#bar .ws[aria-current="page"] { cursor: default; }
+#bar .ws[aria-current="page"] .num { color: var(--fg); }
+/* Alt held down: the numbers light, because Alt+1–4 is what they answer to (core/keys.js sets body.mod-down) */
+body.mod-down #bar .ws .num { color: var(--fg); }
+#bar .ws[aria-current="page"]::after { left: 7px; right: 7px; width: auto; bottom: 7px; height: 1px; background: var(--fg); opacity: .9; }
+
+/* the middle: this workspace's windows; the one in front carries the lamp */
+.bar-task { gap: 4px; color: var(--fg-3); font: 500 11px/1 var(--c-mono); overflow: visible; }
+.bar-task .bw {
+  display: inline-flex; align-items: center; gap: 8px; height: 24px; padding: 0 11px; margin: 0;
+  border: 1px solid transparent; border-radius: 999px; background: none; cursor: pointer;
+  font: 500 11px/1 var(--c-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--fg-4);
+  transition: color var(--t-fast), border-color var(--t-fast), background var(--t-fast);
+}
+.bar-task .bw.open { color: var(--fg-3); }
+.bar-task .bw:hover { color: var(--fg); border-color: var(--line); }
+.bar-task .bw.focus { color: var(--fg); border-color: var(--line); background: var(--surface-2); }
+.bar-task .bw .bt-dot { width: 5px; height: 5px; flex: none; border-radius: 50%; background: currentColor; opacity: 0; transition: opacity var(--t-fast); }
+.bar-task .bw.open .bt-dot { opacity: .55; }
+.bar-task .bw.focus .bt-dot { opacity: 1; background: var(--lamp); box-shadow: var(--lamp-glow); }
+.bar-task .bw .bt-name { overflow: visible; }
+.bar-task .bw:focus-visible { outline-offset: 1px; }
+
+.bar-mods { gap: 14px; }
+.bar-mod, .bar-mod .u { font: 500 11px/1 var(--c-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--fg-4); }
+.bar-mod .v { color: var(--fg-2); letter-spacing: .04em; }
+.bar-mod.net i { width: 5px; height: 5px; background: var(--fg-3); }
+.bar-mod.net.off i { background: none; box-shadow: inset 0 0 0 1px var(--fg-3); }
+.bar-clock { margin-left: 0; font: 500 12px/1 var(--c-mono); letter-spacing: .06em; color: var(--fg); }
+#bar .mod.launch, #bar .mod.apps { width: 26px; height: 26px; border-radius: 999px; color: var(--fg-3); }
+#bar .mod.launch:hover, #bar .mod.apps:hover { color: var(--fg); border-color: var(--line); background: var(--surface-2); }
+#bar .mod.launch svg, #bar .mod.apps svg { width: 13px; height: 13px; }
+
+/* ── the seat: the rail is gone, the panes have the room ────────────────── */
+#shell { grid-template-columns: minmax(0, 1fr); }
+
+/* ── a pane of glass ──────────────────────────────────────────────────────── */
+.win {
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--pane);
+  box-shadow: var(--shadow);
+  transition: border-color 240ms ease, box-shadow 240ms ease, opacity var(--t-fast);
+}
+.win.float, .win.dragging { border-color: var(--line-hi); box-shadow: 0 34px 80px -28px rgba(0, 0, 0, .9); }
+:root[data-scene='ice'] .win.float, :root[data-scene='ice'] .win.dragging { box-shadow: 0 34px 80px -30px rgba(40, 60, 90, .42); }
+/* the pane in front: a warm lamp-coloured edge, the only warm light on the screen */
+.win.focus, .win.float:focus, .win.dragging:focus {
+  border-color: rgba(var(--lamp-rgb), .72);
+  box-shadow: var(--shadow), 0 0 0 1px rgba(var(--lamp-rgb), .16), 0 0 28px -8px rgba(var(--lamp-rgb), .3);
+}
+/* the keyboard's ring on a pane is the lamp too: the edge doubles to 2px (3.4:1 in Ice, more at night) */
+.win:focus-visible { outline: 2px solid rgba(var(--lamp-rgb), .9); outline-offset: -1px; border-radius: var(--r-lg); }
+.win-bar { height: var(--win-t); gap: 10px; padding: 0 14px 0 12px; border-bottom: 1px solid var(--line-2); background: none; }
+.win.focus .win-bar { background: none; border-bottom-color: var(--line-2); }
+.win-bar .dots { gap: 6px; opacity: .7; }
+.win-bar .dot { width: 10px; height: 10px; border: 1px solid var(--line-hi); border-radius: 50%; }
+.win-bar .dot svg { width: 6px; height: 6px; stroke: var(--ink); }
+.dot.d-close:hover, .dot.d-hide:hover, .dot.d-float:hover, .dot.d-max:hover { background: var(--fg); border-color: var(--fg); }
+.win-t { gap: 8px; font: 500 12.5px/1 var(--c-ui); letter-spacing: 0; color: var(--fg-3); }
+.win-t .nm { color: var(--fg-3); }
+.win.focus .win-t, .win.focus .win-t .nm { color: var(--fg); }
+.win-tabs { background: none; border-bottom-color: var(--line-2); }
+.tab { font: 500 11px/1 var(--c-mono); letter-spacing: .1em; color: var(--fg-4); }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--fg); }
+.tab[aria-selected="true"] .n, .tab .n { color: var(--fg-3); }
+.win-body { background: none; }
+.win-foot {
+  height: var(--win-foot-h); gap: 10px; padding: 0 12px; border-top: 1px solid var(--line-2); background: none;
+  font: 500 11px/1 var(--c-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--fg-4);
+}
+.win-foot .btn { height: 20px; min-width: 24px; padding: 0 6px; border-radius: 999px; font-size: 10px; letter-spacing: 0; }
+.win-foot kbd { padding: 0 4px; font-size: 11px; }
+
+/* the generic controls inside the panes: the climb's pills */
+.btn {
+  border: 1px solid var(--line-hi); border-radius: 999px; background: none; color: var(--fg);
+  font: 500 11px/1 var(--c-mono); letter-spacing: .12em; text-transform: uppercase;
+}
+.btn:hover { border-color: var(--fg); background: none; color: var(--fg); }
+.btn.ghost { border-color: var(--line-hi); color: var(--fg-2); }
+.btn.ghost:hover { border-color: var(--fg); color: var(--fg); background: none; }
+.btn.primary { background: var(--fg); border-color: var(--fg); color: var(--ink); }
+.btn.primary:hover { background: var(--accent-bright); border-color: var(--accent-bright); color: var(--ink); }
+
+/* ── the manual: a lesson page, laid out as a man page ───────────────────── */
+.man-head {
+  padding: 12px 24px 11px; border-bottom: 1px solid var(--line-2); background: none;
+  font: 500 11px/1 var(--c-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--fg-4);
+}
+.man-head .l { color: var(--fg); }
+.man-head .m, .man-head .r { color: var(--fg-4); }
+.man-body { scrollbar-gutter: stable; }
+.man-doc {
+  max-width: 44rem; margin: 0 auto; padding: 46px 40px 72px;
+  font: 400 16px/1.72 var(--c-ui); color: var(--fg-2);
+}
+.man-doc h1 { margin: 0 0 18px; font: 300 clamp(32px, 3.2vw, 46px)/1.06 var(--c-ui); letter-spacing: -.022em; color: var(--fg); text-transform: none; text-wrap: balance; }
+.man-doc > p:first-of-type { margin: 0 0 8px; max-width: 34em; font-size: 18px; line-height: 1.62; color: var(--fg-2); }
+/* the man page's capitals: each section head is a small-capital rule, as the climb's step heads are */
+.man-doc h2 {
+  display: flex; align-items: center; gap: 14px; margin: 48px 0 18px; padding: 0; border: 0;
+  font: 500 11px/1 var(--c-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--fg);
+}
+.man-doc h2::before { content: none; }
+.man-doc h2::after { content: ''; flex: 1; height: 1px; background: var(--line-2); }
+.man-doc h3 { margin: 30px 0 10px; font: 500 17px/1.35 var(--c-ui); letter-spacing: -.005em; text-transform: none; color: var(--fg); }
+.man-doc p { margin: 0 0 16px; max-width: 37em; font: inherit; color: var(--fg-2); }
+.man-doc li { margin: 6px 0; font: inherit; color: var(--fg-2); }
+.man-doc ul, .man-doc ol { margin: 0 0 18px; padding-left: 1.3em; max-width: 37em; }
+.man-doc ul > li::marker { color: var(--fg-4); }
+.man-doc ol > li::marker { color: var(--fg-4); font: 500 13px/1 var(--c-mono); }
+.man-doc :is(p, li, td, blockquote) :is(strong, b) { font-weight: 600; color: var(--fg); }
+.man-doc :is(p, li, td, th, blockquote) code {
+  padding: 2px 5px 1px; border: 1px solid var(--line-2); border-radius: 3px; background: var(--well);
+  font: 400 .86em/1 var(--c-mono); color: var(--fn); white-space: nowrap;
+}
+.man-doc a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-hi); text-underline-offset: 3px; }
+.man-doc blockquote { margin: 0 0 18px; padding: 2px 0 2px 18px; border: 0; border-left: 1px solid var(--line-hi); background: none; color: var(--fg-2); }
+.man-doc blockquote::before { content: none; }
+.man-doc blockquote p { margin: 0; color: var(--fg-2); }
+.man-doc table { width: 100%; margin: 4px 0 22px; border: 1px solid var(--line-2); border-radius: 4px; border-collapse: separate; border-spacing: 0; overflow: hidden; background: none; }
+.man-doc th { padding: 11px 14px 9px; border-bottom: 1px solid var(--line-2); background: none; text-align: left; font: 500 11px/1.2 var(--c-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--fg-3); }
+.man-doc td { padding: 10px 14px; border-bottom: 1px solid var(--line-2); font: 400 14.5px/1.5 var(--c-ui); color: var(--fg-2); vertical-align: top; }
+.man-doc tr:last-child td { border-bottom: 0; }
+.man-doc .hint { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line-2); font-size: 14px; color: var(--fg-3); }
+.man-doc .hint .btn { margin-left: 8px; padding: 6px 12px; }
+/* a script: the climb's well */
+.man-doc figure { margin: 6px 0 22px; }
+.man-doc .code { position: relative; overflow: hidden; border: 1px solid var(--line-2); border-radius: 4px; background: var(--well); }
+.man-doc .code-head {
+  display: flex; align-items: center; gap: 14px; min-height: 0; margin: 0; padding: 9px 14px 8px;
+  border-bottom: 1px solid var(--line-2); background: none;
+  font: 500 11px/1.2 var(--c-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--fg-4);
+}
+.man-doc .code-head .lang { color: var(--fg-3); }
+.man-doc .code-head .cap { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-4); font: inherit; }
+.man-doc .code-head .sp { flex: 1; }
+.man-doc .code-head .copy {
+  margin: -3px -4px -3px 0; padding: 4px 8px; border: 1px solid var(--line); border-radius: 3px; background: none; cursor: pointer;
+  font: 500 11px/1 var(--c-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--fg-3);
+}
+.man-doc .code-head .copy:hover { color: var(--fg); border-color: var(--line-hi); }
+.man-doc .code pre { margin: 0; padding: 12px 16px 12px 14px; overflow-x: auto; border: 0; background: none; font: 400 13.5px/1.78 var(--c-mono); color: var(--fn); }
+.man-doc .code pre::before, .man-doc .code pre::after { content: none; }
+.man-doc .code pre code { padding: 0; border: 0; background: none; font: inherit; color: inherit; white-space: inherit; }
+.man-doc .cl { display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 14px; }
+.man-doc .cl .ln { color: var(--fg-4); opacity: .8; text-align: right; font-size: 12px; padding-top: 1px; user-select: none; }
+.man-doc .cl .tx { white-space: pre-wrap; overflow-wrap: anywhere; }
+.man-doc .tok-k { color: var(--kw); font-weight: 500; }
+.man-doc .tok-s { color: var(--str); }
+.man-doc .tok-n { color: var(--num); }
+.man-doc .tok-c { color: var(--com); font-style: normal; }
+.man-doc .tok-f { color: var(--fn); }
+.man-doc .tok-g { color: var(--fg-3); }
+/* a narrow pane (the manual beside the terminal and the files): the same page, set tighter */
+.man { container-type: inline-size; }
+@container (max-width: 560px) {
+  .man-head { padding: 11px 16px 10px; }
+  .man-head .m { display: none; }
+  .man-doc { padding: 30px 22px 56px; font-size: 15px; }
+  .man-doc h1 { font-size: 31px; }
+  .man-doc > p:first-of-type { font-size: 16px; }
+  .man-doc h2 { margin-top: 38px; }
+  .man-doc .code pre { padding: 10px 12px 10px 10px; font-size: 12.5px; line-height: 1.7; }
+  .man-doc .cl { grid-template-columns: 18px minmax(0, 1fr); column-gap: 10px; }
+  /* a note after the code drops under its line, instead of breaking mid-phrase beside it */
+  .man-doc .cl .tx > .tok-c:not(:first-child) { display: block; padding-left: 2ch; }
+  .man-doc th, .man-doc td { padding-left: 10px; padding-right: 10px; }
+}
+#win-man .win-foot .seg { color: var(--fg-4); }
+#win-man .win-foot #man-pos { color: var(--fg-3); }
+
+/* ── the terminal ─────────────────────────────────────────────────────────── */
+.tty, .tty-screen { background: none; }
+.tty-screen { padding: 18px 20px 8px; font: 400 13px/1.65 var(--c-mono); color: var(--fg-2); }
+/* the 未 mark, as in the bar: an image now, not the old PETSCII block */
+.tty-mark { display: block; flex: none; width: auto; height: 96px; margin: 2px 6px 0 0; font: inherit; opacity: .9; }
+.tty-intro .tty-mark { height: 64px; opacity: .9; }
+.tty-who, .tty-intro .tty-who { font: 500 15px/1.3 var(--c-mono); color: var(--fg); }
+.tty-who span:first-child, .tty-who .at { color: var(--fg); }
+.tty-sub, .tty-progress, .tty-hint-line { font-size: 12px; line-height: 1.6; color: var(--fg-4); }
+.tty-sub .sep, .tty-progress .sep, .tty-hint-line .sep { color: var(--fg-4); }
+.tty-next-line { color: var(--fg-2); }
+.tty-next-line .tn-k { color: var(--fg-4); text-transform: uppercase; letter-spacing: .14em; font-size: 11px; }
+.tty-next-line b { color: var(--fg); }
+.tt-user, .tt-path { color: var(--fg); }
+.tt-colon, .tt-dollar, .tt-dim { color: var(--fg-4); }
+.tt-ok, .tt-dir, .tt-help b { color: var(--fg); }
+.tt-err { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-hi); text-underline-offset: 3px; }
+.tty-prompt { padding: 10px 20px 12px; border-top: 1px solid var(--line-2); background: none; font: 400 13px/1.4 var(--c-mono); }
+.tty-prompt input { font: 400 13px/1.4 var(--c-mono); color: var(--fg); caret-color: var(--lamp); background: none; }
+.tty-prompt input::placeholder { color: var(--fg-4); }
+.tty-tool, .tty-unit, .tty-open { border-color: var(--line-2); border-radius: 4px; background: none; }
+.tty-tool:hover, .tty-unit:hover, .tty-open:hover { border-color: var(--line-hi); background: var(--surface-2); }
+
+/* ── the files ────────────────────────────────────────────────────────────── */
+.fm, .fm-body, .fm-units, .fm-pane, .fm-files, .fm-inspect { background: none; }
+.fm-units { border-right: 1px solid var(--line-2); padding: 8px 0; }
+.fm-dir { padding: 7px 14px; border: 0; border-left: 1px solid transparent; border-radius: 0; font: 400 12px/1.3 var(--c-mono); color: var(--fg-3); background: none; }
+.fm-dir:hover { color: var(--fg); background: var(--surface-2); }
+.fm-dir.here, .fm-dir[aria-selected="true"] { color: var(--fg); border-left-color: var(--fg); background: var(--surface-2); }
+.fm-file { border-radius: 4px; font: 400 13px/1.35 var(--c-ui); color: var(--fg-2); }
+.fm-file:hover { background: var(--surface-2); }
+.fm-file.selected { background: var(--surface-hi); box-shadow: inset 0 0 0 1px var(--line); }
+.fm-file.selected .fm-name, .fm-file.current .fm-n { color: var(--fg); }
+.fm-n { font: 500 11px/1 var(--c-mono); letter-spacing: .06em; color: var(--fg-4); }
+.fm-dot { background: none; box-shadow: inset 0 0 0 1px var(--fg-4); }
+.fm-file.done .fm-dot { background: var(--fg); box-shadow: none; }
+.fm-file.doing .fm-dot, .fm-file.open .fm-dot { box-shadow: inset 0 0 0 1.5px var(--fg); }
+.fm-file.tool .fm-dot { box-shadow: inset 0 0 0 1px var(--fg-3); }
+.fm-inspect { border-top: 1px solid var(--line-2); }
+.fi-title b { font: 500 15px/1.3 var(--c-ui); color: var(--fg); }
+.fi-n { font: 500 11px/1 var(--c-mono); color: var(--fg-3); }
+.fi-meta, .fi-state { font: 500 11px/1.4 var(--c-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fg-4); }
+.fi-state.done, .fi-state.doing, .fi-state.open { color: var(--fg); }
+.fi-open { color: var(--fg); }
+.fi-open:hover { color: var(--fg); text-decoration: underline; }
+
+/* ── settings: the climb's menu controls, one row at a time ──────────────── */
+#settings-body .pane { max-width: 880px; margin: 0 auto; padding: 30px 34px 44px; gap: 34px; }
+#settings-body .pane h3 {
+  display: flex; align-items: center; gap: 14px; margin: 0 0 6px;
+  font: 500 11px/1 var(--c-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--fg);
+}
+#settings-body .pane h3::after { content: ''; flex: 1; height: 1px; background: var(--line-2); }
+#settings-body .rowset { gap: 0; }
+#settings-body .srow {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 58px; padding: 10px 2px;
+  border: 0; border-bottom: 1px solid var(--line-2); border-radius: 0; background: none;
+}
+#settings-body .srow:hover { background: none; border-color: var(--line-2); }
+#settings-body .srow .d { display: flex; flex-direction: column; gap: 3px; min-width: 0; font: 500 14.5px/1.3 var(--c-ui); color: var(--fg); }
+#settings-body .srow .sub { font: 400 12.5px/1.45 var(--c-ui); letter-spacing: 0; text-transform: none; color: var(--fg-3); }
+#settings-body .srow .sub code { font: 400 11.5px/1 var(--c-mono); color: var(--fg-2); }
+#settings-body .srow > b { font: 400 15px/1 var(--c-ui); font-variant-numeric: tabular-nums; color: var(--fg); }
+#settings-body .segbar { flex: none; gap: 3px; padding: 3px; border: 1px solid var(--line-hi); border-radius: 999px; overflow: visible; }
+#settings-body .segbar button {
+  min-width: 52px; padding: 7px 12px; border: 0; border-radius: 999px; background: none; cursor: pointer;
+  font: 500 11px/1 var(--c-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3);
+}
+#settings-body .segbar button + button { border-left: 0; }
+#settings-body .segbar button:hover { color: var(--fg); }
+#settings-body .segbar button[aria-pressed="true"] { background: rgba(242, 245, 250, .9); color: #0b0f17; cursor: default; }
+:root[data-scene='ice'] #settings-body .segbar button[aria-pressed="true"] { background: var(--fg); color: #fff; }
+#settings-body .sw {
+  flex: none; width: 40px; height: 22px; border: 1px solid var(--line-hi); border-radius: 999px; background: none;
+}
+#settings-body .sw::after { width: 14px; height: 14px; top: 3px; left: 3px; border-radius: 50%; background: var(--fg-3); }
+#settings-body .sw[aria-checked="true"] { border-color: var(--fg); background: rgba(242, 245, 250, .9); }
+#settings-body .sw[aria-checked="true"]::after { transform: translateX(18px); background: #0b0f17; }
+:root[data-scene='ice'] #settings-body .sw[aria-checked="true"] { background: var(--fg); }
+:root[data-scene='ice'] #settings-body .sw[aria-checked="true"]::after { background: #fff; }
+#settings-body .btn { padding: 8px 14px; }
+#settings-body .btn kbd { margin-left: 6px; padding: 0 4px; border-color: var(--line); font-size: 11px; }
+#settings-body .btn .ic, #settings-body .btn svg { display: none; }
+#settings-body .set-warn { border: 1px solid var(--line-hi); border-radius: 6px; background: var(--surface-2); font: 400 13.5px/1.5 var(--c-ui); color: var(--fg-2); }
+#settings-body .set-note { font: 400 13px/1.5 var(--c-ui); color: var(--fg-2); }
+#settings-body .btn.danger, #settings-body .btn.danger:hover { color: var(--fg); border-color: var(--fg); }
+#settings-body .kbdlist { gap: 9px 22px; font: 400 13.5px/1.4 var(--c-ui); color: var(--fg-2); }
+#settings-body .kbdlist .d { color: var(--fg-2); }
+#settings-body .kbdlist .ks { gap: 4px; }
+#settings-body kbd { font-size: 11px; }
+#settings-body .about { gap: 10px; max-width: 40em; font: 400 13.5px/1.62 var(--c-ui); color: var(--fg-3); }
+#settings-body .about b { font-weight: 600; color: var(--fg); }
+#settings-body .about code { font: 400 12px/1 var(--c-mono); color: var(--fg-2); }
+
+/* ── the launcher, the scrim, the empty seat ─────────────────────────────── */
+#scrim { background: rgba(3, 5, 9, .55); -webkit-backdrop-filter: blur(calc(var(--glass-blur) * .375)); backdrop-filter: blur(calc(var(--glass-blur) * .375)); }
+:root[data-scene='ice'] #scrim { background: rgba(226, 232, 240, .5); }
+.launch-box { border: 1px solid var(--line); border-radius: 10px; background: var(--pane-solid); box-shadow: 0 40px 100px -30px rgba(0, 0, 0, .85); overflow: hidden; }
+:root[data-scene='ice'] .launch-box { box-shadow: 0 40px 100px -36px rgba(40, 60, 90, .45); }
+.launch-prompt { padding: 14px 16px; border-bottom: 1px solid var(--line-2); background: none; }
+.lp-mode { color: var(--fg); font: 500 11px/1 var(--c-mono); letter-spacing: .18em; text-transform: uppercase; }
+.lp-mode::before { width: 6px; height: 6px; border-radius: 50%; background: var(--lamp); box-shadow: var(--lamp-glow); }
+#launch-input { font: 400 15px/1.2 var(--c-ui); color: var(--fg); caret-color: var(--lamp); }
+#launch-input::placeholder { color: var(--fg-4); }
+.lp-hint { color: var(--fg-4); font: 500 11px/1 var(--c-mono); letter-spacing: .1em; }
+#launch-list { padding: 6px; }
+.lrow { gap: 10px; padding: 8px 10px; border-radius: 6px; color: var(--fg-2); font: 400 13.5px/1.3 var(--c-ui); }
+.lrow .ic { color: var(--fg-4); }
+.lrow .sub { color: var(--fg-4); font: 400 12px/1.3 var(--c-ui); }
+.lrow:hover { background: var(--surface-2); }
+.lrow[aria-selected="true"] { background: var(--surface-hi); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line); }
+.lrow[aria-selected="true"] .ic { color: var(--fg); }
+/* on a lit row the quiet parts step up a value, so they still clear 4.5:1 on its wash */
+.lrow:is([aria-selected="true"], :hover) :is(.sub, .k, .snip) { color: var(--fg-3); }
+.lhead { font: 500 11px/1 var(--c-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--fg-4); }
+.launch-foot { padding: 10px 16px; border-top: 1px solid var(--line-2); color: var(--fg-4); font: 500 11px/1 var(--c-mono); letter-spacing: .08em; }
+.seat-empty .box { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--pane); box-shadow: var(--shadow); }
+.seat-empty .big { font: 300 22px/1.2 var(--c-ui); letter-spacing: -.01em; color: var(--fg); }
+.seat-empty .hint { color: var(--fg-3); font: 400 13px/1.5 var(--c-ui); }
+#peek-back { border-radius: 999px; font: 500 11px/1 var(--c-mono); letter-spacing: .14em; text-transform: uppercase; }
+
+/* ── narrower screens ─────────────────────────────────────────────────────── */
+@media (max-width: 1240px) { .bar-task .bw { padding: 0 9px; letter-spacing: .12em; } }
+@media (max-width: 1080px) { .bar-task .bw { gap: 6px; padding: 0 7px; } #bar .ws { padding: 0 5px; } }
+@media (max-width: 860px) {
+  #bar .bar-c { display: flex; }
+  #bar .ws:not([aria-current="page"]) .num { letter-spacing: .08em; }
+  .bar-task .bw .bt-dot { display: none; }
+}
+/* stack mode: the words stay centred in the middle cell, clear of the readouts */
+body.stack #bar .bar-c { justify-content: center; padding: 0 12px; }
+@media (max-width: 620px) { #bar .bar-c { display: none; } }
+body.stack .win { border-radius: var(--r); }
+
+/* the files beside the manual are the narrowest pane: the unit names get the room they need */
+.fm-body { grid-template-columns: minmax(150px, 40%) minmax(0, 1fr); }
+.fm-dir { padding: 7px 12px; font-size: 11.5px; }

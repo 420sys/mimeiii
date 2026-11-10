@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LuauOS — Direction C — The Folio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23efe8db'/%3E%3Crect x='8' y='8' width='16' height='16' fill='%23171912'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="base.css">
+<style>
+  :root {
+    --paper: #efe8db;
+    --paper-hi: #f6f0e5;
+    --paper-lo: #e6ddcd;
+    --ink: #17170f;
+    --muted: #7c7668;
+    --line: rgba(23, 23, 15, .18);
+    --line-soft: rgba(23, 23, 15, .085);
+    --blue: #294780;
+    --blue-soft: #8da2ca;
+    --slab: #171912;
+    --slab-hi: #1e2118;
+    --ivory: #ece5d6;
+    --ivory-dim: #aaa694;
+    --slab-line: rgba(236, 229, 214, .16);
+  }
+  html { background: var(--paper); }
+  body {
+    background:
+      radial-gradient(95% 90% at 0% 0%, rgba(255, 253, 247, .72), transparent 58%),
+      radial-gradient(80% 80% at 100% 100%, rgba(70, 57, 35, .07), transparent 50%),
+      var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    padding: 24px;
+    overflow: hidden;
+  }
+  .page {
+    height: calc(100vh - 48px);
+    min-height: 680px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(300px, .5fr);
+    border: 1px solid rgba(23, 23, 15, .55);
+    background: var(--paper);
+    box-shadow: 0 30px 80px rgba(63, 50, 31, .13);
+  }
+
+  /* ── the paper page ───────────────────────────────────────────────────── */
+  .paper {
+    min-width: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 44px 22px;
+    overflow: hidden;
+  }
+  .paper::before {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border: 1px solid rgba(23, 23, 15, .11);
+    pointer-events: none;
+    z-index: 3;
+  }
+  .paper::after {
+    content: 'FOLIO 01 / THE DESK';
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    color: var(--muted);
+    font: 400 5.5px/1 var(--mono);
+    letter-spacing: .18em;
+    writing-mode: vertical-rl;
+    transform: translateY(-50%) rotate(180deg);
+    opacity: .8;
+    pointer-events: none;
+  }
+
+  .mast {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+    position: relative;
+    z-index: 2;
+  }
+  .brand { display: flex; align-items: center; gap: 13px; }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    color: var(--paper);
+    background: var(--ink);
+    font: 400 16px/1 var(--serif);
+    letter-spacing: -.02em;
+  }
+  .brand h1 {
+    font: 400 30px/.88 var(--serif);
+    letter-spacing: -.04em;
+  }
+  .brand p {
+    margin-top: 6px;
+    color: var(--muted);
+    font: 400 6.5px/1 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .mast-meta {
+    display: flex;
+    gap: clamp(18px, 2.8vw, 40px);
+    padding-top: 2px;
+    text-align: right;
+  }
+  .mast-meta div { display: flex; flex-direction: column; gap: 5px; }
+  .mast-meta span { color: var(--muted); font: 400 6px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+  .mast-meta b { font: 400 8px/1 var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+  .mast-meta .blue { color: var(--blue); }
+
+  /* ── contents / the five tools ────────────────────────────────────────── */
+  .overview, .tool-view { min-height: 0; flex: 1; display: flex; flex-direction: column; }
+  .contents {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(14px, 3vh, 34px) 0 12px;
+  }
+  .contents-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 8px;
+    color: var(--muted);
+    font: 400 6px/1 var(--mono);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 26px;
+    align-items: start;
+    gap: 14px;
+    padding: 11px 0 11px;
+    border-top: 1px solid var(--line);
+    text-align: left;
+    position: relative;
+    transition: padding .22s var(--ease), background .22s var(--ease);
+  }
+  .item:last-child { border-bottom: 1px solid var(--line); }
+  .item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 9px;
+    width: 2px;
+    background: var(--blue);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform .22s var(--ease);
+  }
+  .item:hover, .item:focus-visible {
+    padding-left: 13px;
+    background: rgba(41, 71, 128, .035);
+  }
+  .item:hover::before, .item:focus-visible::before { transform: scaleY(1); }
+  .item-num {
+    padding-top: 10px;
+    color: var(--muted);
+    font: 400 5.5px/1 var(--mono);
+    letter-spacing: .10em;
+  }
+  .item-main { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .item-label {
+    font: 400 clamp(38px, 4.6vw, 63px)/.96 var(--serif);
+    letter-spacing: -.045em;
+    white-space: nowrap;
+    padding-bottom: 5px;
+  }
+  .item-desc {
+    color: var(--muted);
+    font: 400 6.5px/1.2 var(--mono);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .item-arrow {
+    justify-self: end;
+    padding-top: 7px;
+    color: var(--muted);
+    font: 300 18px/1 var(--sans);
+    opacity: .55;
+    transform: translate(-3px, 3px);
+    transition: transform .22s var(--ease), opacity .22s var(--ease), color .22s var(--ease);
+  }
+  .item:hover .item-arrow, .item:focus-visible .item-arrow {
+    color: var(--blue);
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  .contents-foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 12px;
+    color: var(--muted);
+    font: 400 6px/1.5 var(--mono);
+    letter-spacing: .11em;
+    text-transform: uppercase;
+  }
+  .contents-foot span:last-child { text-align: right; }
+  .contents-foot b { color: var(--ink); font-weight: 400; }
+
+  /* ── continuous tool view: the page changes, no window ────────────────── */
+  .tool-view { display: none; overflow: auto; padding-top: 24px; }
+  .tool-view.open { display: flex; }
+  .overview.closed { display: none; }
+  .back {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    color: var(--muted);
+    font: 400 6.5px/1 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    transition: color .18s var(--ease);
+  }
+  .back:hover { color: var(--blue); }
+  .view-kicker {
+    margin-top: 22px;
+    color: var(--blue);
+    font: 400 6px/1 var(--mono);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .view-title {
+    margin-top: 8px;
+    font: 400 clamp(44px, 5.4vw, 74px)/.86 var(--serif);
+    letter-spacing: -.05em;
+  }
+  .view-title em { color: var(--blue); font-style: italic; }
+  .view-lede {
+    max-width: 54ch;
+    margin-top: 13px;
+    color: #5d5648;
+    font: 400 12px/1.55 var(--sans);
+  }
+  .v-units {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 42px;
+    margin-top: 22px;
+    border-top: 1px solid var(--line);
+  }
+  .v-unit {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 10px;
+    align-items: baseline;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .v-unit .u-n { color: var(--blue); font: 400 6px/1 var(--mono); }
+  .v-unit b { font: 400 18px/.95 var(--serif); letter-spacing: -.02em; }
+  .v-unit i { color: var(--muted); font: 400 6px/1 var(--mono); font-style: normal; letter-spacing: .08em; text-transform: uppercase; }
+  .v-search { display: flex; align-items: center; gap: 13px; margin-top: 26px; border-bottom: 1px solid var(--ink); padding-bottom: 10px; }
+  .v-search span { color: var(--blue); font: 400 9px/1 var(--mono); }
+  .v-search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: var(--ink);
+    font: 400 clamp(24px, 3vw, 38px)/1 var(--serif);
+    letter-spacing: -.03em;
+  }
+  .v-search input::placeholder { color: rgba(23, 23, 15, .30); }
+  .v-example { display: flex; justify-content: space-between; gap: 20px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); font: 400 9px/1 var(--mono); }
+  .v-example span:last-child { color: var(--muted); }
+  .v-code {
+    margin-top: 22px;
+    padding: 16px 18px;
+    background: var(--slab);
+    color: var(--ivory);
+    font: 400 10px/1.8 var(--mono);
+    white-space: pre;
+    overflow: auto;
+  }
+  .v-code .c { color: #8c897b; }
+  .v-code .k { color: var(--blue-soft); }
+  .v-goal { display: flex; align-items: flex-end; gap: 22px; margin-top: 23px; padding-top: 17px; border-top: 1px solid var(--line); }
+  .v-goal b { font: 400 58px/.8 var(--serif); letter-spacing: -.05em; }
+  .v-goal span { color: var(--muted); font: 400 6px/1.7 var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+  .v-ticks { display: grid; grid-template-columns: repeat(26, 1fr); gap: 3px; margin-top: 22px; }
+  .v-ticks i { height: 14px; background: rgba(23, 23, 15, .10); }
+  .v-ticks i:first-child { background: var(--blue); }
+  .v-set { margin-top: 18px; border-top: 1px solid var(--line); }
+  .v-set div { display: flex; justify-content: space-between; gap: 24px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); font: 400 9px/1 var(--mono); }
+  .v-set span:last-child { color: var(--muted); }
+
+  /* ── the dark instrument slab ─────────────────────────────────────────── */
+  .slab {
+    background:
+      linear-gradient(160deg, rgba(236, 229, 214, .035), transparent 33%),
+      linear-gradient(180deg, var(--slab-hi), var(--slab));
+    color: var(--ivory);
+    padding: 27px 25px 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    border-left: 1px solid rgba(23, 23, 15, .55);
+  }
+  .slab::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(236, 229, 214, .10);
+    pointer-events: none;
+  }
+  .slab::after {
+    content: 'SYSTEM / 01';
+    position: absolute;
+    right: 14px;
+    bottom: 13px;
+    color: rgba(236, 229, 214, .30);
+    font: 400 5px/1 var(--mono);
+    letter-spacing: .18em;
+    writing-mode: vertical-rl;
+  }
+  .slab-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    color: var(--ivory-dim);
+    font: 400 6px/1 var(--mono);
+    letter-spacing: .17em;
+    text-transform: uppercase;
+  }
+  .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--blue-soft);
+  }
+  .live i {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    box-shadow: 0 0 0 3px rgba(141, 162, 202, .10);
+  }
+  .slab-time {
+    margin-top: 30px;
+    font: 100 clamp(48px, 5vw, 70px)/.8 var(--mono);
+    letter-spacing: -.095em;
+    text-indent: -.06em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ivory);
+  }
+  .slab-date {
+    margin-top: 13px;
+    font: 400 23px/.95 var(--serif);
+    letter-spacing: -.025em;
+    color: var(--ivory);
+  }
+  .slab-day {
+    margin-top: 6px;
+    color: var(--ivory-dim);
+    font: 400 6px/1 var(--mono);
+    letter-spacing: .15em;
+    text-transform: uppercase;
+  }
+  .slab-rule {
+    height: 1px;
+    margin: 23px 0 17px;
+    background: var(--slab-line);
+  }
+
+  .register-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+    color: var(--ivory-dim);
+    font: 400 5.5px/1 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .register-head span:last-child { color: var(--blue-soft); }
+  .register {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .reg-row {
+    display: grid;
+    grid-template-columns: 22px 1fr 20px;
+    align-items: center;
+    gap: 9px;
+    height: 21px;
+    border-top: 1px solid rgba(236, 229, 214, .07);
+    color: rgba(236, 229, 214, .40);
+    font: 400 5.5px/1 var(--mono);
+    letter-spacing: .06em;
+  }
+  .reg-row:last-child { border-bottom: 1px solid rgba(236, 229, 214, .07); }
+  .reg-row .ticks { display: flex; justify-content: space-between; align-items: flex-start; height: 10px; }
+  .reg-row .ticks i { display: block; width: 1px; height: 8px; flex: 0 0 1px; background: rgba(236, 229, 214, .38); }
+  .reg-row:first-child .ticks i:first-child { height: 11px; background: var(--blue-soft); }
+  .reg-row .count {
+    text-align: right;
+    color: rgba(236, 229, 214, .30);
+    font-size: 5px;
+  }
+  .reg-row .n { color: rgba(236, 229, 214, .55); }
+  .reg-row:first-child .n { color: var(--blue-soft); }
+
+  .slab-status {
+    margin-top: auto;
+    padding-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--slab-line);
+    border-left: 1px solid var(--slab-line);
+  }  .slab-status div {
+    padding: 8px 8px 7px;
+    border-right: 1px solid var(--slab-line);
+    border-bottom: 1px solid var(--slab-line);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .slab-status dt {
+    color: rgba(236, 229, 214, .42);
+    font: 400 5.5px/1 var(--mono);
+    letter-spacing: .15em;
+    text-transform: uppercase;
+  }
+  .slab-status dd {
+    color: var(--ivory);
+    font: 400 7.5px/1 var(--mono);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .slab-status .blue { color: var(--blue-soft); }
+  .slab-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 12px;
+    color: rgba(236, 229, 214, .35);
+    font: 400 5px/1 var(--mono);
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+  .slab > :not(.slab-ghost) { position: relative; z-index: 1; }
+  .slab-ghost {
+    position: absolute;
+    right: -12px;
+    bottom: 96px;
+    z-index: 0;
+    color: rgba(236, 229, 214, .045);
+    font: 400 260px/.62 var(--serif);
+    letter-spacing: -.12em;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  @media (max-width: 1040px) {
+    body { padding: 16px; overflow: auto; }
+    .page { height: auto; min-height: 0; grid-template-columns: 1fr; }
+    .paper { min-height: 660px; padding: 24px 30px 20px; }
+    .slab { min-height: 560px; border-left: 0; border-top: 1px solid rgba(23, 23, 15, .55); }
+    .contents { padding-top: 26px; }
+    .mast-meta div:nth-child(2) { display: none; }
+  }
+  @media (max-width: 640px) {
+    body { padding: 10px; }
+    .paper { min-height: 0; padding: 22px 22px 18px; }
+    .paper::after { display: none; }
+    .brand h1 { font-size: 27px; }
+    .brand p { display: none; }
+    .mast-meta { gap: 12px; }
+    .mast-meta div:nth-child(1) { display: none; }
+    .item { grid-template-columns: 26px minmax(0, 1fr) 18px; gap: 8px; }
+    .item-label { font-size: 42px; }
+    .item-desc { font-size: 6px; }
+    .item-arrow { font-size: 15px; }
+    .contents-foot { flex-direction: column; align-items: flex-start; gap: 5px; }
+    .contents-foot span:last-child { text-align: left; }
+    .slab { padding: 22px 20px 18px; }
+    .v-units { grid-template-columns: 1fr; }
+    .slab-time { font-size: 54px; }
+    .view-title { font-size: 46px; }
+  }
+</style>
+</head>
+<body>
+<div class="paper-grain" aria-hidden="true"></div>
+<span class="reg tl" aria-hidden="true"></span>
+<span class="reg tr" aria-hidden="true"></span>
+<span class="reg bl" aria-hidden="true"></span>
+<span class="reg br" aria-hidden="true"></span>
+
+<main class="page">
+  <section class="paper" aria-label="The desk">
+    <header class="mast">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">L</span>
+        <div>
+          <h1>LuauOS</h1>
+          <p>a quiet instrument for learning Luau</p>
+        </div>
+      </div>
+      <div class="mast-meta">
+        <div><span>workspace</span><b>01 / the desk</b></div>
+        <div><span>plate</span><b>folio · 2026.10</b></div>
+      </div>
+    </header>
+
+    <div class="overview" id="c-overview">
+      <div class="contents">
+        <div class="contents-head"><span>index / tools</span><span>five instruments</span></div>
+        <button class="item" type="button" data-tool="course">
+          <span class="item-num">01</span>
+          <span class="item-main"><span class="item-label">course</span><span class="item-desc">twelve units · fifty-two stops</span></span>
+          <span class="item-arrow" aria-hidden="true">↗</span>
+        </button>
+        <button class="item" type="button" data-tool="search">
+          <span class="item-num">02</span>
+          <span class="item-main"><span class="item-label">search</span><span class="item-desc">find a lesson, a unit, a word</span></span>
+          <span class="item-arrow" aria-hidden="true">↗</span>
+        </button>
+        <button class="item" type="button" data-tool="manual">
+          <span class="item-num">03</span>
+          <span class="item-main"><span class="item-label">manual</span><span class="item-desc">syntax, patterns, small references</span></span>
+          <span class="item-arrow" aria-hidden="true">↗</span>
+        </button>
+        <button class="item" type="button" data-tool="goals">
+          <span class="item-num">04</span>
+          <span class="item-main"><span class="item-label">goals</span><span class="item-desc">checkpoints and the journal</span></span>
+          <span class="item-arrow" aria-hidden="true">↗</span>
+        </button>
+        <button class="item" type="button" data-tool="settings">
+          <span class="item-num">05</span>
+          <span class="item-main"><span class="item-label">settings</span><span class="item-desc">effects, sound, the picture</span></span>
+          <span class="item-arrow" aria-hidden="true">↗</span>
+        </button>
+      </div>
+      <footer class="contents-foot">
+        <span><b>select a tool</b> — it opens in place, on this page</span>
+        <span>no windows / one continuous surface<br>esc returns to the desk</span>
+      </footer>
+    </div>
+
+    <div class="tool-view" id="c-view">
+      <button class="back" type="button" id="c-back">← the desk</button>
+      <p class="view-kicker" id="c-view-kicker"></p>
+      <h2 class="view-title" id="c-view-title"></h2>
+      <p class="view-lede" id="c-view-lede"></p>
+      <div id="c-view-body"></div>
+    </div>
+  </section>
+
+  <aside class="slab" aria-label="System status">
+    <div class="slab-top"><span>system / local</span><span class="live"><i></i>online</span></div>
+    <div class="slab-time" id="c-time">00:00</div>
+    <div class="slab-date" id="c-date">22 October 2026</div>
+    <div class="slab-day" id="c-day">thursday</div>
+    <div class="slab-rule"></div>
+
+    <div class="register-head"><span>course register</span><span>52 / 12</span></div>
+    <div class="register" id="c-register"></div>
+
+    <span class="slab-ghost" aria-hidden="true">52</span>
+
+    <div class="slab-status">
+      <div><dt>wall</dt><dd>deep line</dd></div>
+      <div><dt>display</dt><dd id="c-dims">1440 × 900</dd></div>
+      <div><dt>network</dt><dd class="blue">online</dd></div>
+      <div><dt>time</dt><dd id="c-time-small">00:00 local</dd></div>
+    </div>
+    <div class="slab-foot"><span>noctalia / luauos 1.0</span><span>instrument 01</span></div>
+  </aside>
+</main>
+
+<script>
+(() => {
+  const units = [
+    ['Set up', '4'], ['Variables', '6'], ['Decisions', '4'], ['Loops', '5'],
+    ['Functions', '5'], ['Tables', '5'], ['The world', '4'], ['Events', '4'],
+    ['Players', '4'], ['Client and server', '4'], ['Organising and saving', '3'], ['Hero project', '4'],
+  ];
+
+  const tools = {
+    course: {
+      kicker: 'course / twelve units',
+      title: 'Twelve units.<br><em>Fifty-two stops.</em>',
+      lede: 'The whole language, from opening Studio to a finished hero project. Each unit is a room; each stop is one small, complete session.',
+      body: `<div class="v-units">${units.map((u, i) => `<div class="v-unit"><span class="u-n">${String(i + 1).padStart(2, '0')}</span><b>${u[0]}</b><i>${u[1]} stops</i></div>`).join('')}</div>`,
+    },
+    search: {
+      kicker: 'search / the whole course',
+      title: 'Find the next<br><em>small thing.</em>',
+      lede: 'Search by lesson name, unit, or the thing you are trying to do. The course is small enough to know; the search is for the moment you forget where something lives.',
+      body: `<div class="v-search"><span>/</span><input type="text" placeholder="print, variables, a player joins…" aria-label="Search the course"></div>
+        <div class="v-example"><span>1.0 Set up Roblox Studio</span><span>unit 01 · 10m</span></div>
+        <div class="v-example"><span>2.1 Your first variable</span><span>unit 02 · 10m</span></div>
+        <div class="v-example"><span>7.2 A part that moves</span><span>unit 07 · 12m</span></div>`,
+    },
+    manual: {
+      kicker: 'manual / quick reference',
+      title: 'A small book<br><em>beside the work.</em>',
+      lede: 'No long reference to get lost in. The manual holds the syntax and patterns that are worth keeping within arm’s reach while you are in Studio.',
+      body: `<div class="v-code"><span class="c">-- print is the first instrument</span>
+<span class="k">local</span> greeting = "Hello, world!"
+<span class="k">print</span>(greeting)
+
+<span class="c">-- a variable can change</span>
+<span class="k">local</span> score = 0
+score += 1
+<span class="k">print</span>(score)</div>`,
+    },
+    goals: {
+      kicker: 'goals / this session',
+      title: 'Nothing ticked.<br><em>Plenty of room.</em>',
+      lede: 'Checkpoints are the smallest honest unit of progress. They are not a score; they are a record of what you have actually done.',
+      body: `<div class="v-goal"><b>0</b><span>of 52 stops finished<br>rank init · 0 xp</span></div>
+        <div class="v-ticks" aria-hidden="true">${Array.from({ length: 52 }, () => '<i></i>').join('')}</div>`,
+    },
+    settings: {
+      kicker: 'settings / this machine',
+      title: 'The room,<br><em>not the work.</em>',
+      lede: 'The desk should be quiet by default. These are the few controls that change the room around the lesson.',
+      body: `<div class="v-set">
+          <div><span>effects</span><span>static · level 0</span></div>
+          <div><span>sound</span><span>off</span></div>
+          <div><span>wallpaper</span><span>deep line</span></div>
+          <div><span>display</span><span id="c-set-dims">1440 × 900</span></div>
+        </div>`,
+    },
+  };
+
+  const pad = n => String(n).padStart(2, '0');
+  const clock = () => {
+    const d = new Date();
+    const t = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    document.getElementById('c-time').textContent = t;
+    document.getElementById('c-time-small').textContent = `${t} local`;
+    document.getElementById('c-day').textContent = d.toLocaleDateString('en-GB', { weekday: 'long' });
+    document.getElementById('c-date').textContent = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  const dims = () => {
+    const s = `${innerWidth} × ${innerHeight}`;
+    document.getElementById('c-dims').textContent = s;
+    const set = document.getElementById('c-set-dims');
+    if (set) set.textContent = s;
+  };
+
+  document.getElementById('c-register').innerHTML = units.map((u, i) =>
+    `<div class="reg-row"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="ticks">${Array.from({ length: Number(u[1]) }, () => '<i></i>').join('')}</span><span class="count">${u[1]}</span></div>`
+  ).join('');
+
+  const overview = document.getElementById('c-overview');
+  const view = document.getElementById('c-view');
+  const vKicker = document.getElementById('c-view-kicker');
+  const vTitle = document.getElementById('c-view-title');
+  const vLede = document.getElementById('c-view-lede');
+  const vBody = document.getElementById('c-view-body');
+  let lastFocus = null;
+
+  const back = () => {
+    view.classList.remove('open');
+    overview.classList.remove('closed');
+    view.scrollTop = 0;
+    if (lastFocus) lastFocus.focus();
+  };
+  const open = name => {
+    const t = tools[name];
+    if (!t) return;
+    lastFocus = document.activeElement;
+    vKicker.textContent = t.kicker;
+    vTitle.innerHTML = t.title;
+    vLede.textContent = t.lede;
+    vBody.innerHTML = t.body;
+    overview.classList.add('closed');
+    view.classList.add('open');
+    view.scrollTop = 0;
+    dims();
+    document.getElementById('c-back').focus();
+  };
+
+  document.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click', () => open(b.dataset.tool)));
+  document.getElementById('c-back').addEventListener('click', back);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && view.classList.contains('open')) back(); });
+
+  clock();
+  dims();
+  setInterval(clock, 1000);
+  addEventListener('resize', dims);
+})();
+</script>
+</body>
+</html>

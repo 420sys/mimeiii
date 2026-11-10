@@ -1,0 +1,303 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 35 DESK
+   Workspace 1 is the desk: the city at night from the top of a crane, with
+   an old LED sign hanging off the hook (src/ui/desktop.js, src/desk/*). The
+   picture is the whole screen. The words are three quiet lines in the
+   top-right corner and a menu that comes up when the mouse moves.
+
+   No accent colour: white and city blue on Night, slate on Ice. Warm light
+   only close to you (the railing); red only on the aviation beacons in the
+   picture. Inter for the clock and the menu, IBM Plex Mono for the small
+   capitals. --u scales the UI with the screen (set by the desk, 0.8–1.2).
+
+   The fades and the menu run on the desk's own clock (inline opacity), not
+   on CSS transitions, so a film of the desk is frame-exact. The site's
+   bar, wallpaper and screen effects step aside on this workspace.
+
+   New class names here start with cr-. The shell has its own .goal and
+   .live, and they reached in once: tonight went grey on Ice and the menu
+   breathed (tests/desk.spec.js, "the shell keeps its own classes").
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── the shell: the desk owns the whole screen ───────────────────────────── */
+body[data-ws="1"] { --bar-h: 0px; }
+body[data-ws="1"] #bar,
+body[data-ws="1"] #wall,
+body[data-ws="1"] .fx-layers { display: none; }
+body[data-ws="1"] #shell { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+body[data-ws="1"] #seat { overflow: hidden; }
+/* peek ("wallpaper only") on the desk: the picture stays, the words go */
+body.peek[data-ws="1"] #shell { opacity: 1; pointer-events: auto; }
+body.peek #desk .cr-hud,
+body.peek #desk .cr-menu { visibility: hidden; }
+
+#desk.cr {
+  --cr-ink: #05070c;
+  --cr-fg: #f2f5fa;
+  --cr-dim: rgba(228, 234, 244, .66);
+  --cr-faint: rgba(228, 234, 244, .38);
+  --cr-ice-ink: #18202b;
+  --cr-ice-dim: rgba(24, 32, 43, .62);
+  --cr-ice-faint: rgba(24, 32, 43, .4);
+  --cr-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --cr-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --u: 1;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  background: var(--cr-ink);
+  color: var(--cr-fg);
+  font-family: var(--cr-ui);
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+body[data-ws="1"] #desk.cr { display: block; position: fixed; inset: 0; }
+#desk.cr[hidden] { display: none !important; }
+#desk.cr.cr-idle, #desk.cr.cr-idle * { cursor: none !important; }
+
+/* ── the world: plates, the hook, the sign, the weather (desk/world.js) ──── */
+#desk .cr-world,
+#desk .cr-backs,
+#desk .cr-fronts,
+#desk .cr-grades { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+#desk .cr-world { contain: strict; transform-origin: 50% 78%; }
+#desk .plate, #desk .hook, #desk .atmos, #desk .led {
+  position: absolute; left: 0; top: 0; display: block; pointer-events: none;
+  backface-visibility: hidden; max-width: none;
+}
+#desk .plate { width: 3840px; height: 2160px; }
+#desk .plate-none { background: radial-gradient(60% 55% at 50% 70%, #142036, #070b14 70%, var(--cr-ink)); }
+#desk .hook { width: 800px; height: 1067px; }
+#desk .atmos { width: 960px; height: 540px; }
+#desk .led { width: 530px; height: 400px; mix-blend-mode: screen; }
+#desk .cr-wx { position: absolute; left: 0; top: 0; pointer-events: none; }
+
+/* camera grade: a soft vignette, and warm light only close to you (the railing) */
+#desk .grade { position: absolute; inset: 0; pointer-events: none; }
+#desk .vig.k-night, #desk .vig.k-late {
+  background: radial-gradient(135% 110% at 52% 46%, transparent 58%, rgba(2, 4, 10, .42) 100%),
+    linear-gradient(to bottom, rgba(2, 4, 10, .22), transparent 14%, transparent 82%, rgba(2, 4, 10, .26));
+}
+#desk .vig.k-ice {
+  background: radial-gradient(135% 110% at 52% 46%, transparent 62%, rgba(226, 233, 244, .34) 100%),
+    linear-gradient(to bottom, rgba(238, 242, 249, .26), transparent 16%);
+}
+#desk .warm.k-night { background: radial-gradient(34vw 20vw at 9% 103%, rgba(255, 176, 104, .17), rgba(255, 176, 104, .05) 55%, transparent 75%); mix-blend-mode: screen; }
+#desk .warm.k-late { background: radial-gradient(34vw 20vw at 9% 103%, rgba(255, 176, 104, .13), rgba(255, 176, 104, .04) 55%, transparent 75%); mix-blend-mode: screen; }
+#desk .warm.k-ice { background: radial-gradient(34vw 20vw at 9% 103%, rgba(255, 186, 120, .16), transparent 72%); mix-blend-mode: soft-light; }
+
+/* ── the sign is a real button, laid over the sign's face and swaying with it ── */
+#desk .cr-sign {
+  position: absolute; left: 0; top: 0; z-index: 2;
+  width: 0; height: 0; margin: 0; padding: 0; border: 0; border-radius: 0;
+  background: transparent; color: transparent; cursor: pointer;
+  appearance: none; -webkit-appearance: none; -webkit-tap-highlight-color: transparent;
+}
+#desk .cr-sign:focus, #desk .cr-sign:focus-visible { outline: none; box-shadow: none; }
+#desk .cr-ring { position: absolute; left: 0; top: 0; z-index: 2; overflow: visible; pointer-events: none; opacity: 0; }
+#desk .cr-ring polygon {
+  fill: none; stroke: rgba(242, 245, 250, .92); stroke-width: 2; stroke-linejoin: round;
+  vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 6px rgba(160, 196, 255, .55));
+}
+#desk.ice .cr-ring polygon { stroke: rgba(24, 32, 43, .85); filter: drop-shadow(0 0 6px rgba(255, 255, 255, .8)); }
+#desk .cr-sign:focus-visible + .cr-ring { opacity: 1; }
+#desk.leaping .cr-sign, #desk.leaping .cr-ring { visibility: hidden; }
+/* without the city (the pictures did not load) the sign's words are a plain button in the middle */
+#desk.no-world .cr-sign {
+  left: 50% !important; top: 46% !important; width: auto !important; height: auto !important;
+  transform: translate(-50%, -50%) !important; clip-path: none !important;
+  padding: 18px 26px; border: 1px solid rgba(242, 245, 250, .3); border-radius: 14px;
+  background: rgba(8, 12, 20, .5); color: var(--cr-fg);
+  font: 500 14px/1.6 var(--cr-mono); letter-spacing: .08em; text-transform: uppercase;
+}
+#desk.no-world .cr-sign:focus-visible { outline: 2px solid var(--cr-fg); outline-offset: 4px; }
+#desk.no-world #cr-say {
+  position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; white-space: normal;
+}
+#desk.no-world .cr-ring { display: none; }
+
+/* ── the corners share one voice ─────────────────────────────────────────── */
+#desk .micro {
+  font: 500 max(11px, calc(11px * var(--u)))/1.3 var(--cr-mono);
+  letter-spacing: .18em; text-transform: uppercase; color: var(--cr-dim);
+}
+#desk.ice .micro { color: var(--cr-ice-dim); }
+#desk button { font: inherit; color: inherit; }
+#desk .cr-menu button:focus-visible,
+#desk .cr-promise:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; border-radius: 6px; box-shadow: none; }
+
+/* ── the HUD: the weather, the clock, the date ───────────────────────────── */
+#desk .cr-hud {
+  position: absolute; z-index: 3; right: calc(44px * var(--u)); top: calc(38px * var(--u));
+  text-align: right; pointer-events: none; isolation: isolate; color: var(--cr-fg);
+}
+#desk .cr-hud::before {
+  content: ""; position: absolute; z-index: -1; inset: calc(-56px * var(--u)) calc(-80px * var(--u)); border-radius: 50%;
+  pointer-events: none; background: radial-gradient(closest-side, rgba(3, 6, 14, .34), rgba(3, 6, 14, .14) 60%, transparent);
+}
+#desk .cr-hud .micro { font-size: max(11px, calc(12px * var(--u))); letter-spacing: .2em; margin-right: -.2em; text-shadow: 0 1px 8px rgba(0, 0, 0, .5); }
+#desk .cr-clock {
+  margin-top: calc(10px * var(--u));
+  font: 300 calc(66px * var(--u))/1 var(--cr-ui); letter-spacing: .01em; font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .35);
+}
+#desk .cr-date { margin-top: calc(10px * var(--u)); }
+/* a stranger's line: how many stops, how long, where the code goes; gone after the first tick */
+#desk .cr-promise {
+  max-width: 31ch; margin: calc(22px * var(--u)) 0 0 auto;
+  font: 400 max(11px, calc(12px * var(--u)))/1.55 var(--cr-mono); letter-spacing: .02em; color: var(--cr-dim);
+  text-wrap: balance; text-shadow: 0 1px 8px rgba(0, 0, 0, .6);
+}
+#desk .cr-promise[hidden] { display: none; }
+#desk.ice .cr-hud { color: var(--cr-ice-ink); }
+#desk.ice .cr-hud::before { background: radial-gradient(closest-side, rgba(246, 248, 252, .6), rgba(246, 248, 252, .26) 60%, transparent); }
+#desk.ice .cr-hud .micro, #desk.ice .cr-promise { color: var(--cr-ice-dim); text-shadow: 0 0 10px rgba(255, 255, 255, .7); }
+#desk.ice .cr-clock { text-shadow: 0 0 22px rgba(255, 255, 255, .65); }
+
+/* ── the hidden menu: comes up with the mouse, Esc or Tab ────────────────── */
+#desk .cr-menu { position: absolute; inset: 0; z-index: 4; opacity: 0; pointer-events: none; }
+#desk .cr-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(3, 6, 14, .34), transparent 20%, transparent 70%, rgba(3, 6, 14, .5));
+}
+#desk.ice .cr-scrim { background: linear-gradient(to bottom, rgba(244, 247, 252, .5), transparent 22%, transparent 68%, rgba(244, 247, 252, .62)); }
+#desk .m { position: absolute; color: var(--cr-fg); pointer-events: none; }
+#desk .cr-menu.cr-live .m { pointer-events: auto; }
+#desk.ice .m { color: var(--cr-ice-ink); }
+
+/* top left: the mark and the four workspaces */
+#desk .m.tl { left: calc(44px * var(--u)); top: calc(38px * var(--u)); }
+#desk .brand { display: flex; align-items: center; gap: calc(14px * var(--u)); }
+#desk .brand img { display: block; width: auto; height: calc(38px * var(--u)); }
+#desk .brand span { font: 600 max(11px, calc(13px * var(--u)))/1 var(--cr-ui); letter-spacing: .56em; }
+#desk .ws { display: flex; gap: calc(18px * var(--u)); margin-top: calc(22px * var(--u)); }
+#desk .ws button {
+  margin: 0; padding: 0 0 6px; border: 0; border-bottom: 1px solid transparent; background: none; cursor: pointer;
+  font: 500 max(11px, calc(11px * var(--u)))/1 var(--cr-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--cr-faint);
+}
+#desk .ws button:hover { color: var(--cr-fg); }
+#desk .ws button.on { color: var(--cr-fg); border-bottom-color: rgba(242, 245, 250, .8); cursor: default; }
+#desk.ice .ws button { color: var(--cr-ice-faint); }
+#desk.ice .ws button:hover, #desk.ice .ws button.on { color: var(--cr-ice-ink); }
+#desk.ice .ws button.on { border-bottom-color: rgba(24, 32, 43, .7); }
+
+/* bottom left: tonight, the week, and what is waiting */
+#desk .m.bl { left: calc(44px * var(--u)); bottom: calc(40px * var(--u)); }
+#desk .cr-tonight { display: flex; align-items: center; gap: calc(14px * var(--u)); margin-top: calc(9px * var(--u)); }
+#desk .cr-tonight b { font: 300 calc(26px * var(--u))/1 var(--cr-ui); font-variant-numeric: tabular-nums; color: inherit; }
+#desk .cr-tonight .bar { display: block; width: calc(140px * var(--u)); height: 2px; border-radius: 2px; overflow: hidden; background: rgba(242, 245, 250, .2); }
+#desk .cr-tonight .bar i { display: block; width: 0; height: 100%; background: rgba(242, 245, 250, .92); }
+#desk.ice .cr-tonight .bar { background: rgba(24, 32, 43, .16); }
+#desk.ice .cr-tonight .bar i { background: var(--cr-ice-ink); }
+#desk .cr-nights { margin-top: calc(14px * var(--u)); }
+#desk .week { display: flex; gap: calc(13px * var(--u)); margin-top: calc(11px * var(--u)); }
+#desk .week div {
+  display: flex; flex-direction: column; align-items: center; gap: calc(7px * var(--u));
+  font: 500 max(11px, calc(11px * var(--u)))/1 var(--cr-mono); color: var(--cr-dim);
+}
+#desk .week i { display: block; width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(242, 245, 250, .5); }
+#desk .week i.on { background: rgba(242, 245, 250, .95); border-color: transparent; }
+#desk .week i.now { outline: 1px solid rgba(242, 245, 250, .5); outline-offset: 3px; }
+#desk.ice .week div { color: var(--cr-ice-dim); }
+#desk.ice .week i { border-color: rgba(24, 32, 43, .45); }
+#desk.ice .week i.on { background: var(--cr-ice-ink); border-color: transparent; }
+#desk.ice .week i.now { outline-color: rgba(24, 32, 43, .45); }
+#desk .cr-notes { display: flex; flex-wrap: wrap; gap: 6px calc(16px * var(--u)); margin-top: calc(14px * var(--u)); }
+#desk .cr-notes:not(:has(.cr-link:not([hidden]))) { display: none; }
+#desk .cr-link {
+  margin: 0; padding: 2px 0; border: 0; background: none; cursor: pointer;
+  font: 500 max(11px, calc(11px * var(--u)))/1.3 var(--cr-mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--cr-fg); text-decoration: underline; text-decoration-color: rgba(242, 245, 250, .35); text-underline-offset: 4px;
+}
+#desk .cr-link:hover { text-decoration-color: currentColor; }
+#desk .cr-link[hidden] { display: none; }
+#desk.ice .cr-link { color: var(--cr-ice-ink); text-decoration-color: rgba(24, 32, 43, .35); }
+
+/* bottom right: sound, Night or Ice, and the gear */
+#desk .m.br { right: calc(44px * var(--u)); bottom: calc(40px * var(--u)); text-align: right; }
+#desk .icons { display: flex; gap: calc(10px * var(--u)); justify-content: flex-end; align-items: center; }
+#desk .icons > .ic, #desk .icons > .tog {
+  display: flex; align-items: center; justify-content: center;
+  height: calc(34px * var(--u)); min-width: calc(34px * var(--u)); margin: 0; padding: 0;
+  border-radius: 999px; border: 1px solid rgba(242, 245, 250, .3); background: rgba(8, 12, 20, .22); color: var(--cr-fg);
+}
+#desk .icons > .ic { cursor: pointer; }
+#desk .icons > .ic:hover, #desk .icons > .tog:hover { border-color: rgba(242, 245, 250, .6); }
+#desk .icons svg { display: block; width: calc(15px * var(--u)); height: calc(15px * var(--u)); }
+#desk #cr-snd .x { display: none; }
+#desk #cr-snd.off .x { display: inline; }
+#desk #cr-snd.off .w { display: none; }
+#desk #cr-snd.off { color: var(--cr-faint); }
+#desk #cr-gear[aria-expanded="true"] { border-color: rgba(242, 245, 250, .7); }
+#desk .icons .tog { padding: 3px; gap: 2px; }
+#desk .tog button {
+  display: flex; align-items: center; justify-content: center; margin: 0; padding: 0; border: 0;
+  width: calc(30px * var(--u)); height: calc(26px * var(--u)); border-radius: 999px;
+  background: none; color: var(--cr-faint); cursor: pointer;
+}
+#desk .tog button[aria-pressed="true"] { background: rgba(242, 245, 250, .9); color: #0b0f17; cursor: default; }
+#desk.ice .icons > .ic, #desk.ice .icons > .tog { border-color: rgba(24, 32, 43, .3); color: var(--cr-ice-ink); background: rgba(255, 255, 255, .35); }
+#desk.ice .icons > .ic:hover, #desk.ice .icons > .tog:hover { border-color: rgba(24, 32, 43, .6); }
+#desk.ice #cr-snd.off { color: var(--cr-ice-faint); }
+#desk.ice .tog button { color: var(--cr-ice-faint); }
+#desk.ice .tog button[aria-pressed="true"] { background: var(--cr-ice-ink); color: #fff; }
+#desk .hint { margin-top: calc(12px * var(--u)); }
+
+/* the gear's popover: motion, the keys, and the way to every setting */
+#desk .pop {
+  position: absolute; right: 0; bottom: calc(100% + 14px); display: block;
+  min-width: calc(260px * var(--u)); padding: calc(14px * var(--u)) calc(16px * var(--u)); border-radius: 14px; text-align: left;
+  background: rgba(8, 12, 20, .66); border: 1px solid rgba(242, 245, 250, .14);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+#desk .pop[hidden] { display: none; }
+#desk.ice .pop { background: rgba(250, 251, 253, .76); border-color: rgba(24, 32, 43, .14); }
+#desk .seg { display: flex; gap: 4px; margin: calc(8px * var(--u)) 0 calc(14px * var(--u)); padding: 3px; border-radius: 999px; border: 1px solid rgba(242, 245, 250, .24); }
+#desk .seg button {
+  flex: 1; margin: 0; padding: calc(7px * var(--u)) 0; border: 0; border-radius: 999px; background: none; cursor: pointer; text-align: center;
+  font: 500 max(11px, calc(11px * var(--u)))/1 var(--cr-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--cr-dim);
+}
+#desk .seg button[aria-pressed="true"] { background: rgba(242, 245, 250, .9); color: #0b0f17; }
+#desk.ice .seg { border-color: rgba(24, 32, 43, .22); }
+#desk.ice .seg button { color: var(--cr-ice-dim); }
+#desk.ice .seg button[aria-pressed="true"] { background: var(--cr-ice-ink); color: #fff; }
+#desk .cr-rm { margin: calc(-6px * var(--u)) 0 calc(12px * var(--u)); max-width: 30ch; letter-spacing: .08em; text-transform: none; line-height: 1.5; }
+#desk .cr-rm[hidden] { display: none; }
+#desk .keys { display: flex; flex-direction: column; gap: 6px; letter-spacing: .12em; }
+#desk .keys b { display: inline-block; min-width: 4.6em; font-weight: 500; color: var(--cr-fg); }
+#desk.ice .keys b { color: var(--cr-ice-ink); }
+#desk .cr-all { margin-top: calc(14px * var(--u)); }
+
+/* ── the curtains: the desk's own fade, and the leap into a lesson ───────── */
+#desk .cr-fade { position: absolute; inset: 0; z-index: 9; background: #000; pointer-events: none; }
+#leap { position: fixed; inset: 0; z-index: 95; background: #000; opacity: 0; pointer-events: none; }
+#leap.on { pointer-events: auto; }
+
+/* ── the start-up is a black curtain: the desk fades in under it ─────────── */
+#boot { background: #05070c; transition: opacity 400ms linear, visibility 0s linear 400ms; }
+body[data-ws="1"]:not(.booting) #boot { transition: none; }
+#boot .boot-in { width: min(560px, 86vw); text-align: center; }
+#boot-log { min-height: 0; color: rgba(228, 234, 244, .66); font: 500 12px/1.8 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .08em; }
+
+/* ── small screens keep working: the corners stack instead of meeting ────── */
+@media (max-width: 760px) {
+  #desk .m.tl, #desk .m.bl { left: 20px; }
+  #desk .m.br { right: 20px; }
+  #desk .cr-hud { right: 20px; }
+  #desk .m.br { bottom: auto; top: calc(38px * var(--u) + 140px); }
+  #desk .pop { bottom: auto; top: calc(100% + 12px); }
+  #desk .hint { display: none; }
+  #desk .cr-promise { max-width: 24ch; }
+}
+@media (max-height: 560px) {
+  #desk .cr-promise { display: none; }
+}
+
+@media print {
+  #desk.cr, #leap { display: none !important; }
+}

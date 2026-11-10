@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LuauOS — shell studies</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23ffb15f'/%3E%3Ctext x='8' y='12' text-anchor='middle' font-family='monospace' font-size='10' font-weight='700' fill='%23130d08'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="preview.css">
+</head>
+<body data-shell="hypr">
+
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4.5 5.5A2.5 2.5 0 0 1 7 3h13v18H7a2.5 2.5 0 0 1-2.5-2.5z"/><path d="M4.5 18.5A2.5 2.5 0 0 1 7 16h13"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8 9 1.5 1.5L12 8M8 14h8M8 17h5"/></symbol>
+  <symbol id="i-term" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z"/><path d="M16 3v4h3M8 12h8M8 16h6"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="7" cy="17" r="2"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h5l2 2h8A1.5 1.5 0 0 1 21 8.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m4 11 8-7 8 7v9a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v5M14 11v5"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></symbol>
+  <symbol id="i-mem" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="1.5"/><path d="M7 7V4M11 7V4M15 7V4M19 7V4M7 17v3M11 17v3M15 17v3M19 17v3"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M4 9a12 12 0 0 1 16 0M7 12.5a7.8 7.8 0 0 1 10 0M10 15.8a3.3 3.3 0 0 1 4 0"/><circle cx="12" cy="19" r=".9" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-vol" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a5 5 0 0 1 0 6M18.6 6.4a8.2 8.2 0 0 1 0 11.2"/></symbol>
+  <symbol id="i-bat" viewBox="0 0 24 24"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10v4"/><path d="M6 10h6v4H6z" fill="currentColor" stroke="none" opacity=".65"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v8"/><path d="M7 6a8 8 0 1 0 10 0"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 10a6 6 0 0 1 12 0v5l2 2H4l2-2z"/><path d="M10 19a2.4 2.4 0 0 0 4 0"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.6A8.1 8.1 0 0 1 9.4 4 8.6 8.6 0 1 0 20 14.6z"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></g></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M3 17 8 12l3 3 4-7 6 6"/></symbol>
+  <symbol id="i-disc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/></symbol>
+</svg>
+
+<nav class="preview-ui" aria-label="Shell previews">
+  <span class="pv-label">shell studies</span>
+  <button type="button" data-pv="hypr"><b>01</b> hypr</button>
+  <button type="button" data-pv="gnome"><b>02</b> gnome</button>
+  <button type="button" data-pv="kde"><b>03</b> plasma</button>
+  <button type="button" data-pv="noct"><b>04</b> noctalia</button>
+</nav>
+
+<main class="stage">
+
+  <!-- ─────────────────────────────────────────────────────────────
+       01 · HYPRLAND / CUSTOM TILING
+       ───────────────────────────────────────────────────────────── -->
+  <section class="shell shell-hypr is-active" data-preview-panel="hypr" aria-label="Hyprland-style tiling desktop">
+    <div class="wall"></div><div class="wash"></div><div class="grain"></div>
+
+    <header class="hypr-bar">
+      <div class="hb-left">
+        <span class="seal">L</span>
+        <span class="brand">luauos</span>
+        <span class="hair"></span>
+        <div class="ws-row" aria-label="Workspaces">
+          <span class="ws is-on"><span class="ws-n">1</span><span class="ws-name">desk</span></span>
+          <span class="ws"><span class="ws-n">2</span></span>
+          <span class="ws"><span class="ws-n">3</span></span>
+          <span class="ws"><span class="ws-n">4</span></span>
+        </div>
+      </div>
+      <div class="hb-center"><span class="live-dot"></span><span class="hb-title">desk</span><span class="hb-path">~/luauos</span></div>
+      <div class="hb-right">
+        <span class="metric"><svg class="ico"><use href="#i-cpu"/></svg>12%</span>
+        <span class="metric"><svg class="ico"><use href="#i-mem"/></svg>3.1g</span>
+        <span class="metric"><svg class="ico"><use href="#i-wifi"/></svg></span>
+        <span class="metric"><svg class="ico"><use href="#i-vol"/></svg>62</span>
+        <span class="metric"><svg class="ico"><use href="#i-bat"/></svg>92%</span>
+        <span class="clock"><b>22:47</b><span>tue 20 oct</span></span>
+      </div>
+    </header>
+
+    <div class="hypr-foot">
+      <span>tty1 · wayland</span><span class="sep">/</span><span>workspace 1/4</span>
+      <span class="grow"></span>
+      <span><kbd>super</kbd> <span class="sep">/</span> launcher</span>
+      <span class="sep">·</span>
+      <span>luauos 0.4</span>
+    </div>
+
+    <nav class="hypr-dock" aria-label="Applications">
+      <button class="dock-btn is-on" type="button" data-tip="desk" aria-label="Desk"><svg class="ico"><use href="#i-grid"/></svg></button>
+      <button class="dock-btn" type="button" data-tip="course" aria-label="Course"><svg class="ico"><use href="#i-book"/></svg></button>
+      <button class="dock-btn" type="button" data-tip="session" aria-label="Session"><svg class="ico"><use href="#i-file"/></svg></button>
+      <button class="dock-btn" type="button" data-tip="runbook" aria-label="Runbook"><svg class="ico"><use href="#i-check"/></svg></button>
+      <button class="dock-btn" type="button" data-tip="manual" aria-label="Manual"><svg class="ico"><use href="#i-term"/></svg></button>
+      <button class="dock-btn" type="button" data-tip="journal" aria-label="Journal"><svg class="ico"><use href="#i-note"/></svg></button>
+      <span class="dock-sep" aria-hidden="true"></span>
+      <button class="dock-btn" type="button" data-tip="settings" aria-label="Settings"><svg class="ico"><use href="#i-sliders"/></svg></button>
+      <button class="dock-btn" type="button" data-tip="launcher" aria-label="Launcher"><svg class="ico"><use href="#i-search"/></svg></button>
+    </nav>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────────────
+       02 · GNOME / ADWAITA
+       ───────────────────────────────────────────────────────────── -->
+  <section class="shell shell-gnome" data-preview-panel="gnome" aria-label="GNOME-style desktop">
+    <div class="wall"></div><div class="wash"></div><div class="grain"></div>
+
+    <header class="gnome-bar">
+      <button class="gnome-activities" type="button">Activities</button>
+      <div class="gnome-clock">tue 20 oct <b>22:47</b></div>
+      <div class="gnome-status">
+        <svg class="ico"><use href="#i-wifi"/></svg>
+        <svg class="ico"><use href="#i-vol"/></svg>
+        <svg class="ico"><use href="#i-bat"/></svg>
+        <span class="gnome-quick"><svg class="ico"><use href="#i-chev"/></svg></span>
+      </div>
+    </header>
+
+    <div class="gnome-hint"><kbd>super</kbd> overview</div>
+
+    <nav class="gnome-dock" aria-label="Applications">
+      <button class="gnome-app show-apps" type="button" aria-label="Show applications"><svg class="ico"><use href="#i-dots"/></svg></button>
+      <span class="gnome-sep" aria-hidden="true"></span>
+      <button class="gnome-app app-course" type="button" aria-label="Course"><svg class="ico"><use href="#i-book"/></svg></button>
+      <button class="gnome-app app-session" type="button" aria-label="Session"><svg class="ico"><use href="#i-file"/></svg></button>
+      <button class="gnome-app app-runbook" type="button" aria-label="Runbook"><svg class="ico"><use href="#i-check"/></svg></button>
+      <button class="gnome-app app-manual" type="button" aria-label="Manual"><svg class="ico"><use href="#i-term"/></svg></button>
+      <button class="gnome-app app-journal" type="button" aria-label="Journal"><svg class="ico"><use href="#i-note"/></svg></button>
+      <button class="gnome-app app-settings" type="button" aria-label="Settings"><svg class="ico"><use href="#i-sliders"/></svg></button>
+    </nav>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────────────
+       03 · KDE PLASMA
+       ───────────────────────────────────────────────────────────── -->
+  <section class="shell shell-kde" data-preview-panel="kde" aria-label="KDE Plasma-style desktop">
+    <div class="wall"></div><div class="wash"></div><div class="grain"></div>
+
+    <div class="kde-icons" aria-label="Desktop icons">
+      <button class="kde-icon" type="button"><span class="kde-icon-art"><svg class="ico"><use href="#i-home"/></svg></span><span>home</span></button>
+      <button class="kde-icon" type="button"><span class="kde-icon-art folder"><svg class="ico"><use href="#i-folder"/></svg></span><span>course</span></button>
+      <button class="kde-icon" type="button"><span class="kde-icon-art"><svg class="ico"><use href="#i-cube"/></svg></span><span>studio</span></button>
+      <button class="kde-icon" type="button"><span class="kde-icon-art file"><svg class="ico"><use href="#i-file"/></svg></span><span>readme.md</span></button>
+    </div>
+
+    <div class="kde-clock" aria-label="Desktop clock">
+      <span class="kde-date">tue · 20 october</span>
+      <b>22:47</b>
+      <span class="kde-weather">clear <i></i> 18°</span>
+    </div>
+
+    <footer class="kde-panel">
+      <button class="kde-menu" type="button" aria-label="Application launcher">
+        <span class="seal small">L</span><span>apps</span>
+      </button>
+      <span class="kde-vr" aria-hidden="true"></span>
+      <div class="kde-pager" aria-label="Workspaces">
+        <button class="is-on" type="button" aria-label="Workspace 1">1</button>
+        <button type="button" aria-label="Workspace 2">2</button>
+        <button type="button" aria-label="Workspace 3">3</button>
+        <button type="button" aria-label="Workspace 4">4</button>
+      </div>
+      <div class="kde-tasks">
+        <button class="kde-app" type="button" aria-label="Course"><svg class="ico"><use href="#i-book"/></svg></button>
+        <button class="kde-app" type="button" aria-label="Session"><svg class="ico"><use href="#i-file"/></svg></button>
+        <button class="kde-app" type="button" aria-label="Runbook"><svg class="ico"><use href="#i-check"/></svg></button>
+        <button class="kde-app" type="button" aria-label="Manual"><svg class="ico"><use href="#i-term"/></svg></button>
+        <button class="kde-app" type="button" aria-label="Journal"><svg class="ico"><use href="#i-note"/></svg></button>
+        <span class="kde-empty">no windows</span>
+      </div>
+      <div class="kde-tray">
+        <svg class="ico"><use href="#i-bell"/></svg>
+        <svg class="ico"><use href="#i-wifi"/></svg>
+        <svg class="ico"><use href="#i-vol"/></svg>
+        <svg class="ico"><use href="#i-bat"/></svg>
+        <span class="kde-tray-clock"><b>22:47</b><span>tue 20</span></span>
+        <span class="kde-chev"><svg class="ico"><use href="#i-chev"/></svg></span>
+      </div>
+    </footer>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────────────
+       04 · NOCTALIA / HUD
+       ───────────────────────────────────────────────────────────── -->
+  <section class="shell shell-noct" data-preview-panel="noct" aria-label="Noctalia-style HUD desktop">
+    <div class="wall"></div><div class="wash"></div><div class="grain"></div>
+
+    <header class="noct-bar">
+      <div class="noct-left">
+        <span class="seal">L</span>
+        <span class="brand">luauos</span>
+        <span class="noct-mode">noctalia</span>
+        <div class="noct-ws" aria-label="Workspaces">
+          <button class="is-on" type="button" aria-label="Workspace 1"></button>
+          <button type="button" aria-label="Workspace 2"></button>
+          <button type="button" aria-label="Workspace 3"></button>
+          <button type="button" aria-label="Workspace 4"></button>
+        </div>
+      </div>
+      <div class="noct-center">tue · 20 oct</div>
+      <div class="noct-right">
+        <span class="metric"><svg class="ico"><use href="#i-cpu"/></svg>12%</span>
+        <span class="metric"><svg class="ico"><use href="#i-mem"/></svg>3.1g</span>
+        <span class="metric"><svg class="ico"><use href="#i-wifi"/></svg></span>
+        <span class="metric"><svg class="ico"><use href="#i-moon"/></svg></span>
+        <span class="clock"><b>22:47</b></span>
+      </div>
+    </header>
+
+    <nav class="noct-dock" aria-label="Applications">
+      <button class="nd-btn is-on" type="button" data-tip="desk" aria-label="Desk"><svg class="ico"><use href="#i-grid"/></svg></button>
+      <button class="nd-btn" type="button" data-tip="course" aria-label="Course"><svg class="ico"><use href="#i-book"/></svg></button>
+      <button class="nd-btn" type="button" data-tip="session" aria-label="Session"><svg class="ico"><use href="#i-file"/></svg></button>
+      <button class="nd-btn" type="button" data-tip="runbook" aria-label="Runbook"><svg class="ico"><use href="#i-check"/></svg></button>
+      <button class="nd-btn" type="button" data-tip="manual" aria-label="Manual"><svg class="ico"><use href="#i-term"/></svg></button>
+      <button class="nd-btn" type="button" data-tip="journal" aria-label="Journal"><svg class="ico"><use href="#i-note"/></svg></button>
+      <span class="nd-sep" aria-hidden="true"></span>
+      <button class="nd-btn" type="button" data-tip="settings" aria-label="Settings"><svg class="ico"><use href="#i-sliders"/></svg></button>
+      <span class="grow"></span>
+      <button class="nd-btn" type="button" data-tip="power" aria-label="Power"><svg class="ico"><use href="#i-power"/></svg></button>
+    </nav>
+
+    <aside class="noct-hud" aria-label="System and session">
+      <section class="hud-card hud-system">
+        <div class="hud-head"><span>system</span><span class="hud-live">live</span></div>
+        <div class="hud-main">
+          <div class="ring">
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+              <circle class="ring-bg" cx="32" cy="32" r="26"/>
+              <circle class="ring-fg" cx="32" cy="32" r="26"/>
+            </svg>
+            <b>12<small>%</small></b>
+          </div>
+          <div class="hud-stats">
+            <div><span>cpu</span><b>12%</b></div>
+            <div><span>memory</span><b>3.1 / 8g</b></div>
+            <div><span>network</span><b>1.2m</b></div>
+          </div>
+        </div>
+        <div class="hud-bars">
+          <div class="hud-bar"><span>disk</span><i><b style="width:42%"></b></i><em>42</em></div>
+          <div class="hud-bar"><span>volume</span><i><b style="width:62%"></b></i><em>62</em></div>
+        </div>
+      </section>
+
+      <section class="hud-card hud-now">
+        <div class="hud-head"><span>now</span><span>1 / 4</span></div>
+        <p class="hud-kicker">session 1.0 · 10 min</p>
+        <h2>Set up<br><em>Roblox Studio.</em></h2>
+        <p class="hud-note">four goals · one written page</p>
+        <div class="hud-progress"><span></span></div>
+      </section>
+    </aside>
+
+    <div class="noct-foot">
+      <span>wayland · 1440 × 900</span>
+      <span class="sep">/</span>
+      <span>workspace 1 / desk</span>
+      <span class="grow"></span>
+      <span><kbd>super</kbd> <span class="sep">/</span> launcher</span>
+      <span class="sep">·</span>
+      <span>quiet hours</span>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const clean = params.get('clean') === '1';
+  if (clean) document.body.classList.add('clean');
+
+  const panels = [...document.querySelectorAll('[data-preview-panel]')];
+  const buttons = [...document.querySelectorAll('[data-pv]')];
+
+  function show(id) {
+    if (!panels.some(p => p.dataset.previewPanel === id)) id = 'hypr';
+    panels.forEach(p => p.classList.toggle('is-active', p.dataset.previewPanel === id));
+    buttons.forEach(b => b.classList.toggle('is-on', b.dataset.pv === id));
+    document.body.dataset.shell = id;
+    if (!clean) {
+      const next = new URLSearchParams(location.search);
+      next.set('shell', id);
+      history.replaceState(null, '', `${location.pathname}?${next}`);
+    }
+  }
+
+  buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.pv)));
+  show(params.get('shell') || 'hypr');
+
+  addEventListener('keydown', event => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const id = { 1: 'hypr', 2: 'gnome', 3: 'kde', 4: 'noct' }[event.key];
+    if (id) show(id);
+  });
+</script>
+</body>
+</html>

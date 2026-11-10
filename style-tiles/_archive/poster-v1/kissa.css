@@ -1,0 +1,993 @@
+/* ════════════════════════════════════════════════════════════════════════
+   LUAUOS · YORU NO KISSA
+   The warm direction: a late-night bookshop, washi paper, lacquer ink, one
+   vermilion signal. The living scene leads; the next stop is a quiet room
+   at the edge of it. No dashboard grid, no HUD furniture.
+   ════════════════════════════════════════════════════════════════════════ */
+
+body[data-direction="kissa"] {
+  --bg: #070c11;
+  --fg: #f3ead9;
+  --fg-2: #c9c0b0;
+  --dim: #8d887e;
+  --line: rgba(243, 234, 217, .15);
+  --line-strong: rgba(243, 234, 217, .28);
+  --accent: #ff5a4e;
+  --accent-soft: rgba(255, 90, 78, .13);
+  --accent-2: #f2b56b;
+  --accent-3: #5ee0d1;
+  --accent-ink: #0b0f14;
+  --hero-fg: #f3ead9;
+  --hero-2: #c9c0b0;
+  --hero-dim: #8d887e;
+  --hero-line: rgba(243, 234, 217, .15);
+  --panel: #0b1218;
+  --panel-2: #101a22;
+  --paper: #f3ead9;
+  --sheet-bg: #0c1117;
+  --sheet-fg: #f3ead9;
+  --sheet-2: #c9c0b0;
+  --sheet-dim: #8d887e;
+  --sheet-line: rgba(243, 234, 217, .15);
+  --code-bg: #070b10;
+  --line-bg: #080d12;
+  --chrome-bg: linear-gradient(180deg, rgba(7, 12, 17, .96), rgba(7, 12, 17, .68));
+  --chrome-fg: #f3ead9;
+  --chrome-dim: #9a9386;
+  --chrome-line: rgba(243, 234, 217, .13);
+  --chrome-blur: blur(10px);
+  --scene-a: url("../assets/walls/bookshop.webp");
+  --scene-b: url("../assets/walls/fuji.webp");
+  --scene-a-filter: saturate(1.14) brightness(.74) contrast(1.06);
+  --scene-b-filter: saturate(1.02) brightness(.98) contrast(.98) sepia(.04);
+  --scene-grade:
+    radial-gradient(circle at 78% 52%, rgba(242, 181, 107, .18), transparent 31%),
+    radial-gradient(circle at 19% 38%, rgba(94, 224, 209, .07), transparent 36%),
+    linear-gradient(90deg, rgba(5, 10, 15, .88) 0%, rgba(5, 10, 15, .64) 32%, rgba(5, 10, 15, .1) 62%, rgba(5, 10, 15, .18) 100%),
+    linear-gradient(0deg, rgba(5, 10, 15, .82) 0%, rgba(5, 10, 15, .04) 46%, rgba(5, 10, 15, .18) 100%);
+  --scene-vignette: radial-gradient(ellipse at 60% 42%, transparent 28%, rgba(2, 6, 9, .58) 100%);
+  --grain: .14;
+  --rain-opacity: .18;
+  --wipe-bg: #f3ead9;
+}
+
+body[data-direction="kissa"][data-mood="asa"] {
+  --bg: #f3ead9;
+  --fg: #1b1a18;
+  --fg-2: #4d4841;
+  --dim: #7d7466;
+  --line: rgba(27, 26, 24, .15);
+  --line-strong: rgba(27, 26, 24, .26);
+  --accent: #b94233;
+  --accent-soft: rgba(185, 66, 51, .11);
+  --accent-2: #8a5a2b;
+  --accent-3: #2f6b61;
+  --accent-ink: #f7eddc;
+  --hero-fg: #1b1a18;
+  --hero-2: #4d4841;
+  --hero-dim: #7d7466;
+  --hero-line: rgba(27, 26, 24, .15);
+  --panel: #f7eddc;
+  --panel-2: #efe2cd;
+  --paper: #f7eddc;
+  --sheet-bg: #f6ecda;
+  --sheet-fg: #1b1a18;
+  --sheet-2: #4d4841;
+  --sheet-dim: #7d7466;
+  --sheet-line: rgba(27, 26, 24, .15);
+  --line-bg: #f4ead8;
+  --chrome-bg: linear-gradient(180deg, rgba(247, 238, 224, .97), rgba(247, 238, 224, .8));
+  --chrome-fg: #1b1a18;
+  --chrome-dim: #746b5e;
+  --chrome-line: rgba(27, 26, 24, .14);
+  --chrome-blur: blur(10px);
+  --scene-grade:
+    radial-gradient(circle at 78% 48%, rgba(255, 214, 168, .16), transparent 34%),
+    linear-gradient(90deg, rgba(245, 235, 219, .95) 0%, rgba(245, 235, 219, .8) 35%, rgba(245, 235, 219, .1) 70%, rgba(245, 235, 219, .03) 100%),
+    linear-gradient(0deg, rgba(245, 235, 219, .74) 0%, rgba(245, 235, 219, .03) 55%, rgba(245, 235, 219, .14) 100%);
+  --scene-vignette: radial-gradient(ellipse at 62% 44%, transparent 34%, rgba(70, 50, 30, .22) 100%);
+  --grain: .09;
+  --rain-opacity: .04;
+  --wipe-bg: #0a0e13;
+}
+
+/* ── the chrome wears the mood ─────────────────────────────────────────── */
+body[data-direction="kissa"] .brand-mark {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-style: italic;
+  font-size: 20px;
+}
+
+body[data-direction="kissa"] .brand-name { letter-spacing: .22em; }
+body[data-direction="kissa"] .brand-sub { letter-spacing: .2em; }
+body[data-direction="kissa"] .topbar-clock { font-size: 11px; font-weight: 700; }
+body[data-direction="kissa"] .topbar-rank { letter-spacing: .14em; }
+
+body[data-direction="kissa"] .mood-btn[aria-pressed="true"] {
+  box-shadow: 0 0 18px -4px var(--accent);
+}
+
+body[data-direction="kissa"] .view-tab[aria-current="page"]::after {
+  height: 2px;
+  box-shadow: 0 0 12px var(--accent);
+}
+
+body[data-direction="kissa"] .hud-rule {
+  background: repeating-linear-gradient(90deg, var(--chrome-line) 0 3px, transparent 3px 8px);
+}
+
+/* ── desk ───────────────────────────────────────────────────────────────── */
+body[data-direction="kissa"] .view-desk {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 370px;
+  gap: clamp(28px, 4vw, 62px);
+  align-items: center;
+  padding: 32px var(--gutter) 56px;
+  overflow: hidden;
+}
+
+body[data-direction="kissa"] .desk-left {
+  position: relative;
+  z-index: 2;
+  max-width: 790px;
+  color: var(--hero-fg);
+}
+
+body[data-direction="kissa"] .eyebrow {
+  color: var(--accent);
+  letter-spacing: .2em;
+}
+
+body[data-direction="kissa"] .display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 18px 0 22px;
+  color: var(--hero-fg);
+  font-size: clamp(72px, 9vw, 132px);
+  line-height: .77;
+  letter-spacing: -.038em;
+  text-shadow: 0 12px 50px rgba(0, 0, 0, .34);
+}
+
+body[data-direction="kissa"] .display span:nth-child(2) {
+  margin-left: .14em;
+  color: var(--accent-2);
+}
+
+body[data-direction="kissa"] .display span:nth-child(3) {
+  margin-top: .08em;
+  font-size: .52em;
+  line-height: 1.02;
+  letter-spacing: -.022em;
+}
+
+body[data-direction="kissa"] .lede {
+  max-width: 36ch;
+  margin: 0;
+  color: var(--hero-2);
+  font-size: 20px;
+  line-height: 1.45;
+}
+
+body[data-direction="kissa"] .desk-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+body[data-direction="kissa"] .btn-primary,
+body[data-direction="kissa"] .btn-quiet {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
+body[data-direction="kissa"] .btn-primary {
+  padding: 13px 18px;
+  box-shadow: 0 12px 32px -14px var(--accent);
+}
+
+body[data-direction="kissa"] .btn-quiet {
+  color: var(--hero-fg);
+  border-color: var(--hero-line);
+}
+
+body[data-direction="kissa"] .btn-quiet:hover { border-color: var(--accent); }
+
+body[data-direction="kissa"] .desk-stats {
+  display: flex;
+  gap: 34px;
+  width: fit-content;
+  margin-top: 32px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hero-line);
+  color: var(--hero-dim);
+}
+
+body[data-direction="kissa"] .desk-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+body[data-direction="kissa"] .desk-stats b {
+  color: var(--hero-fg);
+  font-family: var(--serif);
+  font-size: 29px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+body[data-direction="kissa"] .desk-stats span {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* ── the next stop is one quiet room, not a widget ─────────────────────── */
+body[data-direction="kissa"] .next-card {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  padding: 25px 24px 20px;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+  box-shadow: 0 44px 90px -48px rgba(0, 0, 0, .9);
+  color: var(--hero-fg);
+}
+
+body[data-direction="kissa"] .next-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 48px;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 18px var(--accent);
+}
+
+body[data-direction="kissa"] .next-card::after {
+  content: '';
+  position: absolute;
+  right: 13px;
+  bottom: 13px;
+  width: 1px;
+  height: 28px;
+  background: var(--accent);
+  opacity: .45;
+}
+
+body[data-direction="kissa"] .card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+body[data-direction="kissa"] .card-kicker {
+  margin: 4px 0 0;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .card-seal {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .04em;
+  transform: rotate(3deg);
+  box-shadow: 0 0 26px -10px var(--accent);
+}
+
+body[data-direction="kissa"] .next-card h2 {
+  margin: 16px 0 14px;
+  color: var(--hero-fg);
+  font-family: var(--serif);
+  font-size: 52px;
+  font-weight: 400;
+  line-height: .86;
+  letter-spacing: -.025em;
+}
+
+body[data-direction="kissa"] .next-card h2 em { color: var(--accent-2); }
+
+body[data-direction="kissa"] .card-copy {
+  max-width: 29ch;
+  margin: 0 0 22px;
+  color: var(--hero-2);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+body[data-direction="kissa"] .card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--hero-line);
+  border-bottom: 1px solid var(--hero-line);
+  color: var(--hero-dim);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+body[data-direction="kissa"] .card-progress {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .08em;
+}
+
+body[data-direction="kissa"] .card-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--accent);
+  color: var(--hero-fg);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  transition: color var(--t-fast) var(--ease), gap var(--t-fast) var(--ease);
+}
+
+body[data-direction="kissa"] .card-go:hover { color: var(--accent); gap: 12px; }
+
+body[data-direction="kissa"] .scene-caption {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 18px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--hero-dim);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, .4);
+}
+
+body[data-direction="kissa"] .caption-dot { color: var(--accent); }
+body[data-direction="kissa"] .scene-label--asa,
+body[data-direction="kissa"] .scene-mood--asa { display: none; }
+body[data-direction="kissa"][data-mood="asa"] .scene-label--asa,
+body[data-direction="kissa"][data-mood="asa"] .scene-mood--asa { display: inline; }
+body[data-direction="kissa"][data-mood="asa"] .scene-label--yoru,
+body[data-direction="kissa"][data-mood="asa"] .scene-mood--yoru { display: none; }
+
+body[data-direction="kissa"] .vertical-label {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%) rotate(180deg);
+  writing-mode: vertical-rl;
+  color: var(--hero-dim);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  opacity: .7;
+}
+
+/* ── lesson: a book laid over the night ────────────────────────────────── */
+body[data-direction="kissa"] .view-lesson {
+  padding: 22px var(--gutter) 40px;
+  background: rgba(4, 8, 12, .56);
+  backdrop-filter: blur(18px) saturate(.82);
+}
+
+body[data-direction="kissa"][data-mood="asa"] .view-lesson {
+  background: rgba(245, 235, 219, .48);
+}
+
+body[data-direction="kissa"] .lesson-sheet {
+  position: relative;
+  max-width: 1220px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--sheet-bg);
+  border: 1px solid var(--sheet-line);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%);
+  box-shadow: 0 50px 110px -60px rgba(0, 0, 0, .9);
+  color: var(--sheet-fg);
+}
+
+body[data-direction="kissa"] .lesson-sheet::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 96px;
+  width: 1px;
+  background: var(--sheet-line);
+  pointer-events: none;
+}
+
+body[data-direction="kissa"] .lesson-top {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 28px;
+  background: var(--sheet-bg);
+  border-bottom: 1px solid var(--sheet-line);
+  color: var(--sheet-dim);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--sheet-fg);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  transition: color var(--t-fast) var(--ease), gap var(--t-fast) var(--ease);
+}
+
+body[data-direction="kissa"] .back-btn:hover { color: var(--sheet-accent, var(--accent)); gap: 10px; }
+
+body[data-direction="kissa"] .lesson-crumb { display: flex; align-items: center; gap: 9px; }
+body[data-direction="kissa"] .lesson-crumb span:nth-child(even) { opacity: .45; }
+body[data-direction="kissa"] .lesson-clock { color: var(--accent); }
+
+body[data-direction="kissa"] .lesson-grid {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 660px) 250px;
+  gap: 40px;
+  align-items: start;
+  justify-content: center;
+  padding: 30px 48px 64px;
+}
+
+body[data-direction="kissa"] .lesson-margin {
+  position: relative;
+  align-self: stretch;
+  min-height: 540px;
+  padding-right: 14px;
+  border-right: 1px solid var(--sheet-line);
+}
+
+body[data-direction="kissa"] .margin-vertical {
+  display: block;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: var(--sheet-dim);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .margin-page {
+  position: absolute;
+  top: 132px;
+  left: 0;
+  color: var(--accent);
+  font-family: var(--serif);
+  font-size: 92px;
+  line-height: .8;
+  opacity: .14;
+}
+
+body[data-direction="kissa"] .margin-seal {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--mono);
+  font-size: 10px;
+  transform: rotate(-2deg);
+}
+
+body[data-direction="kissa"] .lesson-eyebrow {
+  margin: 4px 0 12px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .lesson-title {
+  margin: 0 0 26px;
+  color: var(--sheet-fg);
+  font-family: var(--serif);
+  font-size: clamp(56px, 6vw, 82px);
+  font-weight: 400;
+  line-height: .84;
+  letter-spacing: -.032em;
+}
+
+body[data-direction="kissa"] .lesson-title em { color: var(--accent-2); }
+
+body[data-direction="kissa"] .lesson-lead {
+  max-width: 38ch;
+  margin: 0 0 28px;
+  padding-left: 18px;
+  border-left: 2px solid var(--accent);
+  color: var(--sheet-fg);
+  font-family: var(--serif);
+  font-size: 25px;
+  line-height: 1.26;
+}
+
+body[data-direction="kissa"] .lesson-body p {
+  max-width: 62ch;
+  margin: 0 0 18px;
+  color: var(--sheet-2);
+  font-family: var(--serif);
+  font-size: 17.5px;
+  line-height: 1.68;
+}
+
+body[data-direction="kissa"] .lesson-body strong { color: var(--sheet-fg); }
+
+body[data-direction="kissa"] .lesson-body code {
+  padding: 1px 4px;
+  border: 1px solid var(--sheet-line);
+  color: var(--sheet-fg);
+  font-family: var(--mono);
+  font-size: .82em;
+}
+
+body[data-direction="kissa"] .lesson-body h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 44px 0 16px;
+  color: var(--sheet-fg);
+  font-family: var(--serif);
+  font-size: 31px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -.015em;
+}
+
+body[data-direction="kissa"] .h2-no {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+}
+
+body[data-direction="kissa"] .code {
+  margin: 24px 0 14px;
+  overflow: hidden;
+  background: var(--code-bg);
+  border: 1px solid var(--sheet-line);
+  border-left: 2px solid var(--accent);
+  color: var(--paper);
+  box-shadow: 0 20px 42px -34px #000;
+}
+
+body[data-direction="kissa"] .code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
+  color: #8d887e;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .code-head button {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  border-bottom: 1px solid transparent;
+  transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+
+body[data-direction="kissa"] .code-head button:hover { border-color: var(--accent); }
+body[data-direction="kissa"] .code-head button.is-copied { color: var(--accent-3); }
+
+body[data-direction="kissa"] .code pre {
+  margin: 0;
+  padding: 18px 18px 20px;
+  overflow-x: auto;
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+body[data-direction="kissa"] .output {
+  margin: 0 0 22px;
+  padding: 10px 14px;
+  background: rgba(94, 224, 209, .06);
+  border-left: 2px solid var(--accent-3);
+  color: var(--sheet-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+body[data-direction="kissa"] .output-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--accent-3);
+  font-size: 7px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .output pre { margin: 0; font-family: inherit; white-space: pre-wrap; }
+
+body[data-direction="kissa"] .lesson-body blockquote {
+  max-width: 40ch;
+  margin: 26px 0;
+  padding-left: 18px;
+  border-left: 1px solid var(--accent);
+  color: var(--sheet-2);
+  font-family: var(--serif);
+  font-size: 21px;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+body[data-direction="kissa"] .lesson-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 48px;
+  padding-top: 18px;
+  border-top: 1px solid var(--sheet-line);
+}
+
+body[data-direction="kissa"] .lesson-nav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--sheet-dim);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: color var(--t-fast) var(--ease), gap var(--t-fast) var(--ease);
+}
+
+body[data-direction="kissa"] .lesson-nav button:hover { color: var(--accent); gap: 10px; }
+
+body[data-direction="kissa"] .lesson-rail {
+  position: sticky;
+  top: 52px;
+  align-self: start;
+  padding-left: 22px;
+  border-left: 1px solid var(--sheet-line);
+}
+
+body[data-direction="kissa"] .rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+body[data-direction="kissa"] .rail-kicker {
+  color: var(--sheet-dim);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .rail-count {
+  color: var(--sheet-fg);
+  font-family: var(--serif);
+  font-size: 38px;
+  line-height: 1;
+}
+
+body[data-direction="kissa"] .rail-meter {
+  height: 2px;
+  margin: 12px 0 10px;
+  background: var(--sheet-line);
+}
+
+body[data-direction="kissa"] .rail-meter i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+  transition: width .28s var(--ease);
+}
+
+body[data-direction="kissa"] .goal {
+  border-color: var(--sheet-line);
+  color: var(--sheet-fg);
+  font-family: var(--serif);
+}
+
+body[data-direction="kissa"] .goal .goal-xp { color: var(--sheet-dim); }
+body[data-direction="kissa"] .goal[aria-pressed="true"] .goal-text { opacity: .5; }
+
+body[data-direction="kissa"] .rail-note {
+  max-width: 28ch;
+  margin: 16px 0 0;
+  color: var(--sheet-dim);
+  font-family: var(--mono);
+  font-size: 7.5px;
+  line-height: 1.65;
+}
+
+body[data-direction="kissa"] .rail-next {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sheet-line);
+}
+
+body[data-direction="kissa"] .rail-next b {
+  color: var(--sheet-fg);
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.12;
+}
+
+body[data-direction="kissa"] .rail-next button {
+  align-self: flex-start;
+  margin-top: 4px;
+  color: var(--accent);
+  border-bottom: 1px solid var(--accent);
+  font-family: var(--mono);
+  font-size: 7.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .lesson-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 28px;
+  border-top: 1px solid var(--sheet-line);
+  color: var(--sheet-dim);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+/* ── the line: a departure board, not a grid of cards ──────────────────── */
+body[data-direction="kissa"] .view-line {
+  padding: 34px var(--gutter) 22px;
+  background: var(--line-bg);
+  color: var(--fg);
+}
+
+body[data-direction="kissa"] .view-line::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--noise);
+  opacity: .045;
+  mix-blend-mode: soft-light;
+}
+
+body[data-direction="kissa"] .line-head {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin-bottom: 22px;
+}
+
+body[data-direction="kissa"] .line-title {
+  margin: 12px 0 10px;
+  color: var(--fg);
+  font-family: var(--serif);
+  font-size: clamp(64px, 7vw, 102px);
+  font-weight: 400;
+  line-height: .82;
+  letter-spacing: -.035em;
+}
+
+body[data-direction="kissa"] .line-title em { color: var(--accent-2); }
+
+body[data-direction="kissa"] .line-lede {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--fg-2);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+body[data-direction="kissa"] .line-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 48px;
+  align-items: start;
+}
+
+body[data-direction="kissa"] .station-list { border-top: 1px solid var(--line); }
+
+body[data-direction="kissa"] .station {
+  position: relative;
+  padding: 8px 0;
+  border-color: var(--line);
+  transition: color var(--t-fast) var(--ease), padding var(--t-fast) var(--ease),
+              background var(--t-fast) var(--ease);
+}
+
+body[data-direction="kissa"] .station:hover {
+  padding-left: 8px;
+  background: linear-gradient(90deg, var(--accent-soft), transparent 72%);
+}
+
+body[data-direction="kissa"] .station.is-selected::before {
+  content: '';
+  position: absolute;
+  left: -13px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+  transform: translateY(-50%);
+}
+
+body[data-direction="kissa"] .station-name { font-size: 22px; }
+body[data-direction="kissa"] .station.is-selected .station-name { color: var(--accent); }
+
+body[data-direction="kissa"] .station-panel {
+  position: sticky;
+  top: 16px;
+  padding-left: 32px;
+  border-left: 1px solid var(--line);
+}
+
+body[data-direction="kissa"] .station-kicker {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .station-panel h2 {
+  margin: 12px 0 8px;
+  color: var(--fg);
+  font-family: var(--serif);
+  font-size: 58px;
+  font-weight: 400;
+  line-height: .88;
+  letter-spacing: -.025em;
+}
+
+body[data-direction="kissa"] .station-count {
+  margin: 0;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .station-first {
+  margin: 16px 0 8px;
+  color: var(--fg);
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+body[data-direction="kissa"] .station-copy {
+  max-width: 30ch;
+  margin: 0;
+  color: var(--fg-2);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+body[data-direction="kissa"] .station-panel .btn-primary {
+  margin-top: 22px;
+}
+
+body[data-direction="kissa"] .station-note {
+  margin: 12px 0 0;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+body[data-direction="kissa"] .line-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+/* ── responsive: keep the Air honest, then simplify ────────────────────── */
+@media (max-width: 1220px) {
+  body[data-direction="kissa"] .view-desk { grid-template-columns: minmax(0, 1fr) 330px; gap: 32px; }
+  body[data-direction="kissa"] .next-card h2 { font-size: 46px; }
+  body[data-direction="kissa"] .lesson-grid { grid-template-columns: 54px minmax(0, 1fr) 230px; gap: 28px; padding: 28px 36px 56px; }
+  body[data-direction="kissa"] .lesson-sheet::before { left: 80px; }
+  body[data-direction="kissa"] .line-body { grid-template-columns: minmax(0, 1fr) 300px; gap: 32px; }
+}
+
+@media (max-width: 980px) {
+  body[data-direction="kissa"] .view-desk {
+    grid-template-columns: 1fr;
+    align-content: center;
+    gap: 24px;
+    padding-top: 20px;
+  }
+  body[data-direction="kissa"] .next-card { max-width: 460px; }
+  body[data-direction="kissa"] .display { font-size: clamp(64px, 12vw, 104px); }
+  body[data-direction="kissa"] .desk-stats { margin-top: 22px; }
+  body[data-direction="kissa"] .lesson-grid { grid-template-columns: 48px minmax(0, 1fr); }
+  body[data-direction="kissa"] .lesson-rail { grid-column: 2; position: static; border-left: 0; border-top: 1px solid var(--sheet-line); padding: 20px 0 0; }
+  body[data-direction="kissa"] .line-body { grid-template-columns: 1fr; }
+  body[data-direction="kissa"] .station-panel { position: static; border-left: 0; border-top: 1px solid var(--line); padding: 20px 0 0; }
+  body[data-direction="kissa"] .scene-caption, body[data-direction="kissa"] .vertical-label { display: none; }
+}

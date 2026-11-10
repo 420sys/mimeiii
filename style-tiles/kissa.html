@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LuauOS — Kissa desktop</title>
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23b94233'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-size='22' fill='%23f8efdf'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="kissa.css">
+</head>
+<body class="desk" data-direction="kissa" data-workspace="desk">
+<div class="scene" aria-hidden="true">
+  <div class="scene-grade"></div>
+  <div class="scene-vignette"></div>
+  <div class="scene-grain"></div>
+  <div class="scene-rain"></div>
+</div>
+
+<header class="panel">
+  <div class="panel-left">
+    <button class="panel-brand" type="button" data-launch title="Open the launcher">
+      <span class="panel-seal" aria-hidden="true">L</span>
+      <span class="panel-word">LuauOS</span>
+    </button>
+    <span class="panel-divider" aria-hidden="true"></span>
+    <nav class="workspaces" aria-label="Workspaces">
+      <button class="ws" type="button" data-workspace-tab="desk" data-workspace-target="desk" aria-current="page"><span class="ws-no">1</span><span class="ws-name">desk</span></button>
+      <button class="ws" type="button" data-workspace-tab="session" data-workspace-target="session"><span class="ws-no">2</span><span class="ws-name">session</span></button>
+      <button class="ws" type="button" data-workspace-tab="line" data-workspace-target="line"><span class="ws-no">3</span><span class="ws-name">line</span></button>
+    </nav>
+  </div>
+  <div class="panel-center">
+    <span class="panel-clock" data-clock>--:--</span>
+    <span class="panel-date" data-date></span>
+  </div>
+  <div class="panel-right">
+    <span class="panel-stat"><b>0</b><span>/52</span></span>
+    <span class="panel-rank">init</span>
+    <div class="window-switch" role="group" aria-label="Open windows">
+      <button class="window-chip is-focused" type="button" data-window-focus="session" aria-label="Focus the session window" title="session"><i class="chip-dot chip-dot--session" aria-hidden="true"></i><span>S</span></button>
+      <button class="window-chip" type="button" data-window-focus="line" aria-label="Focus the line window" title="line"><i class="chip-dot chip-dot--line" aria-hidden="true"></i><span>L</span></button>
+      <button class="window-chip" type="button" data-window-focus="runbook" aria-label="Focus the runbook window" title="runbook"><i class="chip-dot chip-dot--runbook" aria-hidden="true"></i><span>R</span></button>
+    </div>
+    <button class="launch-btn" type="button" data-launch><span>launch</span><kbd>/</kbd></button>
+  </div>
+</header>
+
+<main class="desktop" aria-label="LuauOS desktop">
+  <section class="win win-session" data-window="session" aria-label="Session window: Set up Roblox Studio">
+    <header class="win-bar" data-win-bar>
+      <span class="win-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="win-app"><span class="win-seal">S</span><span class="win-app-name">session</span></span>
+      <span class="win-title"><span class="win-path">~/roblox-luau/unit-01-set-up</span><span class="win-file">1.0-set-up-roblox-studio.md</span></span>
+      <span class="win-meta">10 min</span>
+      <span class="win-controls">
+        <button class="win-min" type="button" data-window-min="session" aria-label="Minimize the session window">–</button>
+        <button class="win-max" type="button" data-workspace-target="session" aria-label="Focus the session workspace">□</button>
+      </span>
+    </header>
+    <div class="win-tabs">
+      <span class="win-tab is-active"><b>1.0</b> set up</span>
+      <button class="win-next" type="button" data-next-stop="2.1"><span>next</span> 2.1 variables <span aria-hidden="true">→</span></button>
+    </div>
+    <div class="win-body session-body">
+      <aside class="session-margin" aria-hidden="true">
+        <span class="session-vertical">SET UP / 01</span>
+        <span class="session-page-no">01</span>
+        <span class="session-seal">L</span>
+      </aside>
+      <article class="session-page">
+        <p class="session-eyebrow">STOP 1.0 <span>/</span> SET UP</p>
+        <h1 class="session-title">Set up<br><em>Roblox Studio</em></h1>
+        <p class="session-lead">Before writing any code you need somewhere to run it.</p>
+        <p>Roblox Studio is the free program every Roblox game is built in, and it is where every script in this course will run.</p>
+        <p>This lesson is only setup. By the end you will have run one script and seen it talk back to you, which is the whole loop the rest of the course is built on.</p>
+
+        <h2><span>01</span>Get Studio</h2>
+        <p>Roblox Studio runs on <strong>Windows</strong> and <strong>Mac</strong>. It does not run on phones, tablets or Chromebooks.</p>
+
+        <div class="code">
+          <div class="code-head"><span>script.lua</span><button type="button" data-copy="print(&quot;Hello world!&quot;)">copy</button></div>
+          <pre><code><span class="tok-fn">print</span><span class="tok-punc">(</span><span class="tok-str">"Hello world!"</span><span class="tok-punc">)</span></code></pre>
+        </div>
+
+        <div class="output"><span>OUTPUT</span><pre>Hello world!  -  Server - Script:1</pre></div>
+
+        <p><code>print</code> means <strong>show this in the Output window</strong>. It is how a script talks to you, and you will use it in every single lesson.</p>
+
+        <blockquote>“The grey part on the right is Studio telling you where the message came from.”</blockquote>
+
+        <h2><span>02</span>The two windows you need</h2>
+        <p>Studio has a lot of windows. For now you need two of them: <strong>Explorer</strong>, a list of everything in your game, and <strong>Output</strong>, where your scripts talk back to you.</p>
+
+        <div class="session-nav">
+          <button type="button" data-workspace-target="desk"><span aria-hidden="true">←</span> back to the desk</button>
+          <button type="button" data-workspace-target="line">walk the line <span aria-hidden="true">→</span></button>
+        </div>
+      </article>
+    </div>
+    <footer class="win-foot">
+      <span>session / 1.0</span><span>line 1</span><span>10 min</span>
+      <span class="foot-fill"></span>
+      <span data-goal-count>0 / 4</span><span>md · utf-8</span>
+    </footer>
+  </section>
+
+  <section class="win win-line" data-window="line" aria-label="Course line window">
+    <header class="win-bar" data-win-bar>
+      <span class="win-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="win-app"><span class="win-seal line-seal">L</span><span class="win-app-name">line</span></span>
+      <span class="win-title"><span class="win-path">~/roblox-luau</span><span class="win-file">the-line.md</span></span>
+      <span class="win-meta">0 / 52</span>
+      <span class="win-controls">
+        <button class="win-min" type="button" data-window-min="line" aria-label="Minimize the line window">–</button>
+        <button class="win-max" type="button" data-workspace-target="line" aria-label="Focus the line workspace">□</button>
+      </span>
+    </header>
+    <div class="win-body line-body">
+      <div class="line-head">
+        <p class="win-kicker">THE LINE / 12 UNITS / 52 STOPS</p>
+        <h2>One long <em>line.</em></h2>
+        <p class="line-lede">Twelve stretches of track. Each one ends with a build and a cheatsheet.</p>
+      </div>
+      <div class="line-list" role="group" aria-label="Units">
+        <button class="station is-selected" type="button" data-unit-node data-unit-no="01" data-unit-group="g1" data-unit-title="Set up" data-unit-note="The free program every Roblox game is built in." aria-current="true">
+          <span class="station-no">01</span><span class="station-name">Set up</span><span class="station-meta">1 stop</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="02" data-unit-group="g2" data-unit-title="Variables" data-unit-note="A game has to remember things. A variable is how a script remembers.">
+          <span class="station-no">02</span><span class="station-name">Variables</span><span class="station-meta">6 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="03" data-unit-group="g3" data-unit-title="Decisions" data-unit-note="Scripts make choices: compare, branch, combine.">
+          <span class="station-no">03</span><span class="station-name">Decisions</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="04" data-unit-group="g4" data-unit-title="Loops" data-unit-note="Do the same thing until the job is done.">
+          <span class="station-no">04</span><span class="station-name">Loops</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="05" data-unit-group="g5" data-unit-title="Functions" data-unit-note="Give a block of code a name and call it when you need it.">
+          <span class="station-no">05</span><span class="station-name">Functions</span><span class="station-meta">5 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="06" data-unit-group="g6" data-unit-title="Tables" data-unit-note="Lists and dictionaries: many values under one name.">
+          <span class="station-no">06</span><span class="station-name">Tables</span><span class="station-meta">5 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="07" data-unit-group="g7" data-unit-title="The world" data-unit-note="Find parts, move them, and make them tween.">
+          <span class="station-no">07</span><span class="station-name">The world</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="08" data-unit-group="g8" data-unit-title="Events" data-unit-note="Make things happen when the world changes.">
+          <span class="station-no">08</span><span class="station-name">Events</span><span class="station-meta">5 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="09" data-unit-group="g9" data-unit-title="Players" data-unit-note="The player list, the character, and the Humanoid.">
+          <span class="station-no">09</span><span class="station-name">Players</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="10" data-unit-group="g10" data-unit-title="Client and server" data-unit-note="Two places code runs, and the messages between them.">
+          <span class="station-no">10</span><span class="station-name">Client and server</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="11" data-unit-group="g11" data-unit-title="Organising and saving" data-unit-note="Modules, templates, errors and saved data.">
+          <span class="station-no">11</span><span class="station-name">Organising and saving</span><span class="station-meta">5 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="12" data-unit-group="g12" data-unit-title="Hero project" data-unit-note="Plan and build a real round-based game.">
+          <span class="station-no">12</span><span class="station-name">Hero project</span><span class="station-meta">5 stops</span>
+        </button>
+      </div>
+      <aside class="line-detail" data-unit-no="01">
+        <p class="win-kicker">UNIT <span data-map-no>01</span> / 12</p>
+        <h3 data-map-title>Set up</h3>
+        <p class="line-detail-count" data-map-count>1 stop</p>
+        <p class="line-detail-note" data-map-note>The free program every Roblox game is built in.</p>
+        <div class="line-stops" data-line-stops role="group" aria-label="Stops in this unit"></div>
+        <div class="line-detail-actions">
+          <button class="line-open" type="button" data-workspace-target="session">read 1.0 <span aria-hidden="true">→</span></button>
+          <p class="line-detail-hint">preview contains 1.0 only</p>
+        </div>
+      </aside>
+    </div>
+    <footer class="win-foot">
+      <span>0 / 52 stops</span><span class="foot-fill"></span>
+      <span>bookshop / luauos</span>
+      <button class="line-open-desk" type="button" data-workspace-target="line">open line <span aria-hidden="true">→</span></button>
+    </footer>
+  </section>
+
+  <section class="win win-runbook" data-window="runbook" aria-label="Runbook window">
+    <header class="win-bar" data-win-bar>
+      <span class="win-grip" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="win-app"><span class="win-seal runbook-seal">R</span><span class="win-app-name">runbook</span></span>
+      <span class="win-title"><span class="win-path">~/roblox-luau/unit-01-set-up</span><span class="win-file">runbook.md</span></span>
+      <span class="win-meta" data-goal-meta>0 / 4</span>
+      <span class="win-controls">
+        <button class="win-min" type="button" data-window-min="runbook" aria-label="Minimize the runbook window">–</button>
+        <button class="win-max" type="button" data-workspace-target="session" aria-label="Focus the session workspace">□</button>
+      </span>
+    </header>
+    <div class="win-body runbook-body">
+      <div class="runbook-head"><span class="win-kicker">IN STUDIO</span><span class="runbook-count" data-goal-count>0 / 4</span></div>
+      <div class="runbook-meter"><i data-goal-fill></i></div>
+      <div class="goals" role="group" aria-label="Studio checkpoints">
+        <button type="button" class="goal" data-goal aria-pressed="false"><span class="check" aria-hidden="true"></span><span class="goal-text">Open a Baseplate in Roblox Studio</span><span class="goal-xp">10</span></button>
+        <button type="button" class="goal" data-goal aria-pressed="false"><span class="check" aria-hidden="true"></span><span class="goal-text">Find the Explorer and Output windows</span><span class="goal-xp">10</span></button>
+        <button type="button" class="goal" data-goal aria-pressed="false"><span class="check" aria-hidden="true"></span><span class="goal-text">Run a script and read its Output</span><span class="goal-xp">15</span></button>
+        <button type="button" class="goal" data-goal aria-pressed="false"><span class="check" aria-hidden="true"></span><span class="goal-text">Change the message and run it again</span><span class="goal-xp">15</span></button>
+      </div>
+      <p class="runbook-note">Tick a step in your own Studio. This preview keeps it until reload.</p>
+      <div class="runbook-next"><span class="win-kicker">NEXT</span><b>2.1 / Your first variable</b><button type="button" data-next-stop="2.1">walk the line <span aria-hidden="true">→</span></button></div>
+    </div>
+    <footer class="win-foot"><span>preview</span><span>not saved</span><span class="foot-fill"></span><span>10 min</span></footer>
+  </section>
+</main>
+
+<footer class="desk-footer" aria-label="Desktop shortcuts">
+  <p class="desk-caption"><span>bookshop</span><span class="caption-dot">/</span><span>luauos</span></p>
+  <p class="desk-hint">ALT+1–3 workspaces <span>/</span> / launch <span>/</span> right-click desk</p>
+</footer>
+
+<div class="launcher" data-launcher hidden>
+  <div class="launcher-scrim" data-launcher-close></div>
+  <section class="launcher-panel" role="dialog" aria-modal="true" aria-labelledby="launch-title">
+    <header class="launcher-head">
+      <span class="launcher-seal" aria-hidden="true">L</span>
+      <div class="launcher-title-wrap">
+        <p class="launcher-kicker">LUAUOS / KISSA</p>
+        <h2 id="launch-title">Jump</h2>
+      </div>
+      <button class="launcher-esc" type="button" data-launcher-close>esc</button>
+    </header>
+    <label class="launcher-search">
+      <span class="launcher-prompt" aria-hidden="true">›</span>
+      <input data-launch-input type="search" placeholder="a stop, a workspace, a command..." autocomplete="off" spellcheck="false">
+      <span class="launcher-key" aria-hidden="true">/</span>
+    </label>
+    <div class="launcher-list" data-launch-list>
+      <section class="launcher-group" data-launch-group>
+        <p class="launcher-group-label">WORKSPACES</p>
+        <button class="launch-item" type="button" data-launch-item data-command="workspace:desk" data-search="desk workspace 1 all windows">
+          <span class="li-no">01</span><span class="li-title">Desk</span><span class="li-meta">all windows</span><span class="li-arrow" aria-hidden="true">↵</span>
+        </button>
+        <button class="launch-item" type="button" data-launch-item data-command="workspace:session" data-search="session workspace 2 lesson">
+          <span class="li-no">02</span><span class="li-title">Session</span><span class="li-meta">read 1.0</span><span class="li-arrow" aria-hidden="true">↵</span>
+        </button>
+        <button class="launch-item" type="button" data-launch-item data-command="workspace:line" data-search="line workspace 3 course map">
+          <span class="li-no">03</span><span class="li-title">Line</span><span class="li-meta">the whole course</span><span class="li-arrow" aria-hidden="true">↵</span>
+        </button>
+      </section>
+      <section class="launcher-group" data-launch-group>
+        <p class="launcher-group-label">DESK</p>
+        <button class="launch-item" type="button" data-launch-item data-command="desktop:reset" data-search="reset desk layout windows tiles">
+          <span class="li-no">↺</span><span class="li-title">Reset window layout</span><span class="li-meta">tile the desk</span><span class="li-arrow" aria-hidden="true">↵</span>
+        </button>
+        <button class="launch-item" type="button" data-launch-item data-command="desktop:about" data-search="about luauos version desk info kissa">
+          <span class="li-no">i</span><span class="li-title">About this desk</span><span class="li-meta">luauos / kissa</span><span class="li-arrow" aria-hidden="true">↵</span>
+        </button>
+      </section>
+      <section class="launcher-group" data-launch-group>
+        <p class="launcher-group-label">STOPS / 52</p>
+        <div class="launcher-stops" data-launch-stops></div>
+      </section>
+    </div>
+    <div class="launcher-foot"><span>↑↓ move</span><span>↵ go</span><span>esc close</span><span class="launcher-note">real course copy</span></div>
+  </section>
+</div>
+
+<div class="desk-menu" data-desk-menu role="menu" aria-label="Desktop menu" hidden>
+  <p class="desk-menu-kicker">LUAUOS / KISSA</p>
+  <button type="button" role="menuitem" data-menu-action="launch"><span>Open launcher</span><kbd>/</kbd></button>
+  <button type="button" role="menuitem" data-menu-action="session"><span>Focus session</span><kbd>ALT+2</kbd></button>
+  <button type="button" role="menuitem" data-menu-action="line"><span>Open the line</span><kbd>ALT+3</kbd></button>
+  <span class="desk-menu-rule" aria-hidden="true"></span>
+  <button type="button" role="menuitem" data-menu-action="reset"><span>Reset window layout</span><kbd>R</kbd></button>
+  <p class="desk-menu-foot">fresh save <span>·</span> 0 / 52</p>
+</div>
+
+<div class="toast" data-toast role="status" aria-live="polite"></div>
+<div class="sr-only" data-live aria-live="polite"></div>
+<script type="module" src="desktop.js"></script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!-- Layout + behaviour probe. Loads the site in a same-origin iframe, drives it
+     with a named action, then writes what the machine is actually doing into
+     #probe as JSON — so a headless `--dump-dom` run can check the desk, the
+     window manager, a lesson and the one look without anyone looking at a
+     screenshot, and without npm.
+
+       tools/probe.html?w=1600&h=1000&act=ws2#/3.2
+       tools/probe.html?act=peek
+       tools/probe.html?act=settings
+
+     The page under test exposes `ossuary` (see src/main.js) and this file reads
+     it rather than guessing at pixels: wm rectangles, the fx report, the
+     progress summary. -->
+<meta charset="utf-8">
+<style>html,body{margin:0;background:#000}iframe{border:0;display:block}</style>
+<pre id="probe">pending</pre>
+<script src="_act.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const W = +(q.get('w') || 1600), H = +(q.get('h') || 1000);
+const ACT = q.get('act') || '';
+const WALL = q.get('wall') || '';
+/* ?where=395,300 → what is actually at that point, topmost first. The fastest
+   way to find out which element is bleeding into a gap. */
+const WHERE = q.get('where') || '';
+/* ?sel=.course-list → the box, the scroll box and the clipping of one element
+   plus every ancestor up to the window frame. Layout archaeology in one call. */
+const SEL = q.get('sel') || '';
+const f = document.createElement('iframe');
+f.width = W; f.height = H;
+f.src = '../index.html?noboot' + location.hash;
+document.body.prepend(f);
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const ready = async () => {
+  for (let i = 0; i < 120; i++) {
+    const d = f.contentDocument, w = f.contentWindow;
+    if (w && w.ossuary && d.body && !d.body.classList.contains('booting')) return true;
+    await sleep(120);
+  }
+  return false;
+};
+
+/* every action is one the learner could take: a click, or a key. */
+async function act(a) {
+  await runAct(f, a);
+}
+
+(async () => {
+  const ok = await ready();
+  const d = f.contentDocument, w = f.contentWindow;
+  const L = w.ossuary || {};
+  const errs = [];
+  if (!ok) errs.push('the machine never finished booting');
+
+  /* end states, not transitions: a headless iframe barely advances CSS time */
+  if (ok) {
+    const st = d.createElement('style');
+    st.textContent = '*,*::before,*::after{transition:none!important;animation-duration:1ms!important;animation-delay:0s!important}';
+    d.head.appendChild(st);
+    w.addEventListener('error', e => errs.push('act: ' + (e.message || 'unknown')));
+    try { await act(ACT); } catch (e) { errs.push('act threw: ' + (e && e.message)); }
+  }
+
+  /* ── measure ─────────────────────────────────────────────────────────────── */
+  if (L.wm && L.wm.flush) { try { L.wm.flush(); } catch (e) { errs.push('flush: ' + e.message); } }
+  /* In headless Chrome a frame may never come, so never wait on rAF alone. */
+  await Promise.race([
+    new Promise(res => f.contentWindow.requestAnimationFrame(() => f.contentWindow.requestAnimationFrame(res))),
+    sleep(300),
+  ]);
+  const box = el => {
+    if (!el) return null;
+    const b = el.getBoundingClientRect(), cs = w.getComputedStyle(el);
+    /* checkVisibility walks ancestors, so a child of an opacity:0 shell reads
+       as hidden — which a bare computed style cannot tell you. */
+    const vis = el.checkVisibility
+      ? el.checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true })
+      : (cs.display !== 'none' && cs.visibility !== 'hidden' && +cs.opacity > .05);
+    return {
+      x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height),
+      vis,
+    };
+  };
+  const r = {
+    ok,
+    errors: errs,
+    viewport: [W, H],
+    body: d.body ? d.body.className : '',
+    ws: L.wm ? L.wm.activeWs() : null,
+    rice: L.rice ? L.rice.current() : null,
+    wall: L.wall && L.wall.current() ? L.wall.current().id : null,
+    fx: L.fx ? L.fx() : null,
+    progress: L.progress ? L.progress() : null,
+    fonts: d.fonts ? [...d.fonts].filter(x => x.status === 'loaded').map(x => x.family + ' ' + x.weight)
+      .filter((v, i, a) => a.indexOf(v) === i) : [],
+    rects: {
+      bar: box(d.querySelector('#bar')),
+      task: box(d.querySelector('#bar-task')),
+      seat: box(d.querySelector('#seat')),
+      desk: box(d.querySelector('#desk')),
+      launcher: box(d.querySelector('#launcher')),
+    },
+    windows: L.wm ? L.wm.rects() : [],
+    openWs: L.wm ? [1, 2, 3, 4].map(n => L.wm.windowsOn(n).length) : [],
+    deck: deckProbe(d, w),
+    where: whereProbe(d),
+    sel: selProbe(d, w),
+    lesson: lessonProbe(d),
+    launcher: launcherProbe(d),
+    a11y: a11yProbe(d),
+    overflowX: d.documentElement.scrollWidth > W + 1,
+    bootError: (d.getElementById('boot-error') || {}).textContent || null,
+    live: (d.getElementById('live') || {}).textContent || null,
+  };
+  document.getElementById('probe').textContent = JSON.stringify(r, null, 0);
+
+  function selProbe(d, w) {
+    if (!SEL) return null;
+    const start = d.querySelector(SEL);
+    if (!start) return `no element matches ${SEL}`;
+    const out = [];
+    let el = start;
+    while (el && el !== d.body) {
+      const b = el.getBoundingClientRect(), cs = w.getComputedStyle(el);
+      out.push({
+        el: el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (el.classList.length ? '.' + [...el.classList].join('.') : ''),
+        box: [Math.round(b.x), Math.round(b.y), Math.round(b.width), Math.round(b.height)],
+        scroll: [el.scrollWidth, el.scrollHeight, el.clientWidth, el.clientHeight],
+        of: cs.overflowX + '/' + cs.overflowY,
+        pe: cs.pointerEvents,
+        pos: cs.position,
+      });
+      if (el.classList.contains('win')) break;
+      el = el.parentElement;
+    }
+    return out;
+  }
+
+  function whereProbe(d) {
+    if (!WHERE) return null;
+    const [x, y] = WHERE.split(',').map(Number);
+    return d.elementsFromPoint(x, y).slice(0, 6).map(el => {
+      const cls = (el.className && String(el.className).trim().split(/\s+/).slice(0, 3).join('.')) || '';
+      return `${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}${cls ? '.' + cls : ''}`;
+    });
+  }
+
+  function deckProbe(d, w) {
+    if (!d.querySelector('#desk')) return null;
+    const txt = sel => { const el = d.querySelector(sel); return el ? el.textContent.trim().replace(/\s+/g, ' ') : null; };
+    return {
+      sign: txt('#cr-say'),
+      clock: txt('#desk .cr-clock'),
+      promise: d.querySelector('#cr-promise[hidden]') ? null : txt('#cr-promise'),
+      corners: d.querySelectorAll('#desk .cr-menu .m').length,
+      goal: txt('#cr-goal-n'),
+      canvases: d.querySelectorAll('#desk canvas').length,
+      report: (w.ossuary && w.ossuary.desk) ? w.ossuary.desk() : null,
+    };
+  }
+
+  function lessonProbe(d) {
+    const win = d.querySelector('#study:not([hidden])');      // a lesson is open on workspace 2
+    if (!win) return null;
+    return {
+      title: (win.querySelector('.kicker') || {}).textContent || null,
+      rail: !!win.querySelector('.st-rail'),
+      h1: (win.querySelector('.doc h1') || {}).textContent || null,
+      kicker: !!win.querySelector('.kicker'),
+      code: win.querySelectorAll('.doc .code').length,
+      out: win.querySelectorAll('.doc .out').length,
+      runbook: win.querySelectorAll('.doc .runbook').length,
+      probe: win.querySelectorAll('.doc .probe').length,
+      solutions: win.querySelectorAll('.doc .solution').length,
+      pills: win.querySelectorAll('.doc .pill').length,
+      nav: !!win.querySelector('.stepnav'),
+      tabs: win.querySelectorAll('.win-tabs .tab').length,
+      firstLines: (win.querySelector('.doc .code code') || {}).textContent?.slice(0, 120) || null,
+    };
+  }
+
+  function launcherProbe(d) {
+    const host = d.getElementById('launcher');
+    if (!host) return null;
+    const open = !host.hidden;
+    return {
+      open,
+      mode: (d.getElementById('launch-mode') || {}).textContent || null,
+      rows: d.querySelectorAll('#launch-list .lrow').length,
+      first: (d.querySelector('#launch-list .lrow') || {}).textContent || null,
+      role: (d.getElementById('launch-input') || {}).getAttribute?.('role') || null,
+    };
+  }
+
+  function a11yProbe(d) {
+    const focusables = [...d.querySelectorAll('a[href],button:not([disabled]),input,[tabindex]:not([tabindex="-1"])')];
+    const regions = [...d.querySelectorAll('.win')].map(el => ({
+      id: el.dataset.win,
+      role: el.getAttribute('role'),
+      labelled: !!d.getElementById(el.getAttribute('aria-labelledby') || ''),
+      tabindex: el.tabIndex,
+    }));
+    return {
+      focusables: focusables.length,
+      regions,
+      srOnlyLive: !!d.querySelector('#live.sr-only'),
+      skipLink: !!d.querySelector('.skip'),
+    };
+  }
+
+})();
+</script>

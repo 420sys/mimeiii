@@ -1,0 +1,56 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 50 RESPONSIVE
+   This is a workstation, and it says so: below 1000px the windows become a
+   single readable column under the bar, and a banner tells
+   the learner that the machine wants a bigger screen. Lessons must stay
+   readable on a phone — someone will want to re-read one on the bus — but
+   the tiling, the drag-and-drop and the desktop widgets are desktop truths.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1100–1500: two columns of widgets, tighter chrome ───────────────────── */
+@media (max-width: 1500px) {
+  :root { --prose-w: 72ch; }
+}
+
+/* ── narrow desktop: the bar sheds its least important modules ───────────── */
+@media (max-width: 1240px) {
+  #mod-streak { display: none; }
+}
+@media (max-width: 1080px) {
+  #mod-fx, #mod-sound { display: none; }
+  #clock-date { display: none; }
+}
+
+/* ── below 1000px: stack mode (body.stack is set by the window manager) ──── */
+body.stack #bar { grid-template-columns: auto 1fr auto; }
+body.stack .bar-c { justify-content: flex-end; }
+body.stack #mod-rank .lbl, body.stack #mod-streak { display: none; }
+body.stack #shell { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+
+body.stack #seat { overflow-y: auto; display: block; padding: 0; }
+body.stack .win {
+  position: relative !important; left: 0 !important; top: 0 !important;
+  width: auto !important; height: auto !important; min-height: 0;
+  margin: var(--gap); border-radius: var(--r);
+}
+body.stack .win .win-body { max-height: none; }
+body.stack .session-body, body.stack .man-body, body.stack .course-list { max-height: 70vh; }
+body.stack .win .rz { display: none !important; }
+body.stack #desk { position: relative; inset: auto; grid-template-columns: 1fr; }
+body.stack .seat-empty { position: relative; inset: auto; padding: 40px 16px; }
+body.stack .w-clock .big { font-size: 46px; }
+body.stack .stepnav { grid-template-columns: 1fr; }
+body.stack .launch-box { max-height: 70vh; }
+body.stack #launcher { top: 8vh; }
+
+/* the honest notice used to live here; the shell itself is the notice now */
+
+/* ── small phones ───────────────────────────────────────────────────────── */
+@media (max-width: 620px) {
+  :root { --fs-prose: 16px; --pad-lg: 14px; }
+  .doc h1 { font-size: 22px; }
+  .cl { grid-template-columns: 2.2ch minmax(0, 1fr); gap: 8px; }
+  .code pre { font-size: 12.5px; }
+  body.stack #bar { gap: 6px; padding: 4px 6px; }
+  .brand span { display: none; }
+}

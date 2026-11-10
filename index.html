@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-rice="ossuary" data-shell="noctalia" data-fx="3" data-perf="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIMEI — learn Roblox Luau from nothing</title>
+<meta name="description" content="A quiet desk for learning Roblox Luau from absolute zero: the city at night from the top of a crane, and an old sign that says where you are. You write every script in your own Roblox Studio; MIMEI walks you through it, one lesson at a time.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MIMEI — learn Roblox Luau from nothing">
+<meta property="og:description" content="A quiet desk for learning Roblox Luau from absolute zero: the city at night from the top of a crane, and an old sign that says where you are. You write every script in your own Roblox Studio; MIMEI walks you through it, one lesson at a time.">
+<meta property="og:image" content="assets/og/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#05070c">
+<link rel="stylesheet" href="styles/05-fonts.css">
+<link rel="stylesheet" href="styles/00-tokens.css">
+<link rel="stylesheet" href="styles/10-base.css">
+<link rel="stylesheet" href="styles/22-window.css">
+<link rel="stylesheet" href="styles/23-course.css">
+<link rel="stylesheet" href="styles/24-launcher.css">
+<link rel="stylesheet" href="styles/31-session.css">
+<link rel="stylesheet" href="styles/32-man.css">
+<link rel="stylesheet" href="styles/33-deckops.css">
+<link rel="stylesheet" href="styles/40-effects.css">
+<link rel="stylesheet" href="styles/50-responsive.css">
+<link rel="stylesheet" href="styles/36-riced.css">
+<link rel="stylesheet" href="styles/35-desk.css">
+<link rel="stylesheet" href="styles/37-lesson.css">
+<link rel="stylesheet" href="styles/38-study.css">
+<link rel="stylesheet" href="styles/39-strangers.css">
+<link rel="stylesheet" href="styles/41-cab.css">
+<link rel="stylesheet" href="styles/43-glass.css">
+<link rel="stylesheet" href="styles/60-print.css">
+<link rel="icon" type="image/png" href="assets/crane/icon.png">
+</head>
+<body class="os booting">
+
+<!-- ══ boot safety net ════════════════════════════════════════════════════
+     Runs before anything else and survives the module graph failing to
+     parse. Without it a thrown expression leaves a black screen and no clue
+     why, which is the worst possible failure for a teaching site. -->
+<script>
+(function () {
+  function report(what, detail) {
+    var box = document.getElementById('boot-error');
+    if (!box) {
+      box = document.createElement('pre');
+      box.id = 'boot-error';
+      box.style.cssText = 'position:fixed;z-index:9999;left:0;right:0;bottom:0;margin:0;'
+        + 'padding:16px 20px;max-height:46vh;overflow:auto;background:#2b0f16;color:#ffb4c4;'
+        + 'font:12px/1.6 ui-monospace,Menlo,monospace;white-space:pre-wrap;'
+        + 'border-top:1px solid #7a3b50';
+      document.body.appendChild(box);
+    }
+    document.title = 'BOOT FAILED: ' + what;
+    box.textContent += what + '\n' + detail + '\n\n';
+    var log = document.getElementById('boot-log');
+    if (log) log.textContent = 'the machine did not finish starting.';
+  }
+  window.addEventListener('error', function (e) {
+    report('Error: ' + (e.message || 'unknown'),
+           (e.filename || '') + ':' + (e.lineno || '?') + (e.error && e.error.stack ? '\n' + e.error.stack : ''));
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e.reason;
+    report('Unhandled rejection: ' + ((r && r.message) || r), (r && r.stack) || '');
+  });
+})();
+</script>
+
+<a class="skip" href="#session-body">Skip to the lesson</a>
+
+<!-- ══ the wall ══════════════════════════════════════════════════════════
+     The LQIP layer paints a true-coloured blur instantly; the real wall
+     fades in over it. Nothing here is announced to a screen reader. -->
+<div id="wall" aria-hidden="true">
+  <div class="wall-lqip" id="wall-lqip"></div>
+  <img id="wall-img" alt="" decoding="async">
+  <div class="wall-veil"></div>
+  <div class="wall-noise"></div>
+</div>
+
+<div class="fx-layers" aria-hidden="true">
+  <canvas id="rain"></canvas>
+  <div id="scan"></div>
+  <div id="grain"></div>
+  <div id="glare"></div>
+  <div id="wipe"></div>
+</div>
+
+<!-- ══ start-up ═════════════════════════════════════════════════════════
+     A black curtain while the fonts and the first picture load; the desk
+     fades in under it and its sign powers on. The empty log is where the
+     safety net above writes if the machine does not finish starting. -->
+<div id="boot">
+  <div class="boot-in">
+    <pre id="boot-log"></pre>
+  </div>
+</div>
+
+<!-- ══ bar ═══════════════════════════════════════════════════════════════ -->
+<header id="bar" role="banner">
+  <div class="bar-l">
+    <button class="mod brand" id="brand" title="The desk (Alt+1)" aria-label="MIMEI — the desk">
+      <img class="ob-mark" src="assets/crane/mark-snow.webp" alt="" width="240" height="284">
+      <span class="brand-name">mimei</span>
+    </button>
+    <nav id="workspaces" aria-label="Workspaces"></nav>
+  </div>
+
+  <div class="bar-c">
+    <nav class="bar-task" id="bar-task" aria-label="Windows on this workspace"></nav>
+  </div>
+
+  <div class="bar-r">
+    <div class="bar-mods" aria-label="Machine status">
+      <span class="bar-mod cps" id="bar-cps" title="Checkpoints reached in the course"><span class="v">0</span><span class="u">checkpoints</span></span>
+      <span class="bar-mod net" id="bar-net" title="Network online" aria-label="Network online"><i aria-hidden="true"></i><span class="sr-only">online</span></span>
+      <time class="bar-clock" id="bar-clock" title="Local time">--:--</time>
+    </div>
+    <button class="mod launch" id="mod-launch" title="Search the course (Alt+Enter)" aria-label="Search the course">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3"/></svg>
+    </button>
+    <button class="mod apps" id="mod-apps" title="Apps — open the window switcher (Alt+Enter, Tab)" aria-label="Apps">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ══ shell: the seat (the bar names this workspace's windows) ══════════ -->
+<div id="shell">
+  <main id="seat" aria-label="Desktop">
+    <div id="desk"></div>
+    <div id="study" hidden></div>
+  </main>
+</div>
+
+<!-- lesson bodies land here at boot, pulled out of content/*.md -->
+<div id="lessons" hidden></div>
+
+<div id="peek-back" hidden>Bring everything back <kbd>esc</kbd></div>
+
+<!-- ══ overlays ══════════════════════════════════════════════════════════ -->
+<div id="scrim" hidden></div>
+
+<div id="launcher" role="dialog" aria-modal="true" aria-label="Launcher" hidden>
+  <div class="launch-box">
+    <label class="launch-prompt">
+      <span class="lp-mode" id="launch-mode">lessons</span>
+      <input id="launch-input" type="text" autocomplete="off" spellcheck="false"
+             role="combobox" aria-expanded="true" aria-controls="launch-list"
+             aria-autocomplete="list" aria-label="Search" placeholder="jump to a lesson">
+      <span class="lp-hint" id="launch-count"></span>
+    </label>
+    <div id="launch-list" role="listbox" aria-label="Results"></div>
+    <div class="launch-foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> move</span>
+      <span><kbd>↵</kbd> run</span>
+      <span><kbd>tab</kbd> mode</span>
+      <span><kbd>esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<div id="live" role="status" aria-live="polite" class="sr-only"></div>
+<div id="boot-error-host" hidden></div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

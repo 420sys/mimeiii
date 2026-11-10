@@ -1,0 +1,122 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 20 BAR
+   A thin waybar: the mark, four workspace numbers, a small clock, and the
+   machine's switches. A single line of words and icons, cut from the same
+   glass as the desk.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+#bar {
+  position: relative; z-index: var(--z-bar);
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px;
+  height: var(--bar-h); padding: 0 10px;
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.06) brightness(var(--glass-bright));
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.06) brightness(var(--glass-bright));
+  border-bottom: var(--bw) solid var(--line-2);
+  font-family: var(--font-ui); font-size: var(--fs-sm); color: var(--fg-3);
+}
+.bar-l, .bar-r { display: flex; align-items: center; gap: 2px; min-width: 0; }
+.bar-r { justify-content: flex-end; }
+.bar-c { display: flex; justify-content: center; }
+
+/* ── the switches ────────────────────────────────────────────────────────── */
+.mod {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 24px; padding: 0 6px; border-radius: var(--r-sm);
+  border: 0; background: none;
+  color: var(--fg-3); white-space: nowrap;
+  transition: color var(--t-fast), background var(--t-fast);
+}
+.mod:hover { color: var(--fg); background: var(--line-2); }
+.mod[aria-pressed="true"] { color: var(--accent); }
+.mod.ico { width: 26px; padding: 0; justify-content: center; }
+.mod svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.mod .wv { opacity: .28; }
+#mod-sound[aria-pressed="true"] .wv { opacity: 1; }
+#mod-sound[aria-pressed="false"] .wv { opacity: .24; }
+
+/* ── the mark ────────────────────────────────────────────────────────────── */
+.brand {
+  color: var(--fg-2); font: 600 10.5px/1 var(--font-ui);
+  letter-spacing: .2em; text-transform: uppercase; padding: 0 10px 0 2px;
+  transition: color var(--t-fast);
+}
+.brand:hover { color: var(--fg); background: none; }
+.brand svg { width: 15px; height: 15px; }
+.brand .bm-a { fill: var(--accent); }
+.brand .bm-b { fill: var(--fg-4); }
+
+/* ── workspaces: numbers, with a quiet dot under the one you are on ──────── */
+#workspaces { display: flex; align-items: center; gap: 2px; }
+.ws {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 24px; padding: 0 5px;
+  border: 0; border-radius: var(--r-sm);
+  color: var(--fg-4);
+  transition: color var(--t-fast), background var(--t-fast);
+}
+.ws .num { font: 500 11px/1 var(--font-code); letter-spacing: .02em; }
+.ws .nm { display: none; }
+.ws .cnt { display: none; }
+.ws:hover { color: var(--fg-2); background: var(--line-2); }
+.ws[aria-current="page"] { color: var(--fg); }
+.ws[aria-current="page"] .num { color: var(--fg); }
+.ws[aria-current="page"]::after {
+  content: ''; position: absolute; left: 50%; bottom: 2px;
+  width: 3px; height: 3px; border-radius: 50%;
+  background: var(--accent); transform: translateX(-50%);
+}
+
+/* ── the small clock; the deck has the large one ─────────────────────────── */
+.clock {
+  flex-direction: column; gap: 0; height: auto; padding: 0 12px;
+  border: 0; background: none;
+}
+.clock:hover { background: none; }
+#clock-time {
+  color: var(--fg-2); font: 400 12.5px/1.1 var(--font-code);
+  letter-spacing: .06em; font-variant-numeric: tabular-nums;
+}
+#clock-date {
+  color: var(--fg-4); font: 400 8.5px/1.35 var(--font-ui);
+  letter-spacing: .12em; text-transform: uppercase;
+}
+
+/* ── stats ───────────────────────────────────────────────────────────────── */
+.stat { font-variant-numeric: tabular-nums; }
+.stat b { color: var(--fg); font: 500 10.5px/1 var(--font-code); }
+.stat .lbl { color: var(--fg-4); font: 400 9px/1 var(--font-ui); }
+#mod-rank .rk {
+  font: 600 9px/1 var(--font-ui); letter-spacing: .14em;
+  text-transform: uppercase; color: var(--fg-3);
+}
+.sep { width: 1px; height: 12px; background: var(--line-2); margin: 0 6px; }
+.launch { padding-right: 6px; }
+.launch kbd {
+  padding: 0; min-width: 0; border: 0; background: none;
+  font: 400 9px/1 var(--font-ui); color: var(--fg-4); letter-spacing: .02em;
+}
+
+/* ── the journal's one loud line, when something happens ─────────────────── */
+#bar-tick {
+  position: absolute; left: 50%; bottom: -24px; transform: translateX(-50%);
+  max-width: min(720px, 70vw); padding: 3px 10px; border-radius: var(--r-sm);
+  border: var(--bw) solid var(--line-2); background: var(--glass-fallback);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  font: 400 11px/1.5 var(--font-code); color: var(--fg-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  opacity: 0; transition: opacity var(--t) var(--ez), transform var(--t) var(--ez);
+  pointer-events: none;
+}
+#bar-tick.on { opacity: 1; transform: translateX(-50%) translateY(4px); }
+#bar-tick b { color: var(--ok); font-weight: 400; }
+
+/* level-up: one quiet lavender breath across the bar */
+body.levelup #bar::after {
+  content: ''; position: absolute; inset: 0; background: var(--accent);
+  opacity: .14; pointer-events: none; animation: lvlfade 900ms steps(3) 1;
+  mix-blend-mode: screen;
+}
+@keyframes lvlfade { to { opacity: 0; } }

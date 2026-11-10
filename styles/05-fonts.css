@@ -1,0 +1,79 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 05 FONTS
+   Self-hosted faces, kept beside the machine: no third-party request, no font
+   flash on a cold or offline start, and identical screenshots. Inter and IBM
+   Plex Mono are the voice everywhere you look: the desk, the climb and the
+   cab. JetBrains Mono and Space Grotesk stay for older parts and fallbacks.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* The lesson voice (--disp): prose, headings and tabs on the lesson pages
+   (37-lesson, 38-study). The rest of the machine stays monospaced. */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('../assets/fonts/space-grotesk.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('../assets/fonts/jetbrains-mono.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('../assets/fonts/jetbrains-mono-italic.woff2') format('woff2');
+}
+
+/* Instrument Serif: left from an earlier look. Nothing on screen asks for it
+   now, so the browser never fetches it. */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/instrument-serif.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/instrument-serif-italic.woff2') format('woff2');
+}
+
+/* The desk (workspace 1, the crane): Inter for the clock and the menu, IBM
+   Plex Mono for the small capitals. Both under the SIL Open Font License 1.1
+   (assets/fonts/LICENSE-Inter.txt, LICENSE-IBMPlex.txt). Inter is one
+   variable file; Plex Mono is two static weights. Latin only. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../assets/fonts/inter-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/ibm-plex-mono-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/ibm-plex-mono-500-normal.woff2') format('woff2');
+}

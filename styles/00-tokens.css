@@ -1,0 +1,159 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 00 TOKENS
+   ────────────────────────────────────────────────────────────────────────────
+   Base tokens for geometry, type, motion, effects and the fallback palette.
+   The shell's live palette is 41-cab.css (the cab: Night and Late dark, Ice
+   light), over the older 36-riced.css; the desk is 35-desk.css and the climb
+   is 38-study.css, each with its own scoped tokens.
+
+   Reading the file:
+     1. geometry + type + motion
+     2. the fallback palette
+     3. effect LEVELS (data-fx 3 → 0) — the FPS watchdog flips this
+     4. reduced motion, which forces the machine static
+
+   Contrast: --fg / --fg-2 / --fg-3 / --fg-4 are all ≥ 4.5:1 against
+   --surface-solid. The riced shell and deck are audited separately.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── geometry ─────────────────────────────────────────────────────────── */
+  --gap: 10px;              /* the tiling gap */
+  --bar-h: 36px;
+  --win-t: 30px;             /* window titlebar */
+  --win-foot-h: 22px;
+  --r: 12px;                 /* glass: windows, cards, code wells */
+  --r-sm: 5px;               /* chrome: tabs, buttons, rows, menus */
+  --r-lg: 12px;
+  --bw: 1px;
+  --pad: 14px;
+  --pad-lg: 20px;
+  --prose-w: 72ch;
+
+  /* ── type ─────────────────────────────────────────────────────────────── */
+  /* one face for the whole machine: chrome, prose and code are all terminal */
+  --font-ui: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-code: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --fs: 13px;                /* chrome */
+  --fs-sm: 12px;
+  --fs-xs: 11px;
+  --fs-prose: 16px;          /* lessons are read, not skimmed */
+  --fs-h1: 28px;
+  --fs-h2: 17px;
+  --fs-display: 20px;
+  --lh: 1.5;
+  --lh-prose: 1.8;
+
+  /* ── motion ───────────────────────────────────────────────────────────── */
+  --ez: cubic-bezier(.32, .72, 0, 1);
+  --ez-breathe: cubic-bezier(.45, 0, .55, 1);
+  --t-fast: 110ms;
+  --t: 170ms;
+  --t-slow: 280ms;
+  --t-breathe: 4.2s;
+
+  /* Named ambient animations. The effect levels and reduced motion switch
+     these to `none`, so every loop stops without changing the layout. */
+  --anim-live: breathe;
+  --anim-kicker: breathe;
+  --anim-tick: tick-wait;
+  --anim-cursor: blink;
+
+  /* ── komorebi ────────────────────────────────────────────────────────────
+     Almost black, just warm enough not to read as blue. Panels are glass over
+     the picture outside; the only saturated things in the desk are the live
+     lavender and the wallpaper. */
+  --bg:           #08080a;
+  --surface:      #121217;
+  --surface-2:    #17171e;
+  --surface-solid:#101014;
+  --surface-hi:   #1c1c24;
+  --well:         #0a0a0e;
+  --line:         rgba(238, 234, 250, .11);
+  --line-2:       rgba(238, 234, 250, .055);
+  --line-hi:      rgba(238, 234, 250, .30);
+  --glass:        rgba(8, 9, 13, .36);
+  --glass-clear:  rgba(8, 9, 13, .20);
+  --glass-strong: rgba(8, 9, 13, .52);
+  --glass-line:   rgba(238, 234, 250, .09);
+  --glass-fallback: rgba(8, 9, 13, .88);
+  --glass-shadow: 0 24px 70px -42px rgba(0, 0, 0, .95);
+  --glass-blur:   16px;
+  --glass-blur-soft: 3px;
+  --glass-bright: .60;
+  --fg:           #f4f2fb;
+  --fg-2:         #ded9e8;
+  --fg-3:         #d6d1e0;
+  --fg-4:         #d2cddd;
+  --accent:       #d6c9ff;
+  --accent-ink:   #171125;
+  --accent-2:     #9fc4ff;
+  --ok:           #93e0b4;
+  --warn:         #ff9c8f;
+  --sel:          rgba(200, 183, 255, .13);
+
+  --shadow: 0 24px 70px -34px rgba(0, 0, 0, .95);
+  --glow: none;
+  --wall-filter: saturate(.98) brightness(.90);
+  --wall-veil: .24;          /* how much night sits over the wallpaper */
+
+  --fx-blur-k: 0;
+  --fx-scan-k: 0;
+  --fx-grain-k: 0;
+  --fx-bloom-k: .14;
+  --fx-glitch-k: 0;
+  --fx-rain-k: .8;
+  --blur: 0px;
+
+  /* ── effect level (data-fx) — set on :root[data-fx] ───────────────────── */
+  --lvl-blur: 1;
+  --lvl-scan: 1;
+  --lvl-grain: 1;
+  --lvl-bloom: 1;
+  --lvl-rain: 1;
+  --lvl-glitch: 1;
+  --lvl-parallax: 1;
+
+  /* ── derived ──────────────────────────────────────────────────────────── */
+  --blur-amt: calc(var(--blur) * var(--fx-blur-k) * var(--lvl-blur));
+  --scan-alpha: calc(.20 * var(--fx-scan-k) * var(--lvl-scan));
+  --grain-alpha: calc(.05 * var(--fx-grain-k) * var(--lvl-grain));
+  --bloom-alpha: calc(.55 * var(--fx-bloom-k) * var(--lvl-bloom));
+
+  --z-wall: 0;
+  --z-fx: 4;
+  --z-seat: 10;
+  --z-bar: 60;
+  --z-launch: 80;
+  --z-boot: 90;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EFFECT LEVELS
+   The watchdog in src/core/effects.js sets data-fx on <html>. Level 3 is the
+   full machine; 0 is a static, silent, scanline-free desktop that still looks
+   like itself. Nothing below level 3 is a "broken" look — it is a quieter one.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root[data-fx="2"] { --lvl-blur: 0; --lvl-parallax: 0; --glass-blur: 0px; --glass-blur-soft: 0px; }
+:root[data-fx="1"] {
+  --lvl-blur: 0; --lvl-parallax: 0; --lvl-scan: 0; --lvl-grain: 0;
+  --lvl-rain: 0; --lvl-glitch: 0; --lvl-bloom: .35;
+  --glass-blur: 0px; --glass-blur-soft: 0px;
+  --anim-live: none; --anim-kicker: none; --anim-tick: none; --anim-cursor: none;
+}
+:root[data-fx="0"] {
+  --lvl-blur: 0; --lvl-parallax: 0; --lvl-scan: 0; --lvl-grain: 0;
+  --lvl-rain: 0; --lvl-glitch: 0; --lvl-bloom: 0;
+  --glass-blur: 0px; --glass-blur-soft: 0px;
+  --anim-live: none; --anim-kicker: none; --anim-tick: none; --anim-cursor: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root, :root[data-fx] {
+    --lvl-blur: 0; --lvl-parallax: 0; --lvl-scan: 0; --lvl-grain: 0;
+    --lvl-rain: 0; --lvl-glitch: 0; --lvl-bloom: 0;
+    --glass-blur: 0px; --glass-blur-soft: 0px;
+    --t-fast: 1ms; --t: 1ms; --t-slow: 1ms;
+    --anim-live: none; --anim-kicker: none; --anim-tick: none; --anim-cursor: none;
+  }
+}

@@ -1,0 +1,268 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 31 SESSION
+   The lesson, read in a window. It looks like a terminal that has been
+   carefully typeset: a path kicker, section rules, numbered code wells, a
+   Studio Output panel, runbooks to tick, probes to answer, folded solutions.
+   Prose is capped at a readable measure and never set in code-sized type.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.session { display: flex; flex-direction: column; width: 100%; min-width: 0; }
+.session-body {
+  flex: 1; min-height: 0; overflow-y: auto; padding: 28px 32px 56px;
+  scroll-behavior: smooth;
+}
+.session-body:focus-visible { outline-offset: -3px; }
+.doc { max-width: var(--prose-w); margin: 0 auto; }
+
+/* ── kicker + title ──────────────────────────────────────────────────────── */
+.kicker {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-size: var(--fs-sm); color: var(--fg-4); margin-bottom: 12px;
+}
+.kicker .p { color: var(--accent-2); }
+.kicker .s { color: var(--fg-4); }
+.doc h1 {
+  font-size: var(--fs-h1); line-height: 1.2; letter-spacing: 0;
+  color: var(--fg); font-weight: 600;
+  margin-bottom: 8px; text-wrap: balance;
+}
+.doc h1::after {
+  content: ''; display: block; height: 1px; margin-top: 16px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 10%, transparent) 60%, transparent);
+}
+.metaline { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
+
+/* ── sections ────────────────────────────────────────────────────────────── */
+.doc h2 {
+  display: flex; align-items: baseline; gap: 8px;
+  margin: 38px 0 14px; font-size: var(--fs-h2); font-weight: 600; color: var(--fg);
+  letter-spacing: 0; line-height: 1.3;
+}
+.doc h2::before {
+  content: '##'; color: var(--accent); font-family: var(--font-code);
+  font-size: .78em; opacity: .9;
+}
+.doc h3 {
+  margin: 26px 0 8px; font-size: 15px; font-weight: 600; color: var(--fg-2);
+}
+.doc h3::before { content: '▌ '; color: var(--accent-2); }
+.doc h4 { margin: 20px 0 6px; font-size: var(--fs); color: var(--fg-2); }
+
+/* ── prose ───────────────────────────────────────────────────────────────── */
+.doc p { font-size: var(--fs-prose); line-height: var(--lh-prose); color: var(--fg-2); margin: 14px 0; }
+.doc p strong, .doc li strong { color: var(--fg); font-weight: 600; }
+.doc p em, .doc li em { color: var(--fg-2); font-style: italic; }
+.doc p code, .doc li code, .doc td code, .doc dd code, .doc blockquote code {
+  padding: 1px 5px; border: var(--bw) solid var(--line); border-radius: var(--r-sm);
+  background: var(--well); color: var(--accent-2);
+  font: 400 .88em/1.45 var(--font-code); white-space: nowrap;
+}
+.doc ul, .doc ol { margin: 14px 0; padding-left: 24px; }
+.doc li { font-size: var(--fs-prose); line-height: var(--lh-prose); color: var(--fg-2); margin: 7px 0; }
+.doc ul > li::marker { color: var(--accent); }
+.doc ol > li::marker { color: var(--accent); font-family: var(--font-code); font-size: .9em; }
+.doc a { color: var(--accent-2); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent-2) 45%, transparent); }
+.doc a:hover { text-decoration-color: var(--accent-2); }
+.doc hr { border: 0; border-top: var(--bw) solid var(--line-2); margin: 28px 0; }
+.doc blockquote {
+  margin: 24px 0; padding: 16px 18px; border-left: 3px solid var(--ok);
+  background: color-mix(in srgb, var(--ok) 7%, transparent); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+.doc blockquote p { margin: 0; font-size: var(--fs); color: var(--fg-2); }
+.doc blockquote p + p { margin-top: 10px; }
+.doc blockquote strong { color: var(--ok); }
+.doc blockquote::before {
+  content: '[ done when ]'; display: block; margin-bottom: 6px;
+  font: 500 11px/1 var(--font-ui); letter-spacing: .12em; text-transform: uppercase; color: var(--ok);
+}
+
+/* ── pills: run in Studio / plain luau / check yourself ──────────────────── */
+.pill {
+  display: inline-flex; align-items: center; gap: 4px; padding: 0 6px;
+  border: var(--bw) solid var(--line-hi); border-radius: 99px;
+  font: 500 11px/1.6 var(--font-code); letter-spacing: .04em; color: var(--fg-2);
+  vertical-align: 1px;
+}
+.pill.rbxl { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, transparent); }
+.pill.lua { color: var(--accent-2); border-color: color-mix(in srgb, var(--accent-2) 45%, transparent); }
+.pill.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); }
+
+/* ── code wells ──────────────────────────────────────────────────────────── */
+.doc figure { margin: 22px 0; }
+.code {
+  position: relative; border: var(--bw) solid var(--line); border-radius: var(--r);
+  background: var(--well); overflow: hidden;
+}
+.code-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px 6px 12px; border-bottom: var(--bw) solid var(--line-2);
+  font-size: var(--fs-xs); color: var(--fg-4);
+}
+.code-head .lang { color: var(--accent-2); letter-spacing: .06em; }
+.code-head .cap { color: var(--fg-4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.code-head .sp { flex: 1; }
+.code-head .copy {
+  padding: 2px 8px; border: var(--bw) solid var(--line); border-radius: var(--r-sm);
+  color: var(--fg-3); font-size: var(--fs-xs);
+  transition: color var(--t-fast), border-color var(--t-fast), background var(--t-fast);
+}
+.code-head .copy:hover { color: var(--fg); border-color: var(--line-hi); background: var(--line-2); }
+.code-head .copy.did { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 50%, transparent); }
+.code pre {
+  margin: 0; padding: 14px 16px 16px; overflow-x: auto;
+  font: 400 13.5px/1.72 var(--font-code); color: var(--fg-2);
+  tab-size: 4;
+}
+.cl { display: grid; grid-template-columns: 2.7ch minmax(0, 1fr); gap: 12px; }
+.cl .ln { color: var(--fg-4); text-align: right; user-select: none; font-size: 11.5px; padding-top: 1px; }
+.cl .tx { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* a blank line still has to be as tall as a code line, or the well jitters */
+.cl .tx:empty::before { content: '\200b'; }
+.code .strip { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--line-hi); }
+
+/* luau highlight (the same classes app.js used, re-tokenised) */
+.tok-c { color: var(--fg-4); font-style: italic; }
+.tok-s { color: var(--ok); }
+.tok-n { color: var(--accent-2); }
+.tok-k { color: var(--accent); }
+.tok-f { color: var(--accent-2); }
+.tok-g { color: var(--fg-3); }
+
+/* ── Studio Output panel ─────────────────────────────────────────────────── */
+.out {
+  border: var(--bw) solid var(--line); border-radius: var(--r);
+  background: var(--surface-2); overflow: hidden;
+}
+.out-head {
+  display: flex; align-items: center; gap: 8px; padding: 6px 12px;
+  border-bottom: var(--bw) solid var(--line-2); background: var(--well);
+  font-size: var(--fs-xs); color: var(--fg-3);
+}
+.out-head .k { color: var(--accent); }
+.out-head .sub { color: var(--fg-4); }
+.out-head .sp { flex: 1; }
+.out pre { margin: 0; padding: 12px 16px; font: 400 13px/1.78 var(--font-code); white-space: pre-wrap; overflow-wrap: anywhere; }
+.out .ln { color: var(--fg-2); }
+.out .er { color: var(--warn); }
+.out .src { color: var(--fg-4); }
+
+/* ── runbook (In Studio tasks) ───────────────────────────────────────────── */
+.runbook {
+  border: var(--bw) solid var(--line); border-left: 3px solid var(--accent-2);
+  border-radius: var(--r); background: var(--surface); padding: 16px 18px;
+}
+.runbook-h { display: flex; align-items: baseline; gap: 8px; font-size: var(--fs-xs); color: var(--accent-2); letter-spacing: .06em; }
+.runbook .t { margin: 8px 0 12px; font-size: var(--fs); color: var(--fg); }
+.checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 7px; }
+.checks li {
+  display: grid; grid-template-columns: 15px 1fr; gap: 9px; align-items: start;
+  padding: 5px 7px; border-radius: var(--r-sm); border: var(--bw) solid transparent;
+  font-size: var(--fs); color: var(--fg-2); cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+.checks li:hover { background: var(--line-2); }
+.checks li .m {
+  width: 14px; height: 14px; margin-top: 2px; border: var(--bw) solid var(--line-hi);
+  border-radius: 2px; display: grid; place-items: center;
+}
+.checks li .m::after { content: ''; width: 7px; height: 7px; background: transparent; }
+.checks li[aria-checked="true"] { color: var(--fg-3); }
+.checks li[aria-checked="true"] .m { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 20%, transparent); }
+.checks li[aria-checked="true"] .m::after { background: var(--ok); }
+.checks li[aria-checked="true"] > span:last-child { text-decoration: line-through; text-decoration-color: var(--fg-4); }
+.runbook-foot { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: var(--fs-xs); color: var(--fg-4); }
+.runbook-foot .meter { flex: 1; max-width: 180px; }
+.runbook.done { border-left-color: var(--ok); }
+.runbook.done .runbook-h { color: var(--ok); }
+.runbook .hint.pass { color: var(--ok); }
+
+/* ── probe (predict first) ──────────────────────────────────────────────── */
+.probe { border: var(--bw) solid var(--line); border-left: 3px solid var(--accent); border-radius: var(--r); background: var(--surface); padding: 16px 18px; }
+.probe-h { display: flex; align-items: baseline; gap: 8px; font-size: var(--fs-xs); color: var(--accent); letter-spacing: .06em; }
+.probe-h .from { color: var(--fg-4); }
+.probe .q { margin: 8px 0 14px; font-size: var(--fs); color: var(--fg); }
+.probe .code { margin-bottom: 14px; }
+.probe .opts { display: grid; gap: 7px; }
+.probe .opts button {
+  display: grid; grid-template-columns: 16px 1fr; gap: 8px; align-items: center;
+  padding: 9px 11px; border: var(--bw) solid var(--line); border-radius: var(--r-sm);
+  background: var(--well); color: var(--fg-2); font: 400 13px/1.55 var(--font-code);
+  text-align: left;
+  transition: border-color var(--t-fast), color var(--t-fast), background var(--t-fast);
+}
+.probe .opts button::before { content: '▸'; color: var(--fg-4); }
+.probe .opts button:hover:not(:disabled) { border-color: var(--line-hi); color: var(--fg); }
+.probe .opts button:disabled { cursor: default; }
+.probe .opts button.right { border-color: var(--ok); color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, transparent); }
+.probe .opts button.right::before { content: '✓'; color: var(--ok); }
+.probe .opts button.wrong { border-color: var(--warn); color: var(--warn); background: color-mix(in srgb, var(--warn) 10%, transparent); }
+.probe .opts button.wrong::before { content: '✗'; color: var(--warn); }
+.probe .verdict { margin-top: 14px; font-size: var(--fs); color: var(--fg-2); }
+.probe .verdict b.y { color: var(--ok); }
+.probe .verdict b.n { color: var(--warn); }
+.probe .verdict code { padding: 1px 5px; border: var(--bw) solid var(--line); border-radius: var(--r-sm); background: var(--well); color: var(--accent-2); }
+
+/* ── folded solution ────────────────────────────────────────────────────── */
+.solution { border: var(--bw) dashed var(--line); border-radius: var(--r); background: var(--surface); overflow: hidden; }
+.solution > summary {
+  display: flex; align-items: center; gap: 8px; padding: 11px 14px;
+  font-size: var(--fs-sm); color: var(--fg-3); cursor: pointer; list-style: none;
+  transition: color var(--t-fast), background var(--t-fast);
+}
+.solution > summary::-webkit-details-marker { display: none; }
+.solution > summary::before { content: '▸'; color: var(--accent); }
+.solution[open] > summary::before { content: '▾'; }
+.solution > summary .k { color: var(--accent); font-family: var(--font-code); }
+.solution > summary:hover { color: var(--fg); }
+.solution .code { border: 0; border-top: var(--bw) solid var(--line-2); border-radius: 0; }
+
+/* ── tables ─────────────────────────────────────────────────────────────── */
+.tbl { margin: 22px 0; overflow-x: auto; border: var(--bw) solid var(--line); border-radius: var(--r); }
+.doc table { border-collapse: collapse; width: 100%; font-size: var(--fs); }
+.doc th, .doc td { padding: 9px 12px; text-align: left; border-bottom: var(--bw) solid var(--line-2); }
+.doc th { background: var(--well); color: var(--fg-2); font-weight: 500; font-size: var(--fs-sm); }
+.doc tr:last-child td { border-bottom: 0; }
+.doc tbody tr:hover { background: var(--line-2); }
+.doc td { color: var(--fg-2); }
+
+/* ── previous / next ────────────────────────────────────────────────────── */
+.stepnav {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap);
+  margin: 42px auto 0; max-width: var(--prose-w);
+}
+.stepnav button {
+  display: grid; gap: 5px; padding: 13px 16px; text-align: left;
+  border: var(--bw) solid var(--line); border-radius: var(--r); background: var(--surface);
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.stepnav button:hover:not(:disabled) { border-color: var(--line-hi); background: var(--surface-hi); }
+.stepnav button:disabled { opacity: .45; cursor: default; }
+.stepnav .k { font-size: var(--fs-xs); color: var(--fg-4); }
+.stepnav .v { font-size: var(--fs-sm); color: var(--fg); }
+.stepnav .nx { text-align: right; }
+.stepnav .nx .k { color: var(--accent); }
+
+/* ── not written yet / no lesson text ──────────────────────────────────── */
+.unbuilt { max-width: 430px; margin: 18vh auto 0; display: grid; gap: 8px; justify-items: start; }
+.unbuilt .big {
+  font: 400 10px/1.4 var(--font-code);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--fg-4);
+}
+.unbuilt p { margin: 0; font-size: var(--fs-sm); line-height: 1.6; color: var(--fg-3); }
+.unbuilt-next {
+  margin-top: 3px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: 400 11.5px/1.5 var(--font-code);
+  text-align: left;
+}
+.unbuilt-next span { color: var(--fg-4); }
+.unbuilt-next:hover { color: var(--accent-bright); }
+
+/* progress readout the session footer shows */
+.session-foot .prog { color: var(--fg-3); }
+.session-foot .prog b { color: var(--ok); }

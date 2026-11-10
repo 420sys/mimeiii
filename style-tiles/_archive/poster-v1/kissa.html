@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LuauOS — Yoru no Kissa</title>
+<meta name="color-scheme" content="dark light">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="kissa.css">
+</head>
+<body class="tile" data-direction="kissa" data-mood="yoru" data-view="desk">
+<div class="scene" aria-hidden="true">
+  <div class="scene-grade"></div>
+  <div class="scene-vignette"></div>
+  <div class="scene-grain"></div>
+  <div class="scene-rain"></div>
+</div>
+<div class="mood-wipe" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="Back to the three directions">
+    <span class="brand-mark" aria-hidden="true">L</span>
+    <span class="brand-copy">
+      <span class="brand-name">LUAUOS</span>
+      <span class="brand-sub">NEO-EDO / KISSA</span>
+    </span>
+  </a>
+  <div class="topbar-right">
+    <div class="mood-switch" role="group" aria-label="Desk mood">
+      <button class="mood-btn" type="button" data-mood-tab="asa" data-mood-target="asa" aria-pressed="false">
+        <span class="lang-ja" lang="ja">朝</span><span>asa</span>
+      </button>
+      <button class="mood-btn" type="button" data-mood-tab="yoru" data-mood-target="yoru" aria-pressed="true">
+        <span class="lang-ja" lang="ja">夜</span><span>yoru</span>
+      </button>
+    </div>
+    <span class="topbar-clock" data-clock>--:--</span>
+    <span class="topbar-rank">INIT / 000 XP</span>
+  </div>
+</header>
+
+<main class="stage">
+  <section class="view view-desk" data-view="desk" aria-label="Desk">
+    <div class="desk-left">
+      <p class="eyebrow"><span class="dot"></span> FIRST NIGHT <span class="sep">/</span> UNIT 01</p>
+      <h1 class="display"><span>Learn</span><span><em>Luau</em></span><span>from nothing.</span></h1>
+      <p class="lede">A quiet machine for the long way round. Twelve units, fifty-two stops, one script at a time.</p>
+      <div class="desk-actions">
+        <button class="btn-primary" type="button" data-view-target="lesson">Begin 1.0 <span aria-hidden="true">→</span></button>
+        <button class="btn-quiet" type="button" data-view-target="line">See the line <span aria-hidden="true">↘</span></button>
+      </div>
+      <div class="desk-stats" aria-label="Course at a glance">
+        <div><b>0</b><span>of 52 stops</span></div>
+        <div><b>0</b><span>day streak</span></div>
+        <div><b>init</b><span>rank</span></div>
+      </div>
+    </div>
+
+    <aside class="next-card" aria-labelledby="next-title">
+      <div class="card-top">
+        <p class="card-kicker">NEXT STOP / 1.0</p>
+        <span class="card-seal" aria-hidden="true">01</span>
+      </div>
+      <h2 id="next-title">Set up<br><em>Roblox Studio</em></h2>
+      <p class="card-copy">Before writing any code you need somewhere to run it.</p>
+      <div class="card-meta"><span>10 min</span><span>4 checkpoints</span><span>unit 01</span></div>
+      <div class="card-foot">
+        <span class="card-progress" data-card-progress>0 / 4</span>
+        <button class="card-go" type="button" data-view-target="lesson">Open stop <span aria-hidden="true">→</span></button>
+      </div>
+    </aside>
+
+    <p class="scene-caption"><span class="scene-label scene-label--yoru">bookshop</span><span class="scene-label scene-label--asa">fuji</span><span class="caption-dot">/</span><span class="scene-mood scene-mood--yoru">yoru</span><span class="scene-mood scene-mood--asa">asa</span></p>
+    <div class="vertical-label" aria-hidden="true">NEO-EDO / 01</div>
+  </section>
+
+  <section class="view view-lesson" data-view="lesson" aria-label="Lesson" hidden>
+    <div class="lesson-sheet">
+      <header class="lesson-top">
+        <button class="back-btn" type="button" data-view-target="desk"><span aria-hidden="true">←</span> desk</button>
+        <div class="lesson-crumb"><span>01</span><span>/</span><span>set up</span><span>/</span><span>1.0</span></div>
+        <span class="lesson-clock">10 MIN</span>
+      </header>
+
+      <div class="lesson-grid">
+        <aside class="lesson-margin" aria-hidden="true">
+          <span class="margin-vertical">SET UP / 01</span>
+          <span class="margin-page">01</span>
+          <span class="margin-seal">L</span>
+        </aside>
+
+        <article class="lesson-body">
+          <p class="lesson-eyebrow">STOP 1.0 <span>/</span> SET UP</p>
+          <h1 class="lesson-title">Set up<br><em>Roblox Studio</em></h1>
+          <p class="lesson-lead">Before writing any code you need somewhere to run it.</p>
+          <p>Roblox Studio is the free program every Roblox game is built in, and it is where every script in this course will run.</p>
+          <p>This lesson is only setup. By the end you will have run one script and seen it talk back to you, which is the whole loop the rest of the course is built on.</p>
+
+          <h2><span class="h2-no">01</span>Get Studio</h2>
+          <p>Roblox Studio runs on <strong>Windows</strong> and <strong>Mac</strong>. It does not run on phones, tablets or Chromebooks.</p>
+
+          <div class="code">
+            <div class="code-head"><span>script.lua</span><button type="button" data-copy="print(&quot;Hello world!&quot;)">copy</button></div>
+            <pre><code>print("Hello world!")</code></pre>
+          </div>
+
+          <div class="output"><span class="output-label">OUTPUT</span><pre>Hello world!  -  Server - Script:1</pre></div>
+
+          <p><code>print</code> means <strong>show this in the Output window</strong>. It is how a script talks to you, and you will use it in every single lesson.</p>
+
+          <blockquote>“The grey part on the right is Studio telling you where the message came from.”</blockquote>
+
+          <h2><span class="h2-no">02</span>The two windows you need</h2>
+          <p>Studio has a lot of windows. For now you need two of them: <strong>Explorer</strong>, a list of everything in your game, and <strong>Output</strong>, where your scripts talk back to you.</p>
+
+          <div class="lesson-nav">
+            <button type="button" data-view-target="desk"><span aria-hidden="true">←</span> Back to the desk</button>
+            <button type="button" data-view-target="line"><span>See the line</span> <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+
+        <aside class="lesson-rail">
+          <div class="rail-head"><span class="rail-kicker">IN STUDIO</span><span class="rail-count" data-goal-count>0 / 4</span></div>
+          <div class="rail-meter"><i data-goal-fill></i></div>
+          <div class="goals" role="group" aria-label="Studio checkpoints">
+            <button type="button" class="goal" data-goal aria-pressed="false">
+              <span class="check" aria-hidden="true"></span><span class="goal-text">Open a Baseplate in Roblox Studio</span><span class="goal-xp">10</span>
+            </button>
+            <button type="button" class="goal" data-goal aria-pressed="false">
+              <span class="check" aria-hidden="true"></span><span class="goal-text">Find the Explorer and Output windows</span><span class="goal-xp">10</span>
+            </button>
+            <button type="button" class="goal" data-goal aria-pressed="false">
+              <span class="check" aria-hidden="true"></span><span class="goal-text">Run a script and read its Output</span><span class="goal-xp">15</span>
+            </button>
+            <button type="button" class="goal" data-goal aria-pressed="false">
+              <span class="check" aria-hidden="true"></span><span class="goal-text">Change the message and run it again</span><span class="goal-xp">15</span>
+            </button>
+          </div>
+          <p class="rail-note">Tick a step in your own Studio. The desk remembers it.</p>
+          <div class="rail-next"><span class="rail-kicker">NEXT</span><b>2.1 / Your first variable</b><button type="button" data-view-target="line">walk the line <span aria-hidden="true">→</span></button></div>
+        </aside>
+      </div>
+
+      <footer class="lesson-foot"><span>LUAUOS / SESSION 01</span><span>PREVIEW · NOT SAVED</span></footer>
+    </div>
+  </section>
+
+  <section class="view view-line" data-view="line" aria-label="The line" hidden>
+    <div class="line-head">
+      <p class="eyebrow">THE LINE <span class="sep">/</span> 12 UNITS <span class="sep">/</span> 52 STOPS</p>
+      <h1 class="line-title">One long<br><em>line.</em></h1>
+      <p class="line-lede">Twelve stretches of track. Each one ends with a build and a cheatsheet.</p>
+    </div>
+
+    <div class="line-body">
+      <div class="station-list" role="group" aria-label="Units">
+        <button class="station is-selected" type="button" data-unit-node data-unit-no="01" data-unit-title="Set up" data-unit-count="1 stop" data-unit-first="1.0 / Set up Roblox Studio" data-unit-note="The free program every Roblox game is built in." aria-current="true">
+          <span class="station-no">01</span><span class="station-name">Set up</span><span class="station-meta">1 stop</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="02" data-unit-title="Variables" data-unit-count="6 stops" data-unit-first="2.1 / Your first variable" data-unit-note="A game has to remember things. A variable is how a script remembers.">
+          <span class="station-no">02</span><span class="station-name">Variables</span><span class="station-meta">6 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="03" data-unit-title="Decisions" data-unit-count="4 stops" data-unit-first="3.1 / Comparing values" data-unit-note="Scripts make choices: compare, branch, combine.">
+          <span class="station-no">03</span><span class="station-name">Decisions</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="04" data-unit-title="Loops" data-unit-count="4 stops" data-unit-first="4.1 / While loops" data-unit-note="Do the same thing until the job is done.">
+          <span class="station-no">04</span><span class="station-name">Loops</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="05" data-unit-title="Functions" data-unit-count="5 stops" data-unit-first="5.1 / Your own functions" data-unit-note="Give a block of code a name and call it when you need it.">
+          <span class="station-no">05</span><span class="station-name">Functions</span><span class="station-meta">5 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="06" data-unit-title="Tables" data-unit-count="5 stops" data-unit-first="6.1 / Lists" data-unit-note="Lists and dictionaries: many values under one name.">
+          <span class="station-no">06</span><span class="station-name">Tables</span><span class="station-meta">5 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="07" data-unit-title="The world" data-unit-count="4 stops" data-unit-first="7.1 / Finding things" data-unit-note="Find parts, move them, and make them tween.">
+          <span class="station-no">07</span><span class="station-name">The world</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="08" data-unit-title="Events" data-unit-count="5 stops" data-unit-first="8.1 / Events and Connect" data-unit-note="Make things happen when the world changes.">
+          <span class="station-no">08</span><span class="station-name">Events</span><span class="station-meta">5 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="09" data-unit-title="Players" data-unit-count="4 stops" data-unit-first="9.1 / The player list" data-unit-note="The player list, the character, and the Humanoid.">
+          <span class="station-no">09</span><span class="station-name">Players</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="10" data-unit-title="Client and server" data-unit-count="4 stops" data-unit-first="10.1 / Server and client" data-unit-note="Two places code runs, and the messages between them.">
+          <span class="station-no">10</span><span class="station-name">Client and server</span><span class="station-meta">4 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="11" data-unit-title="Organising and saving" data-unit-count="5 stops" data-unit-first="11.1 / ModuleScripts" data-unit-note="Modules, templates, errors and saved data.">
+          <span class="station-no">11</span><span class="station-name">Organising and saving</span><span class="station-meta">5 stops</span>
+        </button>
+        <button class="station" type="button" data-unit-node data-unit-no="12" data-unit-title="Hero project" data-unit-count="5 stops" data-unit-first="12.1 / Plan a real game" data-unit-note="Plan and build a real round-based game.">
+          <span class="station-no">12</span><span class="station-name">Hero project</span><span class="station-meta">5 stops</span>
+        </button>
+      </div>
+
+      <aside class="station-panel">
+        <p class="station-kicker">UNIT <span data-map-no>01</span></p>
+        <h2 data-map-title>Set up</h2>
+        <p class="station-count" data-map-count>1 stop</p>
+        <p class="station-first" data-map-first>1.0 / Set up Roblox Studio</p>
+        <p class="station-copy" data-map-note>The free program every Roblox game is built in.</p>
+        <button class="btn-primary" type="button" data-view-target="lesson">Open the lesson <span aria-hidden="true">→</span></button>
+        <p class="station-note">Preview shows stop 1.0.</p>
+      </aside>
+    </div>
+
+    <footer class="line-foot"><span>0 / 52 STOPS</span><span>FIRST NIGHT / YORU</span></footer>
+  </section>
+</main>
+
+<footer class="hud">
+  <nav class="view-tabs" aria-label="Surfaces">
+    <button class="view-tab" type="button" data-view-tab="desk" data-view-target="desk" aria-current="page"><span>01</span>Desk</button>
+    <button class="view-tab" type="button" data-view-tab="lesson" data-view-target="lesson"><span>02</span>Lesson</button>
+    <button class="view-tab" type="button" data-view-tab="line" data-view-target="line"><span>03</span>Line</button>
+  </nav>
+  <div class="hud-mid" aria-hidden="true"><span class="hud-rule"></span><span class="hud-progress">0 / 52 STOPS</span><span class="hud-rule"></span></div>
+  <div class="hud-meta"><span>ALT+1–3</span><span class="hud-live"><i></i> PREVIEW</span></div>
+</footer>
+
+<div class="sr-only" data-live aria-live="polite"></div>
+<script src="tiles.js"></script>
+</body>
+</html>

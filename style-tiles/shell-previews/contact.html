@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LuauOS — shell studies, side by side</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23ffb15f'/%3E%3Ctext x='8' y='12' text-anchor='middle' font-family='monospace' font-size='10' font-weight='700' fill='%23130d08'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="preview.css">
+<style>
+  html, body { width: 1440px; height: 900px; }
+  body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 76px 10px;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(255, 177, 95, .08), transparent 44%),
+      #05080c;
+  }
+
+  .contact-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    height: 32px;
+    flex: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .contact-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--text-soft);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+  }
+  .contact-mark .seal { width: 15px; height: 15px; font-size: 8px; }
+  .contact-sub {
+    color: var(--faint);
+    font-size: 8px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .contact-rule { flex: 1; height: 1px; background: var(--line-soft); }
+  .contact-link {
+    color: var(--dim);
+    font-size: 8px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color .14s;
+  }
+  .contact-link:hover { color: var(--accent); }
+  .contact-link b { color: var(--accent); font-weight: 500; }
+
+  .options {
+    display: grid;
+    grid-template-columns: repeat(2, 638px);
+    grid-template-rows: repeat(2, 398.5px);
+    gap: 12px;
+    flex: none;
+  }
+  .option {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 9px;
+    background: #05080c;
+    box-shadow:
+      0 18px 40px rgba(0, 0, 0, .32),
+      0 1px 0 rgba(255, 255, 255, .04) inset;
+    text-decoration: none;
+    color: inherit;
+  }
+  .option::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .025);
+    pointer-events: none;
+  }
+  .option img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .option .shade {
+    position: absolute;
+    inset: auto 0 0;
+    height: 112px;
+    background: linear-gradient(180deg, transparent, rgba(3, 5, 9, .82) 58%, rgba(3, 5, 9, .94));
+    pointer-events: none;
+  }
+  .option .caption {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 11px;
+    display: flex;
+    align-items: flex-end;
+    gap: 9px;
+    pointer-events: none;
+  }
+  .option .no {
+    min-width: 21px;
+    color: var(--accent);
+    font-size: 15px;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    line-height: .9;
+    letter-spacing: -.03em;
+  }
+  .option .name {
+    color: #f2eee4;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .option .desc {
+    margin-left: 2px;
+    padding-left: 9px;
+    border-left: 1px solid rgba(255, 255, 255, .14);
+    color: var(--muted);
+    font-size: 7.5px;
+    line-height: 1.2;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .option .open {
+    margin-left: auto;
+    color: var(--faint);
+    font-size: 7px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity .14s, color .14s;
+  }
+  .option:hover .open { opacity: 1; color: var(--accent); }
+  .option:hover { border-color: rgba(255, 177, 95, .4); }
+  .option:hover img { filter: brightness(1.06); }
+
+  .contact-foot {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 13px;
+    flex: none;
+    color: var(--faint);
+    font-size: 7px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+  .contact-foot .dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px rgba(255, 177, 95, .55);
+  }
+  .contact-foot .grow { flex: 1; height: 1px; background: var(--line-soft); }
+  .contact-foot kbd { font-size: 6px; }
+</style>
+</head>
+<body>
+
+  <header class="contact-head">
+    <span class="contact-mark"><span class="seal">L</span>luauos / shell studies</span>
+    <span class="contact-sub">clean desk · 1440 × 900</span>
+    <span class="contact-rule"></span>
+    <a class="contact-link" href="index.html">live preview <b>→</b></a>
+  </header>
+
+  <main class="options">
+    <a class="option" href="index.html?shell=hypr">
+      <img src="../shots/shell-hypr.png" alt="Hyprland-style tiling desktop with top bar, workspace pager, and bottom dock">
+      <span class="shade"></span>
+      <span class="caption"><span class="no">01</span><span class="name">hypr</span><span class="desc">custom tiling · slim bar · centered dock</span><span class="open">open study →</span></span>
+    </a>
+    <a class="option" href="index.html?shell=gnome">
+      <img src="../shots/shell-gnome.png" alt="GNOME-style desktop with Activities top bar and centered app dock">
+      <span class="shade"></span>
+      <span class="caption"><span class="no">02</span><span class="name">gnome</span><span class="desc">adwaita · activities · floating dash</span><span class="open">open study →</span></span>
+    </a>
+    <a class="option" href="index.html?shell=kde">
+      <img src="../shots/shell-kde.png" alt="KDE Plasma-style desktop with desktop icons, clock, and full bottom panel">
+      <span class="shade"></span>
+      <span class="caption"><span class="no">03</span><span class="name">plasma</span><span class="desc">desktop icons · clock · full taskbar</span><span class="open">open study →</span></span>
+    </a>
+    <a class="option" href="index.html?shell=noct">
+      <img src="../shots/shell-noct.png" alt="Noctalia-style desktop with side dock, system HUD, and serif lesson card">
+      <span class="shade"></span>
+      <span class="caption"><span class="no">04</span><span class="name">noctalia</span><span class="desc">side dock · system HUD · telemetry</span><span class="open">open study →</span></span>
+    </a>
+  </main>
+
+  <footer class="contact-foot">
+    <span class="dot"></span>
+    <span>same wallpaper · same graphite glass · same amber signal</span>
+    <span class="grow"></span>
+    <span>press <kbd>1</kbd>–<kbd>4</kbd> in the live preview</span>
+  </footer>
+
+</body>
+</html>

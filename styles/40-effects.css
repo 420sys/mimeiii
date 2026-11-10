@@ -1,0 +1,92 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 40 EFFECTS
+   Bloom, the cursor, goal ticks, the peek state and the machine's own
+   animations. The level tokens turn the quiet ones off.
+   All of it reads the level tokens from 00-tokens, so a slow machine or a
+   reduced-motion visitor gets the same layout with the theatre turned off.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── bloom on the live things ──────────────────────────────────────────────
+   The chrome stays flat: the bar, rail and meters never glow. The desk spends
+   its small amount of light on the clock and the quiet lavender signal. */
+
+/* ── ambient life ─────────────────────────────────────────────────────────
+   Four slow loops: the running dot, the hero signal, the next stop on the
+   pulse and the prompt cursor. They are opacity/colour only, so they never
+   move a box. Effect level 1/0 and reduced motion turn the names to `none`. */
+@keyframes breathe {
+  0%, 100% { opacity: .55; }
+  50% { opacity: 1; }
+}
+@keyframes tick-wait {
+  0%, 100% {
+    background: color-mix(in srgb, var(--accent) 13%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 72%, transparent);
+  }
+  50% {
+    background: color-mix(in srgb, var(--accent) 24%, transparent);
+    border-color: var(--accent);
+  }
+}
+.live,
+.hero-kicker::before {
+  animation-name: var(--anim-live);
+  animation-duration: var(--t-breathe);
+  animation-timing-function: var(--ez-breathe);
+  animation-iteration-count: infinite;
+}
+.hero-kicker::before { animation-name: var(--anim-kicker); animation-duration: 5.4s; }
+.tick.next {
+  animation-name: var(--anim-tick);
+  animation-duration: 3.2s;
+  animation-timing-function: var(--ez-breathe);
+  animation-iteration-count: infinite;
+}
+.jprompt::after {
+  content: '▌';
+  margin-left: 5px;
+  color: var(--accent);
+  animation-name: var(--anim-cursor);
+  animation-duration: 1.15s;
+  animation-timing-function: steps(1);
+  animation-iteration-count: infinite;
+}
+:root[data-asleep] .live,
+:root[data-asleep] .hero-kicker::before,
+:root[data-asleep] .tick.next,
+:root[data-asleep] .jprompt::after {
+  animation-play-state: paused;
+}
+
+/* ── type-in for the boot log ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .typing::after {
+    content: ''; display: inline-block; width: 7px; height: 12px;
+    background: var(--accent); vertical-align: -2px; margin-left: 2px;
+    animation: blink 1.05s steps(2) infinite;
+  }
+}
+
+/* ── the cursor: a thin accent block over interactive things ─────────────── */
+body.fancy-cursor button:hover, body.fancy-cursor a:hover { cursor: pointer; }
+
+/* ── a goal ticking: a short flash on the goal row + rail ────────────────── */
+@keyframes tick {
+  0% { background: color-mix(in srgb, var(--ok) 34%, transparent); }
+  100% { background: transparent; }
+}
+.goal.just { animation: tick 700ms ease-out 1; }
+
+/* ── the peek state: only the wall ───────────────────────────────────────── */
+body.peek #bar, body.peek #shell, body.peek #dock-wrap { opacity: 0; pointer-events: none; transition: opacity var(--t-slow) var(--ez); }
+body.peek .wall-veil { opacity: .35; }
+#peek-back {
+  position: fixed; z-index: 70; left: 50%; bottom: 26px; transform: translateX(-50%);
+  padding: 8px 16px; border: var(--bw) solid var(--line-hi); border-radius: 99px;
+  background: var(--surface); color: var(--fg-2); font-size: var(--fs-sm);
+}
+body.blur #peek-back { -webkit-backdrop-filter: blur(var(--blur-amt)); backdrop-filter: blur(var(--blur-amt)); }
+#peek-back[hidden] { display: none; }
+#peek-back:hover { color: var(--fg); }
+
+/* ── printed lesson (see 60-print) ───────────────────────────────────────── */

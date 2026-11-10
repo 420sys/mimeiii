@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- A clean frame for screenshots: the site fills the window, one action runs,
+     and nothing else is drawn. Chrome's own --screenshot then captures exactly
+     the machine, with no probe output or tool chrome in the image.
+
+       tools/shot.html?w=1600&h=1000&act=ws2#/3.2
+
+     Motion is frozen before the shot so two runs of the same view are the same
+     pixels; tools/shots.py drives this and stitches the contact sheets. -->
+<meta charset="utf-8">
+<title>ossuary-shot</title>
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  iframe { border: 0; display: block; position: fixed; inset: 0; }
+</style>
+<body>
+<script src="_act.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const W = +(q.get('w') || 1600), H = +(q.get('h') || 1000);
+const ACT = q.get('act') || '';
+const WALL = q.get('wall') || '';
+const FREEZE = q.get('freeze') !== '0';
+/* fx is pinned by default: a still should never be caught mid-watchdog. */
+const FX = q.get('fx') === 'auto' ? '' : (q.get('fx') || '3');
+
+const f = document.createElement('iframe');
+f.width = W; f.height = H;
+f.src = '../index.html?noboot' + (FX ? `&fx=${FX}` : '') + location.hash;
+document.body.append(f);
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const ready = async () => {
+  for (let i = 0; i < 120; i++) {
+    const w = f.contentWindow, d = f.contentDocument;
+    if (w && w.ossuary && d.body && !d.body.classList.contains('booting')) return true;
+    await sleep(120);
+  }
+  return false;
+};
+
+(async () => {
+  const ok = await ready();
+  const w = f.contentWindow, d = f.contentDocument;
+  const L = (w && w.ossuary) || {};
+
+  if (ok && FREEZE) {
+    const st = d.createElement('style');
+    st.textContent = '*,*::before,*::after{transition:none!important;animation-duration:1ms!important;'
+      + 'animation-delay:0s!important;animation-iteration-count:1!important}';
+    d.head.appendChild(st);
+  }
+  if (ok && WALL && L.wall) L.wall.apply(WALL);
+  if (WALL) await sleep(400);
+  if (ok) await runAct(f, ACT);
+
+  /* the watchdog is not interesting in a still: keep the full machine */
+  if (ok && L.fx && L.fx() !== 3) { /* leave whatever level the site chose */ }
+
+  document.title = ok ? 'shot-ready' : 'shot-failed';
+  document.documentElement.dataset.shot = ok ? 'ready' : 'failed';
+  document.documentElement.dataset.act = ACT;
+  try { document.documentElement.dataset.error = (d.getElementById('boot-error') || {}).textContent || ''; }
+  catch (_) { document.documentElement.dataset.error = ''; }
+})();
+</script>
+</body>

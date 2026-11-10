@@ -1,0 +1,161 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MIMEI · 22 WINDOW
+   Real windows: a titlebar you can drag, four dots (close · hide · float · fill),
+   tabs, a body that scrolls and a status footer. Tiled windows are placed by
+   the window manager as inline geometry; floating ones keep their own
+   position and grow eight resize handles.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.win {
+  position: absolute;
+  display: flex; flex-direction: column;
+  min-width: 220px; min-height: 120px;
+  border: var(--bw) solid var(--glass-line);
+  border-radius: var(--r);
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.06) brightness(var(--glass-bright));
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.06) brightness(var(--glass-bright));
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  transition: box-shadow var(--t), border-color var(--t), opacity var(--t);
+}
+.win.float, .win.dragging { box-shadow: var(--shadow); z-index: 30; border-color: var(--line-hi); }
+.win.focus { border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); }
+.win.float:focus, .win.dragging:focus { border-color: color-mix(in srgb, var(--accent) 55%, var(--line-hi)); }
+/* a window is a frame, not a link: its keyboard ring stays legible */
+.win:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-radius: var(--r);
+  box-shadow: 0 0 0 4px rgba(8, 8, 10, .58);
+}
+.win.float:focus-visible { box-shadow: var(--shadow), 0 0 0 4px rgba(8, 8, 10, .58); }
+.win.hidden { display: none; }
+.win.opening { animation: win-in 200ms var(--ez) 1; }
+@keyframes win-in {
+  from { opacity: 0; transform: translateY(6px) scale(.995); clip-path: inset(0 0 90% 0); }
+  to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
+}
+.win.closing { animation: win-out 150ms var(--ez) 1 forwards; pointer-events: none; }
+@keyframes win-out {
+  to { opacity: 0; transform: translateY(4px) scale(.995); clip-path: inset(90% 0 0 0); }
+}
+body.glitch .win.focus { animation: win-glitch 260ms steps(2) 1; }
+@keyframes win-glitch {
+  0% { transform: translateX(0); }
+  30% { transform: translateX(calc(-2px * var(--lvl-glitch))); }
+  60% { transform: translateX(calc(2px * var(--lvl-glitch))); }
+  100% { transform: none; }
+}
+
+/* ── titlebar ────────────────────────────────────────────────────────────── */
+.win-bar {
+  display: flex; align-items: center; gap: 8px;
+  height: var(--win-t); padding: 0 9px; flex: none;
+  border-bottom: var(--bw) solid var(--line-2);
+  cursor: grab; user-select: none; touch-action: none;
+  transition: border-color var(--t);
+}
+.win.focus .win-bar { border-bottom-color: color-mix(in srgb, var(--accent) 34%, var(--line-2)); }
+.win.dragging .win-bar { cursor: grabbing; }
+.win-bar .dots { display: flex; gap: 5px; flex: none; }
+.win-bar .dot {
+  width: 8px; height: 8px; border-radius: 99px; border: var(--bw) solid var(--line-hi);
+  background: transparent;
+  display: grid; place-items: center; padding: 0;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.win-bar .dot svg { width: 5px; height: 5px; opacity: 0; fill: none; stroke: var(--accent-ink); stroke-width: 1.8; }
+.win-bar .dots:hover .dot svg { opacity: .9; }
+.dot.d-close:hover { background: var(--warn); border-color: var(--warn); }
+.dot.d-hide:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.dot.d-float:hover { background: var(--ok); border-color: var(--ok); }
+.dot.d-max:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.win-t {
+  flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px;
+  font: 500 12px/1 var(--font-ui); color: var(--fg-2);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  transition: color var(--t-fast);
+}
+.win.focus .win-t { color: var(--fg); }
+.win.dragging { opacity: .92; transform: scale(1.004); }
+
+/* ── tabs ────────────────────────────────────────────────────────────────── */
+.win-tabs {
+  display: flex; align-items: stretch; gap: 2px; flex: none;
+  padding: 0 7px; border-bottom: var(--bw) solid var(--line-2);
+  background: none; overflow-x: auto; scrollbar-width: none;
+}
+.win-tabs:empty { display: none; }
+.win-tabs::-webkit-scrollbar { height: 0; }
+.tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 8px 4px; border: 0; border-bottom: 1px solid transparent;
+  font: 400 11px/1 var(--font-ui); color: var(--fg-4); white-space: nowrap;
+  transition: color var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+}
+.tab:hover { color: var(--fg-2); background: var(--line-2); }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+.tab .n { color: var(--fg-4); font-family: var(--font-code); font-size: 9.5px; }
+.tab[aria-selected="true"] .n { color: var(--accent); }
+.tab.done .n { color: var(--ok); }
+.tab .x { color: var(--fg-4); padding: 0 1px; border-radius: 3px; }
+.tab .x:hover { color: var(--warn); background: var(--line-2); }
+
+/* ── body + footer ───────────────────────────────────────────────────────── */
+.win-body { flex: 1; min-height: 0; display: flex; position: relative; }
+.win-foot {
+  display: flex; align-items: center; gap: 10px; flex: none;
+  height: var(--win-foot-h); padding: 0 9px;
+  border-top: var(--bw) solid var(--line-2); background: none;
+  font: 400 9px/1 var(--font-ui); color: var(--fg-4);
+}
+.win-foot .seg { display: inline-flex; align-items: center; gap: 5px; }
+.win-foot .seg.k { color: var(--accent); }
+.win-foot .fill { flex: 1; }
+
+/* ── resize handles (floating windows only) ──────────────────────────────── */
+.win.float .rz { position: absolute; z-index: 5; }
+.win.float .rz.n { top: -3px; left: 8px; right: 8px; height: 6px; cursor: ns-resize; }
+.win.float .rz.s { bottom: -3px; left: 8px; right: 8px; height: 6px; cursor: ns-resize; }
+.win.float .rz.w { left: -3px; top: 8px; bottom: 8px; width: 6px; cursor: ew-resize; }
+.win.float .rz.e { right: -3px; top: 8px; bottom: 8px; width: 6px; cursor: ew-resize; }
+.win.float .rz.nw { left: 0; top: 0; width: 12px; height: 12px; cursor: nwse-resize; }
+.win.float .rz.ne { right: 0; top: 0; width: 12px; height: 12px; cursor: nesw-resize; }
+.win.float .rz.sw { left: 0; bottom: 0; width: 12px; height: 12px; cursor: nesw-resize; }
+.win.float .rz.se { right: 0; bottom: 0; width: 12px; height: 12px; cursor: nwse-resize; }
+.win:not(.float) .rz { display: none; }
+
+/* ── drop indicator ──────────────────────────────────────────────────────── */
+#drop {
+  position: absolute; z-index: 25; pointer-events: none;
+  border: 1px dashed var(--accent); border-radius: var(--r);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  display: none;
+}
+#drop.on { display: block; }
+#drop.swap { border-style: solid; background: color-mix(in srgb, var(--accent-2) 12%, transparent); border-color: var(--accent-2); }
+
+/* ── empty seat: a workspace with nothing on it ──────────────────────────── */
+.seat-empty {
+  position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+  color: var(--fg-3); padding: 40px;
+}
+.seat-empty .box { max-width: 560px; display: grid; gap: 10px; justify-items: center; }
+.seat-empty .big { font: 500 15px/1.3 var(--font-ui); color: var(--fg-3); letter-spacing: .2em; text-transform: uppercase; }
+.seat-empty .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+/* ── window menu (right-click on a titlebar) ─────────────────────────────── */
+#win-menu {
+  position: fixed; z-index: 70; min-width: 190px; padding: 4px;
+  border: var(--bw) solid var(--line); border-radius: var(--r-sm);
+  background: var(--surface-solid); box-shadow: var(--shadow);
+}
+#win-menu button {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  width: 100%; padding: 5px 8px; border-radius: var(--r-sm);
+  font-size: var(--fs-sm); color: var(--fg-2); text-align: left;
+}
+#win-menu button:hover { background: var(--sel); color: var(--fg); }
+#win-menu kbd { font-size: 10px; }
+#win-menu hr { border: 0; border-top: var(--bw) solid var(--line-2); margin: 4px 2px; }

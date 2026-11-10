@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-rice="komorebi" data-fx="3" data-perf="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LuauOS — learn Roblox Luau from nothing</title>
+<meta name="description" content="A quiet desktop for learning Roblox Luau from absolute zero. You write every script in your own Roblox Studio; this machine walks you through it, one session at a time.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="LuauOS — learn Roblox Luau from nothing">
+<meta property="og:description" content="A quiet desktop for learning Roblox Luau from absolute zero. You write every script in your own Roblox Studio; this machine walks you through it, one session at a time.">
+<meta property="og:image" content="assets/og/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#08080a">
+<link rel="stylesheet" href="styles/05-fonts.css">
+<link rel="stylesheet" href="styles/00-tokens.css">
+<link rel="stylesheet" href="styles/10-base.css">
+<link rel="stylesheet" href="styles/20-bar.css">
+<link rel="stylesheet" href="styles/21-rail.css">
+<link rel="stylesheet" href="styles/22-window.css">
+<link rel="stylesheet" href="styles/23-course.css">
+<link rel="stylesheet" href="styles/24-launcher.css">
+<link rel="stylesheet" href="styles/30-deck.css">
+<link rel="stylesheet" href="styles/31-session.css">
+<link rel="stylesheet" href="styles/32-man.css">
+<link rel="stylesheet" href="styles/33-deckops.css">
+<link rel="stylesheet" href="styles/40-effects.css">
+<link rel="stylesheet" href="styles/50-responsive.css">
+<link rel="stylesheet" href="styles/60-print.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect width='16' height='16' fill='%2308080c'/><path fill='%23c3b5ff' d='M5 3h6v1H5zM4 4h2v1H4z'/><path fill='%239ad8ff' d='M10 4h2v1h-2zM4 5h1v7H4zM11 5h1v7h-1zM5 12h6v1H5zM7 7h2v1H7zM7 9h2v1H7z'/></svg>">
+</head>
+<body class="os booting">
+
+<!-- ══ boot safety net ════════════════════════════════════════════════════
+     Runs before anything else and survives the module graph failing to
+     parse. Without it a thrown expression leaves a black screen and no clue
+     why, which is the worst possible failure for a teaching site. -->
+<script>
+(function () {
+  function report(what, detail) {
+    var box = document.getElementById('boot-error');
+    if (!box) {
+      box = document.createElement('pre');
+      box.id = 'boot-error';
+      box.style.cssText = 'position:fixed;z-index:9999;left:0;right:0;bottom:0;margin:0;'
+        + 'padding:16px 20px;max-height:46vh;overflow:auto;background:#2b0f16;color:#ffb4c4;'
+        + 'font:12px/1.6 ui-monospace,Menlo,monospace;white-space:pre-wrap;'
+        + 'border-top:1px solid #7a3b50';
+      document.body.appendChild(box);
+    }
+    document.title = 'BOOT FAILED: ' + what;
+    box.textContent += what + '\n' + detail + '\n\n';
+    var log = document.getElementById('boot-log');
+    if (log) log.textContent = 'the machine did not finish starting.';
+  }
+  window.addEventListener('error', function (e) {
+    report('Error: ' + (e.message || 'unknown'),
+           (e.filename || '') + ':' + (e.lineno || '?') + (e.error && e.error.stack ? '\n' + e.error.stack : ''));
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e.reason;
+    report('Unhandled rejection: ' + ((r && r.message) || r), (r && r.stack) || '');
+  });
+})();
+</script>
+
+<a class="skip" href="#session-body">Skip to the lesson</a>
+
+<!-- ══ the wall ══════════════════════════════════════════════════════════
+     The LQIP layer paints a true-coloured blur instantly; the real wall
+     fades in over it. Nothing here is announced to a screen reader. -->
+<div id="wall" aria-hidden="true">
+  <div class="wall-lqip" id="wall-lqip"></div>
+  <img id="wall-img" alt="" decoding="async">
+  <div class="wall-veil"></div>
+  <div class="wall-noise"></div>
+</div>
+
+<div class="fx-layers" aria-hidden="true">
+  <canvas id="rain"></canvas>
+  <div id="scan"></div>
+  <div id="grain"></div>
+  <div id="glare"></div>
+  <div id="wipe"></div>
+</div>
+
+<!-- ══ boot ══════════════════════════════════════════════════════════════ -->
+<div id="boot" role="status" aria-live="polite">
+  <div class="boot-in">
+    <div class="boot-mark" aria-hidden="true">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges"><path class="bm-a" d="M5 3h6v1H5zM4 4h2v1H4z"/><path class="bm-b" d="M10 4h2v1h-2zM4 5h1v7H4zM11 5h1v7h-1zM5 12h6v1H5zM7 6h2v1H7zM7 8h2v1H7zM7 10h2v1H7z"/></svg>
+      <span>luauOS</span>
+    </div>
+    <pre id="boot-log"></pre>
+  </div>
+</div>
+
+<!-- ══ bar ═══════════════════════════════════════════════════════════════ -->
+<header id="bar" role="banner">
+  <div class="bar-l">
+    <button class="mod brand" id="brand" title="The deck (Alt+1)">
+      <svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path class="bm-a" d="M5 3h6v1H5zM4 4h2v1H4z"/><path class="bm-b" d="M10 4h2v1h-2zM4 5h1v7H4zM11 5h1v7h-1zM5 12h6v1H5zM7 6h2v1H7zM7 8h2v1H7zM7 10h2v1H7z"/></svg>
+      <span>luauOS</span>
+    </button>
+    <nav id="workspaces" aria-label="Workspaces"></nav>
+  </div>
+
+  <div class="bar-c">
+    <button class="mod clock" id="clock" title="The deck has the big clock">
+      <span id="clock-time">--:--</span>
+      <span id="clock-date">----</span>
+    </button>
+  </div>
+
+  <div class="bar-r">
+    <button class="mod stat" id="mod-rank" title="Rank and XP"></button>
+    <button class="mod stat" id="mod-streak" title="Days in a row you have opened the course"></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button class="mod ico" id="mod-rain" title="Rain (Alt+Shift+R)" aria-pressed="false" aria-label="Toggle rain">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.5v3M9 1.5v3M13 3v3M3 8v3M7 7.5v3M11 9v3M5 13v1.5"/></svg>
+    </button>
+    <button class="mod ico" id="mod-fx" title="Effects level (Alt+Shift+F)" aria-label="Cycle effects level">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 12V6M5.5 12V3M9 12V7.5M12.5 12V5"/></svg>
+    </button>
+    <button class="mod ico" id="mod-sound" title="Sound off — click to switch on" aria-pressed="false" aria-label="Toggle sound">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6h2l3-2.5v9L5 10H3z"/><path d="M10.5 6.2a2.6 2.6 0 0 1 0 3.6" class="wv"/><path d="M12.4 4.6a5 5 0 0 1 0 6.8" class="wv"/></svg>
+    </button>
+    <button class="mod ico" id="mod-peek" title="Wallpaper only (Alt+B)" aria-pressed="false" aria-label="Show wallpaper only">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8 12.1 12.5 8 12.5 1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/></svg>
+    </button>
+    <span class="sep" aria-hidden="true"></span>
+    <button class="mod launch" id="mod-launch" title="Launcher (Alt+Enter)">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3"/></svg>
+      <kbd>alt ↵</kbd>
+    </button>
+  </div>
+
+  <!-- the journal's last loud line, when something happens -->
+  <div id="bar-tick" aria-live="off"></div>
+</header>
+
+<!-- ══ shell: rail + seat ════════════════════════════════════════════════ -->
+<div id="shell">
+  <nav id="rail" aria-label="Windows and tools"></nav>
+  <main id="seat" aria-label="Desktop">
+    <p id="stack-note">
+      <span>This is a workstation — the tiling, the drag and drop and the deck want a bigger screen.</span>
+      <button type="button" id="stack-lesson">open the lesson anyway</button>
+    </p>
+    <div id="desk" aria-label="Deck widgets"></div>
+  </main>
+</div>
+
+<!-- lesson bodies land here at boot, pulled out of content/*.md -->
+<div id="lessons" hidden></div>
+
+<div id="peek-back" hidden>Show the desktop <kbd>esc</kbd></div>
+
+<!-- ══ overlays ══════════════════════════════════════════════════════════ -->
+<div id="scrim" hidden></div>
+
+<div id="launcher" role="dialog" aria-modal="true" aria-label="Launcher" hidden>
+  <div class="launch-box">
+    <label class="launch-prompt">
+      <span class="lp-mode" id="launch-mode">lessons</span>
+      <input id="launch-input" type="text" autocomplete="off" spellcheck="false"
+             role="combobox" aria-expanded="true" aria-controls="launch-list"
+             aria-autocomplete="list" aria-label="Search" placeholder="jump to a lesson">
+      <span class="lp-hint" id="launch-count"></span>
+    </label>
+    <div id="launch-list" role="listbox" aria-label="Results"></div>
+    <div class="launch-foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> move</span>
+      <span><kbd>↵</kbd> run</span>
+      <span><kbd>tab</kbd> mode</span>
+      <span><kbd>esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<div id="live" role="status" aria-live="polite" class="sr-only"></div>
+<div id="boot-error-host" hidden></div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

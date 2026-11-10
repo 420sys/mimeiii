@@ -1,0 +1,51 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   MIMEI · 43 GLASS · RICHER GLASS ON A LIVING CITY (the cab: workspaces 2, 3 and 4)
+   Loaded after 41-cab. The panes get an edge of light along the top, a faint sheen and a little
+   grain, all under the words, and, when the effects level allows a live blur (fx 3), a deeper blur
+   behind a lighter fill. At fx 2 and below --glass-blur is 0, so the panes keep the cab's solid fill.
+   The lamp edge on the focused pane stays the only warm light. Behind it all, ui/drift.js moves a
+   few soft headlights and tail-lights along the city's light trails, on a canvas in #wall.
+   Text keeps 4.5:1 or better on every pane, in Night, Late and Ice.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── the tokens ────────────────────────────────────────────────────────── */
+:root {
+  --glass-blur-deep: calc(var(--glass-blur) * 1.5);   /* 24px at fx 3, nothing below */
+  --glass-sat: 1.12;
+  --glass-edge: rgba(255, 255, 255, .08);
+  --glass-sheen: linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, 0) 38%);
+  --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  --pane-glass: rgba(6, 9, 15, .66);
+}
+:root[data-scene='ice'] {
+  --glass-edge: rgba(255, 255, 255, .75);
+  --glass-sheen: linear-gradient(180deg, rgba(255, 255, 255, .36), rgba(255, 255, 255, 0) 42%);
+  --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .09 0 0 0 0 .13 0 0 0 0 .17 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  --pane-glass: rgba(246, 248, 251, .72);
+}
+
+/* ── the panes: an edge of light, a faint sheen and the grain, all under the words ── */
+.win, #study .glass {
+  background-image: var(--glass-sheen), var(--glass-grain);
+  background-size: 100% 100%, 160px 160px;
+  box-shadow: inset 0 1px 0 var(--glass-edge), var(--shadow);
+}
+#study.bench-over .rd-bench { box-shadow: inset 0 1px 0 var(--glass-edge), var(--shadow), -24px 0 70px -28px rgba(0, 0, 0, .75); }
+:root[data-scene='ice'] #study.bench-over .rd-bench { box-shadow: inset 0 1px 0 var(--glass-edge), var(--shadow), -24px 0 70px -34px rgba(40, 60, 90, .35); }
+
+/* a live blur only at fx 3; :where keeps this as weak as the cab's own .win rule, so any pane with
+   its own fill keeps it, and the drawer over the page stays solid */
+:where(:root[data-fx='3']) .win, :where(:root[data-fx='3']) #study .glass {
+  background-color: var(--pane-glass);
+  -webkit-backdrop-filter: blur(var(--glass-blur-deep)) saturate(var(--glass-sat));
+  backdrop-filter: blur(var(--glass-blur-deep)) saturate(var(--glass-sat));
+}
+:where(:root[data-fx='3']) #bar {
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur-deep) * .75)) saturate(var(--glass-sat));
+  backdrop-filter: blur(calc(var(--glass-blur-deep) * .75)) saturate(var(--glass-sat));
+}
+
+/* ── the living city: drift.js draws here, under the veil ─────────────────── */
+#wall .wall-drift { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+body.parallax #wall .wall-drift { transform: translate3d(var(--px, 0), var(--py, 0), 0) scale(1.04); transition: transform 900ms var(--ez); }
+body:not([data-ws='2']):not([data-ws='3']):not([data-ws='4']) #wall .wall-drift { display: none; }

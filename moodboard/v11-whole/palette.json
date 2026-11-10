@@ -1,0 +1,373 @@
+{
+ "attached": {
+  "images": 7,
+  "tone": {
+   "dark": 0.208,
+   "light": 0.216,
+   "grey": 0.119,
+   "coloured": 0.457
+  },
+  "hue": {
+   "red": 0.01,
+   "orange": 0.011,
+   "yellow": 0.02,
+   "green": 0.021,
+   "teal": 0.35,
+   "blue": 0.53,
+   "violet": 0.017,
+   "magenta": 0.041
+  },
+  "swatches": [
+   {
+    "hex": "#000000",
+    "share": 0.237
+   },
+   {
+    "hex": "#fefefe",
+    "share": 0.164
+   },
+   {
+    "hex": "#1a2125",
+    "share": 0.154
+   },
+   {
+    "hex": "#647180",
+    "share": 0.136
+   },
+   {
+    "hex": "#2e4e65",
+    "share": 0.131
+   },
+   {
+    "hex": "#091f34",
+    "share": 0.078
+   },
+   {
+    "hex": "#c1cdce",
+    "share": 0.074
+   },
+   {
+    "hex": "#011323",
+    "share": 0.026
+   }
+  ]
+ },
+ "megacity": {
+  "images": 3,
+  "tone": {
+   "dark": 0.184,
+   "light": 0.013,
+   "grey": 0.103,
+   "coloured": 0.7
+  },
+  "hue": {
+   "red": 0.005,
+   "orange": 0.003,
+   "yellow": 0.0,
+   "green": 0.003,
+   "teal": 0.31,
+   "blue": 0.656,
+   "violet": 0.007,
+   "magenta": 0.017
+  },
+  "swatches": [
+   {
+    "hex": "#000000",
+    "share": 0.252
+   },
+   {
+    "hex": "#465e75",
+    "share": 0.173
+   },
+   {
+    "hex": "#17202a",
+    "share": 0.147
+   },
+   {
+    "hex": "#17354b",
+    "share": 0.132
+   },
+   {
+    "hex": "#313f51",
+    "share": 0.103
+   },
+   {
+    "hex": "#7996a7",
+    "share": 0.086
+   },
+   {
+    "hex": "#051d37",
+    "share": 0.067
+   },
+   {
+    "hex": "#001834",
+    "share": 0.04
+   }
+  ]
+ },
+ "akiba": {
+  "images": 1,
+  "tone": {
+   "dark": 0.232,
+   "light": 0.06,
+   "grey": 0.061,
+   "coloured": 0.646
+  },
+  "hue": {
+   "red": 0.035,
+   "orange": 0.047,
+   "yellow": 0.096,
+   "green": 0.094,
+   "teal": 0.18,
+   "blue": 0.439,
+   "violet": 0.059,
+   "magenta": 0.05
+  },
+  "swatches": [
+   {
+    "hex": "#000000",
+    "share": 0.513
+   },
+   {
+    "hex": "#324961",
+    "share": 0.127
+   },
+   {
+    "hex": "#6a7d82",
+    "share": 0.113
+   },
+   {
+    "hex": "#08131a",
+    "share": 0.074
+   },
+   {
+    "hex": "#92b3ab",
+    "share": 0.071
+   },
+   {
+    "hex": "#dfd7cc",
+    "share": 0.061
+   },
+   {
+    "hex": "#000002",
+    "share": 0.031
+   },
+   {
+    "hex": "#010000",
+    "share": 0.01
+   }
+  ]
+ },
+ "filigree": {
+  "images": 2,
+  "tone": {
+   "dark": 0.333,
+   "light": 0.346,
+   "grey": 0.174,
+   "coloured": 0.147
+  },
+  "hue": {
+   "red": 0.0,
+   "orange": 0.0,
+   "yellow": 0.0,
+   "green": 0.001,
+   "teal": 0.765,
+   "blue": 0.013,
+   "violet": 0.01,
+   "magenta": 0.211
+  },
+  "swatches": [
+   {
+    "hex": "#131510",
+    "share": 0.284
+   },
+   {
+    "hex": "#ffffff",
+    "share": 0.179
+   },
+   {
+    "hex": "#fdfdfd",
+    "share": 0.169
+   },
+   {
+    "hex": "#5c6672",
+    "share": 0.16
+   },
+   {
+    "hex": "#b7bfc7",
+    "share": 0.112
+   },
+   {
+    "hex": "#202221",
+    "share": 0.072
+   },
+   {
+    "hex": "#121510",
+    "share": 0.011
+   },
+   {
+    "hex": "#11130e",
+    "share": 0.011
+   }
+  ]
+ },
+ "digital-2000s": {
+  "images": 11,
+  "tone": {
+   "dark": 0.218,
+   "light": 0.127,
+   "grey": 0.255,
+   "coloured": 0.4
+  },
+  "hue": {
+   "red": 0.002,
+   "orange": 0.0,
+   "yellow": 0.0,
+   "green": 0.007,
+   "teal": 0.291,
+   "blue": 0.695,
+   "violet": 0.001,
+   "magenta": 0.004
+  },
+  "swatches": [
+   {
+    "hex": "#000001",
+    "share": 0.152
+   },
+   {
+    "hex": "#f1f3f3",
+    "share": 0.136
+   },
+   {
+    "hex": "#1b2733",
+    "share": 0.128
+   },
+   {
+    "hex": "#384150",
+    "share": 0.125
+   },
+   {
+    "hex": "#8c9daa",
+    "share": 0.122
+   },
+   {
+    "hex": "#567387",
+    "share": 0.12
+   },
+   {
+    "hex": "#bccfd8",
+    "share": 0.12
+   },
+   {
+    "hex": "#080e16",
+    "share": 0.096
+   }
+  ]
+ },
+ "vibe": {
+  "images": 20,
+  "tone": {
+   "dark": 0.181,
+   "light": 0.006,
+   "grey": 0.219,
+   "coloured": 0.594
+  },
+  "hue": {
+   "red": 0.036,
+   "orange": 0.067,
+   "yellow": 0.006,
+   "green": 0.004,
+   "teal": 0.02,
+   "blue": 0.55,
+   "violet": 0.179,
+   "magenta": 0.137
+  },
+  "swatches": [
+   {
+    "hex": "#272634",
+    "share": 0.139
+   },
+   {
+    "hex": "#191f2d",
+    "share": 0.134
+   },
+   {
+    "hex": "#6d5371",
+    "share": 0.129
+   },
+   {
+    "hex": "#aea8c4",
+    "share": 0.126
+   },
+   {
+    "hex": "#422d47",
+    "share": 0.121
+   },
+   {
+    "hex": "#7077a7",
+    "share": 0.12
+   },
+   {
+    "hex": "#3b456c",
+    "share": 0.116
+   },
+   {
+    "hex": "#0d0c1b",
+    "share": 0.115
+   }
+  ]
+ },
+ "whole-board": {
+  "images": 42,
+  "tone": {
+   "dark": 0.217,
+   "light": 0.055,
+   "grey": 0.198,
+   "coloured": 0.53
+  },
+  "hue": {
+   "red": 0.025,
+   "orange": 0.039,
+   "yellow": 0.006,
+   "green": 0.034,
+   "teal": 0.125,
+   "blue": 0.571,
+   "violet": 0.109,
+   "magenta": 0.09
+  },
+  "swatches": [
+   {
+    "hex": "#090a15",
+    "share": 0.138
+   },
+   {
+    "hex": "#212532",
+    "share": 0.135
+   },
+   {
+    "hex": "#7b9ab0",
+    "share": 0.134
+   },
+   {
+    "hex": "#3a526c",
+    "share": 0.128
+   },
+   {
+    "hex": "#3e3047",
+    "share": 0.123
+   },
+   {
+    "hex": "#ddd6df",
+    "share": 0.121
+   },
+   {
+    "hex": "#71617f",
+    "share": 0.112
+   },
+   {
+    "hex": "#122031",
+    "share": 0.109
+   }
+  ]
+ }
+}

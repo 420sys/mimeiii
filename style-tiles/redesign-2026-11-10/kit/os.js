@@ -712,7 +712,8 @@ function deskParts(desk) {
 
 /* ── the prototype switcher (not part of any design) ──────────────────── */
 
-const PROTOS = [['a-hologram', 'A', 'Hologram'], ['b-filigree', 'B', 'Filigree'], ['c-signal', 'C', 'Signal'], ['d-rose', 'D', 'Rose window']];
+/* Only the directions that exist: they are built one at a time. */
+const PROTOS = [['0-today', '0', 'Today'], ['a-hologram', 'A', 'Hologram']];
 function buildSwitcher() {
   return h(`<nav id="proto" aria-label="Prototype switcher">
     <a href="../index.html" class="pr-home" title="Back to the gallery (G)">gallery</a>
@@ -773,7 +774,8 @@ export function boot(config) {
   if (!SHOT && !Q.has('bare')) os.append(buildSwitcher());
 
   if (cfg.wall) cfg.wall(api.el.wall, api);
-  cfg.desk(api.el.ws1, api);
+  /* A desk that draws its picture later (it waits for fonts or an image) returns a promise, and __ready waits for it. */
+  const drawn = Promise.resolve(cfg.desk(api.el.ws1, api)).catch(e => console.error('desk', e));
 
   document.addEventListener('keydown', keys);
   os.addEventListener('click', clicks);
@@ -784,7 +786,7 @@ export function boot(config) {
   if (S.overlay === 'launcher') buildLauncher.open();
   emit('ws', S.ws);
   emit('scene', scene());
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { window.__ready = true; root.dataset.ready = ''; }));
+  Promise.all([document.fonts ? document.fonts.ready : null, drawn]).then(() => requestAnimationFrame(() => { window.__ready = true; root.dataset.ready = ''; }));
   window.mimeiProto = api;
   return api;
 }

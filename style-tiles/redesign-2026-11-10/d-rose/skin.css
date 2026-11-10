@@ -1,0 +1,6 @@
+/* D · Rose window (first pass). */
+.rw-scene { position: absolute; inset: 0; width: 100%; height: 100%; stroke: none; }
+.rw-scene text { font: 600 46px 'Cinzel', serif; letter-spacing: .02em; stroke: none; }
+.rw-hi { fill: #fff; fill-opacity: 0; pointer-events: none; }
+.rw-pane { cursor: pointer; }
+.sign, .dclock, .dmenu { position: absolute; opacity: 0; }

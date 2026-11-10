@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>dev iron</title>
+<style>
+body { margin: 0; background: #060d14; font: 12px monospace; color: #9cc; }
+.row { display: flex; }
+.cell { position: relative; flex: 1; height: 600px; border: 1px solid #123; box-sizing: border-box; --u: 46px; overflow: hidden;
+  background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size: var(--u) var(--u); }
+.cell.ice { background-color: #8496a2; color: #123; }
+.cell.night { background-color: #0c2a33; }
+.blade { position: absolute; left: calc(var(--u) * 4); top: calc(var(--u) * 6); width: calc(var(--u) * var(--w)); height: 400px; background: rgba(210,250,250,.5); }
+.ice .blade { background: rgba(244,248,250,.7); }
+.c-iron { position: absolute; left: calc(var(--ix) * var(--u)); top: calc(var(--iy) * var(--u)); width: calc(var(--iw) * var(--u)); height: calc(var(--ih) * var(--u)); overflow: visible; }
+.c-iron[data-flip] { transform: scaleX(-1); }
+.fe { fill: #0b1720; stroke: rgba(150, 225, 240, .34); stroke-width: .045; }
+.bolt { fill: #5d8591; stroke: none; }
+.sn { display: none; }
+.ice .fe { fill: #121c24; stroke: none; }
+.ice .bolt { fill: #5d6f7c; }
+.ice .sn { display: block; fill: none; stroke: #fff; stroke-width: .2; stroke-linecap: round; stroke-linejoin: round; }
+.cell > span { position: absolute; left: 6px; top: 4px; }
+</style></head><body>
+<div class="row" id="n"></div><div class="row" id="i"></div>
+<script type="module">
+const { bracket } = await import('./iron.js?v=' + Date.now());
+const q = new URLSearchParams(location.search);
+const all = [['arm', { w: 4.4, g: 3.2 }], ['arm', { w: 3.4, g: 2.4, plain: true, brace: 3.4, k: .85 }], ['swan', { w: 3.6, g: 1.6 }], ['crown', { w: 3.6 }], ['lamp', {}]];
+const specs = q.get('k') ? all.filter(s => s[0] === q.get('k')) : all;
+for (const [id, cls] of [['n', 'night'], ['i', 'ice']]) {
+  for (const [k, o] of specs) {
+    const c = document.createElement('div'); c.className = 'cell ' + cls;
+    c.innerHTML = `<span>${k} ${JSON.stringify(o)}</span><div class="blade" style="--w:${o.w || 0.01}">${bracket(k, o)}</div>`;
+    document.getElementById(id).append(c);
+  }
+}
+</script>
+</body></html>

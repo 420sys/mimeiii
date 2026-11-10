@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>dev iron</title>
+<style>
+body { margin: 0; background: #060d14; font: 12px monospace; color: #9cc; }
+.row { display: flex; }
+.cell { position: relative; width: 20%; height: 450px; border: 1px solid #123; box-sizing: border-box; --u: 34px; overflow: hidden; }
+.cell.ice { background: #8496a2; color: #123; }
+.cell.night { background: radial-gradient(circle at 60% 55%, #1c5560, #0a1620 70%); }
+.blade { position: absolute; left: calc(var(--u) * 5.2); top: calc(var(--u) * 6.4); width: calc(var(--u) * var(--w)); height: 300px; background: #dff; opacity: .9; }
+.ice .blade { background: #f4f8fa; }
+.c-iron { position: absolute; left: calc(var(--ix) * var(--u)); top: calc(var(--iy) * var(--u)); width: calc(var(--iw) * var(--u)); height: calc(var(--ih) * var(--u)); overflow: visible; }
+.c-iron[data-flip] { transform: scaleX(-1); }
+.fe { fill: #0b1720; stroke: rgba(150, 225, 240, .34); stroke-width: .045; }
+.bolt { fill: #5d8591; stroke: none; }
+.sn { display: none; }
+.ice .fe { fill: #121c24; stroke: none; }
+.ice .bolt { fill: #5d6f7c; }
+.ice .sn { display: block; fill: none; stroke: #fff; stroke-width: .2; stroke-linecap: round; stroke-linejoin: round; }
+.cell > span { position: absolute; left: 6px; top: 4px; }
+</style></head><body>
+<div class="row" id="n"></div><div class="row" id="i"></div>
+<script type="module">
+import { bracket } from './iron.js?v=' + Date.now();
+</script>
+<script type="module">
+const { bracket } = await import('./iron.js?v=' + Date.now());
+const specs = [['arm', { w: 4.4, g: 3.2 }], ['swan', { w: 3.6, g: 1.6 }], ['crown', { w: 3.6 }], ['lyre', { w: 3.4, g: 2.3 }], ['lamp', {}]];
+for (const [id, cls] of [['n', 'night'], ['i', 'ice']]) {
+  for (const [k, o] of specs) {
+    const c = document.createElement('div'); c.className = 'cell ' + cls;
+    c.innerHTML = `<span>${k}</span><div class="blade" style="--w:${o.w || 0.01}">${bracket(k, o)}</div>`;
+    document.getElementById(id).append(c);
+  }
+}
+</script>
+</body></html>

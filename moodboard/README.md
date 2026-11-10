@@ -45,6 +45,22 @@ again, so they count double.
 | `08-iridescent-led-columns-rain` | Iridescent LED columns on a wet plaza; pink and magenta reflections |
 | `09-glass-shatter-moon` | Shattered glass bursting from white-hot light, with a moon |
 
+## v11-whole (10 Nov 2026): the whole board, prototypes only
+
+A ground-up look at the redesign from every folder here plus `vibe/`, with
+`v6-lunar/01` to `07` attached again as "me as a whole". No new images:
+`v11-whole/` holds the brief (`BRIEF.md`), the colour measurement of the board
+(`palette.json`, made by `palette.py`) and nothing else.
+
+- The answers in one line: teal and ice blue; neon megacity and filigree; no
+  skulls, no anime, no Japanese but 未; loud home, calm page; Night and Ice
+  both; the whole machine kept; checkpoints only; MacBook and a big monitor.
+- So from the table above: take the filigree of 03 and 04 without the skulls
+  or the violet, the signs of 07 without the characters or the neon colours,
+  and leave the pink of 08.
+- The prototypes are in `style-tiles/redesign-2026-11-10/` (open its
+  `index.html`). Nothing in the real site changed.
+
 ## Notes
 
 Write what you want here: what to keep, what to drop, what feels wrong.

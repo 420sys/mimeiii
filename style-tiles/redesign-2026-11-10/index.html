@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIMEI · redesign round 11 · four desks, one machine</title>
+<link rel="icon" type="image/png" href="../../assets/crane/icon.png">
+<link rel="stylesheet" href="kit/fonts.css">
+<style>
+  /* The gallery page. It is plain on purpose: the directions are the subject. */
+  :root {
+    --bg: #05070c; --fg: #f2f5fa; --fg-2: #c8ccd5; --fg-3: #9499a2; --line: rgba(190, 215, 240, .16);
+    --faint: rgba(190, 215, 240, .07); --ice: #a9dcf2; --teal: #2fb7b0;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace; --sans: 'Inter', system-ui, sans-serif;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { font-size: clamp(15px, 10px + .42vw, 20px); background: var(--bg); color-scheme: dark; scroll-behavior: smooth; }
+  body { margin: 0; color: var(--fg-2); font: 400 1rem/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .wrap { max-width: 92rem; margin: 0 auto; padding: 0 clamp(1.2rem, 4vw, 4rem); }
+  .k { font: 500 .6875rem/1.5 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--fg-3); }
+
+  header.top { display: flex; justify-content: space-between; align-items: center; gap: 2rem; padding: 1.4rem 0; border-bottom: 1px solid var(--line); }
+  .brand { display: flex; align-items: center; gap: .7rem; color: var(--fg); text-decoration: none; }
+  .mark { width: 1.3rem; height: 1.5rem; background: currentColor;
+    -webkit-mask: url('../../assets/crane/mark-snow.webp') center / contain no-repeat; mask: url('../../assets/crane/mark-snow.webp') center / contain no-repeat; }
+  .brand b { font: 500 .8rem/1 var(--mono); letter-spacing: .36em; }
+  nav.jump { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+  nav.jump a { text-decoration: none; }
+  nav.jump a:hover { color: var(--fg); }
+
+  .hero { padding: clamp(3rem, 9vh, 7rem) 0 clamp(2.5rem, 6vh, 4.5rem); }
+  .hero h1 { margin: .6rem 0 1.2rem; font: 500 clamp(2.8rem, 6.2vw, 6.4rem)/.98 var(--serif); letter-spacing: -.02em; color: var(--fg); }
+  .hero h1 em { font-style: italic; color: var(--ice); }
+  .hero p { max-width: 46rem; margin: 0 0 1rem; font-size: 1.125rem; }
+  .hero .note { color: var(--fg-3); font-size: .9375rem; }
+
+  section { padding: clamp(2.5rem, 6vh, 4.5rem) 0; border-top: 1px solid var(--line); }
+  h2 { margin: .4rem 0 1.6rem; font: 500 clamp(1.9rem, 3vw, 2.9rem)/1.05 var(--serif); letter-spacing: -.01em; color: var(--fg); }
+  h3 { margin: 0; color: var(--fg); font-weight: 500; }
+
+  /* the board, measured */
+  .board { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: start; }
+  .thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; }
+  .thumbs a { display: block; aspect-ratio: 4 / 3; overflow: hidden; border: 1px solid var(--line); background: #000; }
+  .thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.92); transition: transform .3s ease-out; }
+  .thumbs a:hover img { transform: scale(1.05); }
+  .thumbs .n { position: absolute; }
+  .rows { display: grid; gap: 1.15rem; }
+  .row { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: .3rem 1.2rem; align-items: center; }
+  .row .name { color: var(--fg); font-size: .9375rem; }
+  .row .name small { display: block; }
+  .bar { display: flex; height: .8rem; overflow: hidden; border-radius: 2px; background: var(--faint); }
+  .bar i { display: block; height: 100%; }
+  .bar.tone { height: .3rem; margin-top: .25rem; }
+  .row .say { grid-column: 2; }
+  .legend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; margin-top: 1.4rem; }
+  .legend span { display: inline-flex; align-items: center; gap: .4rem; }
+  .legend i { width: .7rem; height: .7rem; border-radius: 2px; display: inline-block; }
+  .swatches { display: flex; gap: 2px; margin-top: .3rem; }
+  .swatches i { height: .5rem; flex: 1; }
+
+  .says { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.6rem 2rem; counter-reset: s; }
+  .says div { counter-increment: s; border-top: 1px solid var(--line); padding-top: .8rem; }
+  .says div::before { content: '0' counter(s); display: block; font: 500 .6875rem/1 var(--mono); letter-spacing: .14em; color: var(--teal); margin-bottom: .6rem; }
+  .says b { display: block; color: var(--fg); font: 500 1.25rem/1.2 var(--serif); margin-bottom: .35rem; }
+  .says p { margin: 0; font-size: .9rem; color: var(--fg-3); }
+
+  .answers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 2rem; }
+  .answers div { display: grid; gap: .1rem; padding: .7rem 0; border-top: 1px solid var(--faint); }
+  .answers b { color: var(--fg); font-weight: 500; }
+
+  /* a direction */
+  .dir { padding: clamp(2.5rem, 6vh, 5rem) 0; border-top: 1px solid var(--line); }
+  .dir-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0 1.6rem; align-items: end; margin-bottom: 1.6rem; }
+  .dir-k { font: 500 clamp(4rem, 8vw, 8rem)/.8 var(--serif); font-feature-settings: 'lnum'; color: var(--ice); min-width: 1.1em; }
+  .dir-head h2 { margin: 0 0 .5rem; }
+  .dir-head p { margin: 0; max-width: 44rem; }
+  .dir-meta { display: grid; gap: .25rem; justify-items: end; text-align: right; }
+  .open { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 1.2rem; align-items: center; }
+  .open a { text-decoration: none; padding: .32rem .8rem; border: 1px solid var(--line); border-radius: 2rem; }
+  .open a:hover { border-color: var(--ice); color: var(--fg); }
+  .open a.go { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+  .strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: .8rem; margin-top: .8rem; }
+  figure { margin: 0; }
+  .shot { display: block; position: relative; aspect-ratio: 16 / 10; overflow: hidden; border: 1px solid var(--line); background: #0a0d13; text-decoration: none; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+  .shot:hover { border-color: var(--ice); }
+  .shot.missing::after { content: 'not captured yet'; position: absolute; inset: 0; display: grid; place-items: center; font: 500 .6875rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--fg-3); }
+  figcaption { margin-top: .4rem; }
+  .from { display: flex; gap: .4rem; align-items: center; margin-top: 1.2rem; flex-wrap: wrap; }
+  .from img { width: 4.2rem; height: 3rem; object-fit: cover; border: 1px solid var(--line); display: block; }
+  .from span { margin-right: .6rem; }
+
+  .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 4rem; }
+  .keys { display: grid; grid-template-columns: auto 1fr; gap: .5rem 1.4rem; align-items: baseline; }
+  kbd { font: 500 .75rem/1 var(--mono); border: 1px solid var(--line); border-radius: .25rem; padding: .15rem .4rem; color: var(--fg); }
+  ol.ask { margin: 0; padding-left: 1.2rem; display: grid; gap: .7rem; }
+  ol.ask b { color: var(--fg); font-weight: 500; }
+  footer { padding: 2.5rem 0 4rem; border-top: 1px solid var(--line); color: var(--fg-3); font-size: .875rem; }
+  code { font: 400 .9em var(--mono); color: var(--fg); }
+
+  @media (max-width: 1000px) {
+    .board, .cols, .pair { grid-template-columns: 1fr; }
+    .says, .answers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .strip { grid-template-columns: repeat(2, 1fr); }
+    .dir-head { grid-template-columns: auto 1fr; }
+    .dir-meta { grid-column: 1 / -1; justify-items: start; text-align: left; margin-top: .8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <a class="brand" href="../../index.html" title="The real site, unchanged"><span class="mark" aria-hidden="true"></span><b>MIMEI</b></a>
+  <nav class="jump k" aria-label="On this page">
+    <a href="#board">the board</a><a href="#answers">your answers</a><a href="#d-0-today">0</a><a href="#d-a-hologram">A</a><a href="#d-b-filigree">B</a><a href="#d-c-signal">C</a><a href="#d-d-rose">D</a><a href="#next">next</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <p class="k">Redesign · round 11 · 10 Nov 2026 · prototypes only</p>
+  <h1>Four desks,<br><em>one machine.</em></h1>
+  <p>Four ways MIMEI could look, built from your whole board and your sixteen answers. Each one is the same machine you have now (four workspaces, the bar, the lesson, the manual, the terminal, the files, settings, search) with a different desk in front of it and a different hand on every page.</p>
+  <p class="note">Nothing in the real site changed. Every number is from the course, the lesson is 3.1 word for word, and the progress shown belongs to a demo learner. Everything on screen is drawn in code.</p>
+</div>
+
+<section id="board">
+  <p class="k">01 · The board, measured</p>
+  <h2>Nine tenths of your colour is teal or blue.</h2>
+  <div class="board">
+    <div>
+      <div class="thumbs" id="thumbs"></div>
+      <p class="k" style="margin-top:.8rem">The seven you attached (moodboard/v6-lunar, 01 to 07)</p>
+      <p style="margin-top:1.4rem;font-size:.9rem;color:var(--fg-3);max-width:34rem">Each image was shrunk and every pixel sorted. The thick bar is how the coloured pixels divide between hue families; the thin bar is tone (near-black, grey, colour, near-white); the strip is the eight most common colours. The numbers are in <code>moodboard/v11-whole/palette.json</code>, made by <code>palette.py</code> beside it.</p>
+      <p style="font-size:.9rem;color:var(--fg-3);max-width:34rem">The lavender and pink live in the vibe folder. In what you attached, and in what you answered, they are nearly absent, so they are absent here.</p>
+    </div>
+    <div>
+      <div class="rows" id="rows"></div>
+      <div class="legend k" id="legend"></div>
+    </div>
+  </div>
+</section>
+
+<section id="says">
+  <p class="k">02 · What it says</p>
+  <h2>Cold light, one enormous thing, one very fine thing.</h2>
+  <div class="says">
+    <div><b>Cold light in the dark</b><p>Colour is rarely the subject. Light is: windows, a billboard, a hologram, white-hot glass. Hue stays between teal and blue; brightness does the work.</p></div>
+    <div><b>Huge beside hair-thin</b><p>A hologram as tall as a tower over thousands of tiny windows. A crest over filigree. Almost nothing at a middle scale.</p></div>
+    <div><b>Lettering is architecture</b><p>Names on towers, billboards, vertical signs, script under a crest. Words are never a caption under the picture.</p></div>
+    <div><b>Ornament has two shapes</b><p>It grows out of one corner, or it stands symmetric like a coat of arms.</p></div>
+    <div><b>Two grounds</b><p>A fifth of what you attached is black and a fifth is white. Night and Ice are both native to the board.</p></div>
+    <div><b>Screens inside screens</b><p>The vibe folder is riced desktops, windows and terminals. The small Linux comes from there, and it stays.</p></div>
+    <div><b>Height, weather, nobody about</b><p>Rain, haze, snow. Seen from high up or from the street looking up. People absent or tiny.</p></div>
+    <div><b>A 2000s hand</b><p>Glossy black, shards, thin interface bars, micro type: the digital art of 2003 to 2008, drawn with care.</p></div>
+  </div>
+</section>
+
+<section id="answers">
+  <p class="k">03 · What you answered</p>
+  <h2>The brief, in your words.</h2>
+  <div class="answers">
+    <div><span class="k">Why start over</span><b>Just exploring</b></div>
+    <div><span class="k">Loudness</span><b>Loud home, calm page</b></div>
+    <div><span class="k">Most you</span><b>Neon megacity; filigree</b></div>
+    <div><span class="k">Colour</span><b>Teal and ice blue</b></div>
+    <div><span class="k">Skulls</span><b>Gone</b></div>
+    <div><span class="k">Anime</span><b>None</b></div>
+    <div><span class="k">Japanese</span><b>Only the 未 mark</b></div>
+    <div><span class="k">Night and Ice</span><b>Both, made perfect</b></div>
+    <div><span class="k">The small Linux</span><b>Keep all of it</b></div>
+    <div><span class="k">Name</span><b>MIMEI 未明, final</b></div>
+    <div><span class="k">Rewards</span><b>Checkpoints only</b></div>
+    <div><span class="k">Sound</span><b>Ambience only</b></div>
+    <div><span class="k">Who opens it</span><b>You and portfolio visitors</b></div>
+    <div><span class="k">Pictures</span><b>Any mix</b></div>
+    <div><span class="k">Screens</span><b>MacBook and a big monitor</b></div>
+    <div><span class="k">GitHub</span><b>Push all of it</b></div>
+  </div>
+</section>
+
+<div id="dirs"></div>
+
+<section id="look">
+  <p class="k">05 · How to look</p>
+  <h2>Open one, then press things.</h2>
+  <div class="cols">
+    <div class="keys">
+      <span><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></span><span>desk, lessons, manual, settings</span>
+      <span><kbd>N</kbd></span><span>Night or Ice</span>
+      <span><kbd>←</kbd> <kbd>→</kbd> <kbd>Enter</kbd></span><span>on the desk: flip the sign through all 52 lessons, open the one it shows</span>
+      <span><kbd>C</kbd></span><span>the course, as that direction draws it</span>
+      <span><kbd>S</kbd></span><span>in a lesson: the scripts, beside the page</span>
+      <span><kbd>Alt</kbd> <kbd>Enter</kbd> or <kbd>/</kbd></span><span>search the course</span>
+      <span><kbd>G</kbd></span><span>back to this page</span>
+    </div>
+    <div>
+      <p>In the lesson, tick the last box of the runbook ("Ask some questions"): that reaches a checkpoint, and each direction answers in its own way. In the terminal on workspace 3, try <code>help</code>, <code>ls</code>, <code>scene ice</code> and <code>open 3.1</code>.</p>
+      <p>The small pill at the bottom of every prototype switches direction, workspace and scene. It belongs to no design.</p>
+      <p>Each was checked at 1440 × 900 (MacBook) and 2560 × 1440 (big monitor).</p>
+    </div>
+  </div>
+</section>
+
+<section id="next">
+  <p class="k">06 · What I need from you next</p>
+  <h2>Pick one, or name the parts.</h2>
+  <ol class="ask">
+    <li><b>Which desk?</b> A, B, C, D, or stay with today's. Mixing is fine: "A's desk with B's pages" is a valid answer.</li>
+    <li><b>The warm lamp.</b> A and C keep today's one warm light that marks you. B and D have none: teal, ice, white and black only. Which is right?</li>
+    <li><b>Which Ice?</b> Each direction reads Ice differently: a snowed-in dawn (A), white paper and black ink (B), signs switched off in the snow (C), daylight through the glass (D).</li>
+    <li><b>How loud is too loud?</b> Is any desk more than you want to open every night? Is any lesson page not calm enough to read for two hours?</li>
+    <li><b>The beads.</b> D draws all 210 checkpoints round the window and lights the ones reached. Is that still "checkpoints only", or does it cross into a picture that fills in?</li>
+    <li><b>Type.</b> Any face you want kept, or never want to see again?</li>
+  </ol>
+</section>
+
+<footer>
+  <p>Files: <code>style-tiles/redesign-2026-11-10/</code> (this page, <code>kit/</code> the shared machine, one folder per direction), <code>moodboard/v11-whole/BRIEF.md</code> (the brief). Fonts are self-hosted and under the SIL Open Font License.</p>
+</footer>
+</div>
+
+<script type="module">
+const DIRS = [
+  { id: '0-today', k: '0', name: 'Today', lead: 'what you have', lamp: 'the lamp',
+    line: 'The crane’s city and its sign on the shared machine, with no skin: Inter and IBM Plex Mono, white and city blue, one warm lamp. This is the baseline the other four are measured against.', from: [] },
+  { id: 'a-hologram', k: 'A', name: 'Hologram', lead: 'megacity, cinematic', lamp: 'one lamp',
+    line: 'You are high above a megacity that never stops moving. A hologram as tall as a tower shows the mark, and a white billboard names your lesson. Pages are projected light on dark glass.',
+    from: ['v6-lunar/01-hologram-dancer-billboard-city.jpg', 'v6-lunar/02-aerial-city-ring-roads-blue-red.jpg', 'v6-lunar/06-teal-plaza-towers-night.jpg', 'v6-lunar/09-glass-shatter-moon.jpg'] },
+  { id: 'b-filigree', k: 'B', name: 'Filigree', lead: 'filigree, graphic', lamp: 'no warm light',
+    line: 'MIMEI as a printed plate: the mark carried by wings and scrollwork, with the megacity engraved at its foot. Ice-blue ink on black at Night; black ink and a teal wash on white paper in Ice.',
+    from: ['v6-lunar/03-winged-skull-filigree-blue.jpg', 'v6-lunar/04-rose-skull-scrollwork-violet.jpg', 'v6-lunar/05-dragon-kanji-2000s-digital-art.jpg', 'v5-chrome-soft-club/07-spades-vector.jpg'] },
+  { id: 'c-signal', k: 'C', name: 'Signal', lead: 'megacity, typographic', lamp: 'one lamp',
+    line: 'The city is made of signs. You stand in a wet street, the biggest sign is your lesson, and twelve blade signs hang from ironwork for the twelve units. In Ice the signs are off and the snow is on them.',
+    from: ['v6-lunar/07-neo-akiba-anime-billboards.jpg', 'v6-lunar/01-hologram-dancer-billboard-city.jpg', 'v6-lunar/08-iridescent-led-columns-rain.jpg', 'v6-lunar/06-teal-plaza-towers-night.jpg'] },
+  { id: 'd-rose', k: 'D', name: 'Rose window', lead: 'both, as architecture', lamp: 'no warm light',
+    line: 'A cathedral of glass in the megacity: the one already standing at the lower right of your crane’s city. Its rose window is the course: twelve petals for twelve units, a pane for every lesson, 210 beads for the checkpoints.',
+    from: ['v7-crane/desk-night-menu.jpg', 'v6-lunar/03-winged-skull-filigree-blue.jpg', 'v6-lunar/09-glass-shatter-moon.jpg', 'v6-lunar/02-aerial-city-ring-roads-blue-red.jpg'] },
+];
+const SMALL = [['2', 'lesson', 'the lesson'], ['2.drawer', 'scripts', 'the scripts'], ['3', 'manual', 'manual, terminal, files'], ['4', 'settings', 'settings'], ['2.course', 'course', 'the course']];
+const h = html => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+const shot = (d, scene, hash, name, cap) => `<figure><a class="shot" href="${d.id}/?scene=${scene}#${hash}" title="Open it live"><img alt="${d.name}: ${cap}, ${scene}" src="shots/${d.id}-${scene}-${hash.split('.')[0]}-${name}.webp" onerror="this.parentNode.classList.add('missing');this.remove()"></a><figcaption class="k">${cap} · ${scene}</figcaption></figure>`;
+
+const dirs = document.getElementById('dirs');
+DIRS.forEach((d, i) => {
+  dirs.append(h(`<article class="dir" id="d-${d.id}">
+    ${i === 0 ? '<p class="k" style="margin-bottom:2rem">04 · The desks</p>' : ''}
+    <div class="dir-head">
+      <div class="dir-k">${d.k}</div>
+      <div><h2>${d.name}</h2><p>${d.line}</p></div>
+      <div class="dir-meta k"><span>leads with: ${d.lead}</span><span>${d.lamp}</span></div>
+    </div>
+    <div class="open k">
+      <a class="go" href="${d.id}/#1">open the desk</a>
+      <a href="${d.id}/?scene=ice#1">in Ice</a><a href="${d.id}/#2">lesson</a><a href="${d.id}/#3">manual</a><a href="${d.id}/#4">settings</a><a href="${d.id}/#2.course">course</a>
+    </div>
+    <div class="pair">${shot(d, 'night', '1', 'desk', 'the desk')}${shot(d, 'ice', '1', 'desk', 'the desk')}</div>
+    <div class="strip">${SMALL.map(([hash, name, cap], n) => shot(d, n % 2 ? 'ice' : 'night', hash, name, cap)).join('')}</div>
+    ${d.from.length ? `<div class="from"><span class="k">taken from</span>${d.from.map(f => `<a href="../../moodboard/${f}"><img loading="lazy" alt="" src="../../moodboard/${f}"></a>`).join('')}</div>` : ''}
+  </article>`));
+});
+
+/* the board, measured */
+const HUES = [['teal', '#2fb7b0'], ['blue', '#4f8fd6'], ['violet', '#8b6fd0'], ['magenta', '#d267b4'], ['red', '#d8504a'], ['orange', '#e09a4f'], ['yellow', '#e3cf5a'], ['green', '#6dbb6a']];
+const GROUPS = [['attached', 'The seven attached'], ['megacity', 'Megacity', '01, 02, 06'], ['filigree', 'Filigree', '03, 04'], ['digital-2000s', '2000s digital art', '05, 09, v5'], ['akiba', 'Neo-Akiba', '07'], ['vibe', 'The vibe folder', '20 images'], ['whole-board', 'Everything', '42 images']];
+const pct = x => `${Math.round(x * 100)}%`;
+try {
+  const data = await (await fetch('../../moodboard/v11-whole/palette.json')).json();
+  const rows = document.getElementById('rows');
+  for (const [key, name, sub] of GROUPS) {
+    const g = data[key];
+    if (!g) continue;
+    const cool = g.hue.teal + g.hue.blue;
+    rows.append(h(`<div class="row">
+      <span class="name">${name}${sub ? `<small class="k">${sub}</small>` : ''}</span>
+      <div>
+        <div class="bar" role="img" aria-label="${name}: ${pct(cool)} of the colour is teal or blue">${HUES.map(([n, c]) => `<i style="width:${g.hue[n] * 100}%;background:${c}" title="${n} ${pct(g.hue[n])}"></i>`).join('')}</div>
+        <div class="bar tone" title="tone">${[['dark', '#000'], ['grey', '#5d6670'], ['coloured', '#2e6f8f'], ['light', '#f4f6f8']].map(([n, c]) => `<i style="width:${g.tone[n] * 100}%;background:${c}" title="${n} ${pct(g.tone[n])}"></i>`).join('')}</div>
+        <div class="swatches">${g.swatches.map(s => `<i style="background:${s.hex};flex:${s.share}" title="${s.hex}"></i>`).join('')}</div>
+      </div>
+      <span class="say k">teal + blue ${pct(cool)} · black ${pct(g.tone.dark)} · white ${pct(g.tone.light)}</span>
+    </div>`));
+  }
+  document.getElementById('legend').innerHTML = HUES.map(([n, c]) => `<span><i style="background:${c}"></i>${n}</span>`).join('');
+} catch (e) { document.getElementById('rows').textContent = 'The measurements did not load (this page needs to be served, not opened as a file).'; }
+
+const T = ['01-hologram-dancer-billboard-city', '02-aerial-city-ring-roads-blue-red', '03-winged-skull-filigree-blue', '04-rose-skull-scrollwork-violet', '05-dragon-kanji-2000s-digital-art', '06-teal-plaza-towers-night', '07-neo-akiba-anime-billboards'];
+document.getElementById('thumbs').innerHTML = T.map(n => `<a href="../../moodboard/v6-lunar/${n}.jpg"><img loading="lazy" alt="${n.slice(3).replace(/-/g, ' ')}" src="../../moodboard/v6-lunar/${n}.jpg"></a>`).join('');
+</script>
+</body>
+</html>
